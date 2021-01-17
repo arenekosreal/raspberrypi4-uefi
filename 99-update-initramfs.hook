@@ -1,0 +1,9 @@
+[Trigger]
+Type = File
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Target = boot/vmlinuz*
+[Action]
+When = PostTransaction
+Exec = sh -c 'dracut -f /boot/initramfs-%KERNELVER% %KERNELVER%'

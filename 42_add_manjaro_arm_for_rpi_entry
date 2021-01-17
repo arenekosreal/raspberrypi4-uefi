@@ -1,0 +1,12 @@
+#!/bin/sh
+if [ -f /boot/cmdline.txt ];then
+    CMDLINE=$(cat /boot/cmdline.txt)
+else
+    CMDLINE=""
+fi
+KERNELVER=%KERNELVER%
+echo "menuentry Manjaro-ARM on RaspberryPi(){"
+echo "search --no-floppy --set=root --fs-uuid ${UUID}"
+echo "linux /vmlinuz-${KERNELVER} ${CMDLINE}" 
+echo "initrd /initramfs-${KERNELVER}.img"
+echo "}"

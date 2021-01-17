@@ -1,0 +1,8 @@
+*.tar.*
+src
+pkg
+*.dtb*
+*.dat
+LICENCE.*
+RPi4
+*.elf
