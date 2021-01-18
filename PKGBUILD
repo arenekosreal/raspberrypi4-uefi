@@ -17,11 +17,12 @@ url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
 arch=("aarch64" "x86_64")
 licence=("custom:LICENCE.EDK2" "custom:LICENCE.broadcom" "GPL")
 depends=("grub" "dracut")
-makedepends=("git" "acpica" "python")
+makedepends=("git" "acpica" "python" "rsync")
 if [ ${CARCH} != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
+    options=(!strip)
 fi
-conflicts=("linux-rpi4" "linux-rpi4-mainline" "linux-rpi4-rc")
+conflicts=("linux-rpi4" "linux-rpi4-mainline" "linux-rpi4-rc" "uboot-raspberrypi")
 sha256sums=('SKIP'
             '35813b05987c6875fc736be701c806d59ee09c96d2c8af19b069507cd97f854b'
             '0c8a06c443b40f08cae7e0bc5e6244dbbfff658065695341b03e91dcf5308b63'
@@ -48,6 +49,7 @@ source=(
 	${GIT_RAW}/raspberrypi/firmware/master/boot/overlays/miniuart-bt.dtbo
 	${GIT_RAW}/raspberrypi/firmware/master/boot/overlays/disable-bt.dtbo
 )
+
 pkgver(){
 	cd ${srcdir}/RPi4
 	FIRMWAREVER=$(git rev-parse --short HEAD)
@@ -55,21 +57,46 @@ pkgver(){
 	KERNELVER=$(git rev-parse --short HEAD)
 	echo ${FIRMWAREVER}_${KERNELVER}
 }
+
 prepare(){
+    local file
+	local dir
+    echo "Use ${GIT_HUB} as mirrorsite."
     if [ ! -d linux ];then
         git clone --depth=1 -b rpi-${KBRANCH}.y ${GIT_HUB}/raspberrypi/linux.git linux
     else
+        if [ ${CARCH} != "aarch64" ];then
+            export ARCH=arm64
+            export CROSS_COMPILE=aarch64-linux-gnu-
+        fi
         cd linux
         git fetch origin
+        make clean
     fi
-    # Will move this to source list when makepkg supports --depth option 
+    # Will move this to source list when makepkg supports --depth=1 option or we have to clone a huge repository.
 	cd ${srcdir}/RPi4
 	if [ ${CARCH} == "aarch64" ];then
-		sed "s/export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-//" -i build_firmware.sh 
-		# remove cross-compile flag to start native compiling
+		sed "s/export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-/# export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-/" -i build_firmware.sh 
+		# Remove cross-compile flag to start native compiling if running on aarch64 device.
 	fi
-	git submodule update --init --recursive || echo "Skipping getting some submodules due to Internet connection problem"
+	sed "11s/^/# /" -i build_firmware.sh
+	# Remove debug build as its files are useless, we only need release build files.
+	# Or you can comment line 12 of build script to use debug build files.
+	for dir in . edk2 edk2-platforms edk2/CryptoPkg/Library/OpensslLib/openssl edk2/BaseTools/Source/C/BrotliCompress/brotli edk2/MdeModulePkg/Library/BrotliCustomDecompressLib/brotli
+	do
+		echo "Modifying ${dir}/.gitmodules"
+		cd ${srcdir}/RPi4/${dir}/
+		sed -i "s_https://github.com_${GIT_HUB}_g; s_https://boringssl.googlesource.com_${GIT_HUB}/google_g" .gitmodules
+		git submodule update --init
+	done
+	cd ${srcdir}/RPi4
+    # Apply modification to let submodules on github also use mirrorsite.
+    
+	git submodule update --init --recursive || echo "Skipping getting some submodules due to Internet connection problem."
+	# Maybe this line should be removed.
+
 }
+
 build(){
 	cd ${srcdir}/RPi4
 	sh build_firmware.sh
@@ -80,8 +107,9 @@ build(){
 	fi
 	make bcm2711_defconfig
 	patch .config ${srcdir}/switch-power-gov-to-ondemand.patch
-	make
+	make -j$(cat /proc/cpuinfo |grep "processor"|wc -l)
 }
+
 package_raspberrypi4-uefi-firmware-git(){
 	local file
 	mkdir -p ${pkgdir}/boot/overlays
@@ -96,8 +124,12 @@ package_raspberrypi4-uefi-firmware-git(){
 	done
     install -Dm644 ${srcdir}/LICENCE.EDK2 "$pkgdir"/usr/share/licenses/$pkgname/LICENCE.EDK2
     install -Dm644 ${srcdir}/LICENCE.broadcom "$pkgdir"/usr/share/licenses/$pkgname/LICENCE.broadcom
+    echo "There are some files conflicting with some same-name files provided by raspberrypi-boot-loader, "
+	echo "the latter may not suit for this firmware package. "
+    echo "You have to overwrite them with --overwrite option."
 	
 }
+
 package_raspberrypi4-uefi-kernel-git(){
     if [ ${CARCH} != "aarch64" ];then
         export ARCH=arm64
@@ -109,13 +141,13 @@ package_raspberrypi4-uefi-kernel-git(){
 	cd ${srcdir}/linux
 	cp .config ${pkgdir}/boot/config-$(make kernelrelease)
 	cp System.map ${pkgdir}/boot/System.map-$(make kernelrelease)
-	make zinstall INSTALL_PATH=${pkgdir}
+	make zinstall INSTALL_PATH=${pkgdir}/boot
 	make modules_install INSTALL_MOD_PATH=${pkgdir}
 	make headers_install INSTALL_HDR_PATH=${pkgdir}
 	mkdir -p ${pkgdir}/grub.d
 	cp ${srcdir}/42_add_manjaro_arm_for_rpi_entry ${pkgdir}/grub.d
-	sed -i "s/%KERNELVER%/`make kernelrelease`/" ${pkgdir}/grub.d/42_add_manjaro_arm_for_rpi_entry
+	sed -i "s/%KERNELVER%/`make kernelrelease`/g" ${pkgdir}/grub.d/42_add_manjaro_arm_for_rpi_entry
 	mkdir -p ${pkgdir}/usr/share/libalpm/hooks/
 	cp ${srcdir}/99-update-initramfs.hook ${pkgdir}/usr/share/libalpm/hooks/
-	sed -i "s/%KERNELVER%/`make kernelrelease`/" ${pkgdir}/usr/share/libalpm/hooks/99-update-initramfs.hook
+	sed -i "s/%KERNELVER%/`make kernelrelease`/g" ${pkgdir}/usr/share/libalpm/hooks/99-update-initramfs.hook
 }
