@@ -1,0 +1,11 @@
+[Trigger]
+Type=File
+Operation=Install
+Operation=Upgrade
+Operation=Remove
+Target=/etc/default/grub
+Target=boot/cmdline.txt
+[Action]
+Description="Modifying grub kernel cmdline ..."
+When=PostTransaction
+Exec=sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=.$/GRUB_CMDLINE_LINUX_DEFAULT=`cat /boot/cmdline.txt || echo 'quiet splash'`/" /etc/default/grub

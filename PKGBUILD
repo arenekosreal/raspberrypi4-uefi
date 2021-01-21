@@ -9,10 +9,10 @@ GIT_HUB=https://hub.fastgit.org
 GIT_RAW=https://raw.fastgit.org
 
 pkgbase=raspberrypi4-uefi-boot-git
-pkgname=(raspberrypi4-uefi-firmware-git raspberrypi4-uefi-kernel-git)
+pkgname=(raspberrypi4-uefi-firmware-git raspberrypi4-uefi-kernel-git raspberrypi4-uefi-kernel-header-git)
 pkgver=d8a55b0_a63790d02 #Firmware Version_Kernel Version (All are git commit strings)
 pkgrel=1
-pkgdesc="UEFI kernel and Firmware for Raspberry Pi 4"
+pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
 arch=("aarch64" "x86_64")
 licence=("custom:LICENCE.EDK2" "custom:LICENCE.broadcom" "GPL")
@@ -22,25 +22,25 @@ if [ ${CARCH} != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
     options=(!strip)
 fi
-conflicts=("linux-rpi4" "linux-rpi4-mainline" "linux-rpi4-rc" "uboot-raspberrypi")
+conflicts=("linux-rpi4" "linux-rpi4-mainline" "linux-rpi4-rc" "uboot-raspberrypi" "linux" "linux-mainline" "linux-rc")
 sha256sums=('SKIP'
-            '35813b05987c6875fc736be701c806d59ee09c96d2c8af19b069507cd97f854b'
+            'e6dc26a2bec6ff37e5b4ad9acb96a98c26d8d0d0959379531ca81ab67061d181'
+            '87be683b20f5e97155ce0c1f1f555d2700bd65f2c09ce39c821fbadf93516d2c'
             '0c8a06c443b40f08cae7e0bc5e6244dbbfff658065695341b03e91dcf5308b63'
             'fd309f6d078365ce5273d03a6256b019e1693a99c4909c1ffd1b9ff06fd51b39'
-            '157549e4cf52ea118b50419894e8815ed779a365032c26cd8b898502cf87b71c'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
             '5f69f0d4f0c3ab23d9d390efbdf1e23159b20bbda14a759f0c9e3fe90cf78e6a'
-            '6361c7a55eb9c0721eafee1f34e335414b4ca3184fca2d6e2cdb78c95242ebf4'
-            '7f620cf146d1ff1e035137a26f7df09a9260d663f24eb81096d63c67332b8ebb'
+            '5c8a0197532eea767ff8d36edf4ec5a8c82cfeb910103a30b1b95bf5461652ab'
+            'a915ddfa20778d434416d8751c6da3e2396026e650aadfe162ccc88469374cb5'
             '8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
             'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02')
 source=(
 	"git+${GIT_HUB}/pftf/RPi4"
 	99-update-initramfs.hook
+	98-modify-grub-kernel-cmdline.hook
 	switch-power-gov-to-ondemand.patch
 	config.txt
-	42_add_manjaro_arm_for_rpi_entry
 	LICENCE.EDK2::${GIT_HUB}/tianocore/edk2/raw/master/License.txt
 	LICENCE.broadcom::${GIT_HUB}/raspberrypi/firmware/raw/master/boot/LICENCE.broadcom
 	${GIT_RAW}/raspberrypi/firmware/master/boot/bcm2711-rpi-4-b.dtb
@@ -113,6 +113,8 @@ build(){
 package_raspberrypi4-uefi-firmware-git(){
 	local file
 	mkdir -p ${pkgdir}/boot/overlays
+	cd ${srcdir}/RPi4
+	pkgdesc="UEFI firmware for Raspberry Pi boot files"
 	cp ${srcdir}/RPi4/Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd ${pkgdir}/boot/
 	for file in config.txt bcm2711-rpi-4-b.dtb fixup4.dat start4.elf
 	do
@@ -139,15 +141,20 @@ package_raspberrypi4-uefi-kernel-git(){
 	cd ${pkgdir}
 	mkdir -p {boot,usr/include}
 	cd ${srcdir}/linux
-	cp .config ${pkgdir}/boot/config-$(make kernelrelease)
-	cp System.map ${pkgdir}/boot/System.map-$(make kernelrelease)
+	pkgdesc="Kernel for Raspberry Pi UEFI boot files"
 	make zinstall INSTALL_PATH=${pkgdir}/boot
 	make modules_install INSTALL_MOD_PATH=${pkgdir}
-	make headers_install INSTALL_HDR_PATH=${pkgdir}
-	mkdir -p ${pkgdir}/grub.d
-	cp ${srcdir}/42_add_manjaro_arm_for_rpi_entry ${pkgdir}/grub.d
-	sed -i "s/%KERNELVER%/`make kernelrelease`/g" ${pkgdir}/grub.d/42_add_manjaro_arm_for_rpi_entry
 	mkdir -p ${pkgdir}/usr/share/libalpm/hooks/
 	cp ${srcdir}/99-update-initramfs.hook ${pkgdir}/usr/share/libalpm/hooks/
 	sed -i "s/%KERNELVER%/`make kernelrelease`/g" ${pkgdir}/usr/share/libalpm/hooks/99-update-initramfs.hook
+	cp ${srcdir}/98-modify-grub-kernel-cmdline.hook ${pkgdir}/usr/share/libalpm/hooks/
+}
+package_raspberrypi4-uefi-kernel-header-git(){
+	if [ ${CARCH} != "aarch64" ];then
+        export ARCH=arm64
+        export CROSS_COMPILE=aarch64-linux-gnu-
+	fi
+	cd ${srcdir}/linux
+	pkgdesc="Kernel Header for Raspberry Pi UEFI boot files"
+	make headers_install INSTALL_HDR_PATH=${pkgdir}
 }
