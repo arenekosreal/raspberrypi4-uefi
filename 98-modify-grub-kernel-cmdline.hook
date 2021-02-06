@@ -8,4 +8,4 @@ Target=boot/cmdline.txt
 [Action]
 Description="Modifying grub kernel cmdline ..."
 When=PostTransaction
-Exec=sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=.$/GRUB_CMDLINE_LINUX_DEFAULT=`cat /boot/cmdline.txt || echo 'quiet splash'`/" /etc/default/grub
+Exec=sed -i "s/^GRUB_CMDLINE_LINUX=.$/GRUB_CMDLINE_LINUX=`sed -n "s/root=LABEL=ROOT_MNJRO rw //p" /boot/cmdline.txt`" /etc/default/grub

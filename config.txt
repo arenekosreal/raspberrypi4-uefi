@@ -1,7 +1,0 @@
-arm_64bit=1
-enable_uart=1
-enable_gic=1
-armstub=RPI_EFI.fd
-disable_commandline_tags=2
-device_tree_address=0x1f0000
-device_tree_end=0x200000 
