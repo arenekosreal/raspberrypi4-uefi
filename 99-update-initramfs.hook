@@ -7,4 +7,4 @@ Target = boot/vmlinuz*
 [Action]
 Description=Generating initramfs using dracut ...
 When = PostTransaction
-Exec = sh -c 'dracut -f /boot/initramfs-%KERNELVER%.img %KERNELVER% --add-drivers "bcm2835 xhci-plat-hcd"'
+Exec = sh -c 'dracut -f /boot/initramfs-%KERNELVER%.img %KERNELVER%'
