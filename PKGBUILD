@@ -23,7 +23,7 @@ if [ ${CARCH} != "aarch64" ];then
 fi
 options=(!strip)
 sha256sums=('SKIP'
-            'c060523fdd74e2d737b91a07186892e05ab9a57608eed712f928f4a847006d47'
+            '51e358cdad35c801ba29d0f94784c5202ca3468a5b3b7dae78e1de72d06b868a'
             'd17e4c9145edd05c2b081bb5edd7962203c4b77c41d2405d584782d7263f863e'
             '0c8a06c443b40f08cae7e0bc5e6244dbbfff658065695341b03e91dcf5308b63'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
