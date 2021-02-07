@@ -1,6 +1,6 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
-KBRANCH=5.11
+KBRANCH=5.10
 GIT_HUB=https://github.com
 GIT_RAW=https://raw.githubusercontent.com
 
@@ -9,10 +9,10 @@ GIT_HUB=https://hub.fastgit.org
 GIT_RAW=https://raw.fastgit.org
 
 pkgbase=raspberrypi4-uefi-boot-git
-pkgname=(raspberrypi4-uefi-firmware-git raspberrypi4-uefi-kernel-git raspberrypi4-uefi-kernel-header-git)
-pkgver=d8a55b0_eb3377dea #Firmware Version_Kernel Version (All are git commit strings)
+pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git")
+pkgver=5.10.13_uefi_d8a55b0
 pkgrel=1
-pkgdesc="Raspberry Pi 4 UEFI boot files"
+_pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
 arch=("aarch64" "x86_64")
 licence=("custom:LICENCE.EDK2" "custom:LICENCE.broadcom" "GPL")
@@ -20,11 +20,11 @@ depends=("grub" "dracut")
 makedepends=("git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "inetutils")
 if [ ${CARCH} != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
-    options=(!strip)
 fi
+options=(!strip)
 sha256sums=('SKIP'
-            'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
-            'fbc3106f76146c11ca3cd129373213f4834b5f0285816d19c1371fd3cd57c562'
+            'c060523fdd74e2d737b91a07186892e05ab9a57608eed712f928f4a847006d47'
+            'd17e4c9145edd05c2b081bb5edd7962203c4b77c41d2405d584782d7263f863e'
             '0c8a06c443b40f08cae7e0bc5e6244dbbfff658065695341b03e91dcf5308b63'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
@@ -48,11 +48,16 @@ source=(
 )
 
 pkgver(){
+	if [  ${CARCH} != "aarch64"  ];then
+		export ARCH=arm64
+		export CrOSS_COMPILE=aarch64-linux-gnu-
+	fi
 	cd ${srcdir}/RPi4
 	FIRMWAREVER=$(git rev-parse --short HEAD)
 	cd ${srcdir}/linux
-	KERNELVER=$(git rev-parse --short HEAD)
-	echo ${FIRMWAREVER}_${KERNELVER}
+	#KERNELVER=$(git rev-parse --short HEAD)
+	KERNELVER=$(make kernelversion | sed "s/-1//;s/-/_/;s/_v8+//")
+	echo ${KERNELVER}_uefi_${FIRMWAREVER}
 }
 
 prepare(){
@@ -117,7 +122,7 @@ package_raspberrypi4-uefi-firmware-git(){
 	local file
 	mkdir -p ${pkgdir}/boot/overlays
 	cd ${srcdir}/RPi4
-	pkgdesc="UEFI firmware for Raspberry Pi boot files for ${pkgdesc}"
+	pkgdesc="UEFI firmware for Raspberry Pi boot files for ${_pkgdesc}"
 	cp ${srcdir}/RPi4/Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd ${pkgdir}/boot/
 	cat>${pkgdir}/boot/config.txt<<EOF
 arm_64bit=1
@@ -143,7 +148,7 @@ EOF
 }
 
 package_raspberrypi4-uefi-kernel-git(){
-	pkgdesc="The Linux Kernel and modules for ${pkgdesc}"
+	pkgdesc="The Linux Kernel and modules for ${_pkgdesc}"
 	depends=("coreutils" "linux-firmware" "kmod" "dracut" "firmware-raspberrypi" "raspberrypi4-uefi-firmware-git")
 	optdepends=("crda: to set the correct wireless channels of your country")
 	provides=("kernel26" "linux")
@@ -181,7 +186,7 @@ package_raspberrypi4-uefi-kernel-git(){
 	sed -i "s/%KERNELVER%/`make kernelrelease`/g" ${pkgdir}/usr/share/libalpm/hooks/99-update-initramfs.hook
 	cp ${srcdir}/98-modify-grub-kernel-cmdline.hook ${pkgdir}/usr/share/libalpm/hooks/
 }
-package_raspberrypi4-uefi-kernel-header-git(){
+package_raspberrypi4-uefi-kernel-headers-git(){
 	if [ ${CARCH} != "aarch64" ];then
         	export ARCH=arm64
         	export CROSS_COMPILE=aarch64-linux-gnu-
@@ -238,3 +243,4 @@ package_raspberrypi4-uefi-kernel-header-git(){
   	done < <(find "${pkgdir}/usr/lib/modules/${kernver}/build/scripts" -type f -perm -u+w -print0 2>/dev/null)
 	
 }
+

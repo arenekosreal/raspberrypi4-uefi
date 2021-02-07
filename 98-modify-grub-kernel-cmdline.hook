@@ -6,6 +6,6 @@ Operation=Remove
 Target=/etc/default/grub
 Target=boot/cmdline.txt
 [Action]
-Description="Modifying grub kernel cmdline ..."
+Description=Modifying grub kernel cmdline ...
 When=PostTransaction
-Exec=sed -i "s/^GRUB_CMDLINE_LINUX=.$/GRUB_CMDLINE_LINUX=`sed -n "s/root=LABEL=ROOT_MNJRO rw //p" /boot/cmdline.txt`" /etc/default/grub
+Exec=sed -i "s/^GRUB_CMDLINE_LINUX=\"\"$/GRUB_CMDLINE_LINUX=`sed "s/root=.\+ rw //" /boot/cmdline.txt`" /etc/default/grub
