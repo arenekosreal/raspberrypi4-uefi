@@ -22,9 +22,8 @@ if [ ${CARCH} != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
     options=(!strip)
 fi
-conflicts=("linux-rpi4" "linux-rpi4-mainline" "linux-rpi4-rc" "uboot-raspberrypi" "linux" "linux-mainline" "linux-rc")
 sha256sums=('SKIP'
-            '94d991be5ba4b47e61d86ab8433f6935a959445cd458b3b15922db1cb9ddbfa8'
+            'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
             'fbc3106f76146c11ca3cd129373213f4834b5f0285816d19c1371fd3cd57c562'
             '0c8a06c443b40f08cae7e0bc5e6244dbbfff658065695341b03e91dcf5308b63'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
@@ -71,7 +70,7 @@ prepare(){
         	fi
         	cd linux
         	git fetch origin
-        	make clean
+        	#make clean
     	fi
     	# Will move this to source list when makepkg supports --depth=1 option or we have to clone a huge repository.
 	cd ${srcdir}/RPi4
@@ -101,7 +100,7 @@ prepare(){
 
 build(){
 	cd ${srcdir}/RPi4
-	sh build_firmware.sh
+	sh build_firmware.sh || sudo sh build_firmware.sh
 	cd ${srcdir}/linux
 	if [ ${CARCH} != "aarch64" ];then
         	export ARCH=arm64
@@ -145,7 +144,7 @@ EOF
 
 package_raspberrypi4-uefi-kernel-git(){
 	pkgdesc="The Linux Kernel and modules for ${pkgdesc}"
-	depends=("coreutils" "linux-firmware" "kmod" "dracut" "firmware-raspberrypi")
+	depends=("coreutils" "linux-firmware" "kmod" "dracut" "firmware-raspberrypi" "raspberrypi4-uefi-firmware-git")
 	optdepends=("crda: to set the correct wireless channels of your country")
 	provides=("kernel26" "linux")
 	conflicts=("kernel26" "linux" "uboot-raspberrypi")
@@ -166,19 +165,16 @@ package_raspberrypi4-uefi-kernel-git(){
 	ln -s "../extramodules-${basekernel}-rpi4-uefi" "${pkgdir}/usr/lib/modules/${kernver}/extramodules"
 	echo ${kernver} | install -Dm644 /dev/stdin ${pkgdir}/usr/lib/modules/${kernver}/extramodules-${basekernel}-rpi4-uefi/version
 	rm ${pkgdir}/usr/lib/modules/${kernver}/{source,build}
-	for file in bcm2711-rpi-400.dtb bcm2710-rpi-3-b-plus.dtb bcm2710-rpi-3-b.dtb;
-	do
-		cp arch/arm64/boot/dts/broadcom/${file} ${pkgdir}/boot
-	done
-	for file in $(ls arch/arm64/dts/overlays/*.dtbo*);
+	mkdir ${pkgdir}/boot/overlays
+	for file in $(ls arch/arm64/boot/dts/overlays/*.dtbo*);
 	do
 		if [[  ${file} == "arch/arm64/boot/dts/overlays/miniuart-bt.dtbo" ]] || [[ ${file} == "arch/arm64/boot/dts/overlays/disable-bt.dtbo"  ]];
 		then
 			continue
 		fi
-		cp ${file} ${pkgdir}/boot/overlays
+		cp ${file} ${pkgdir}/boot/overlays/
 	done
-	cp arch/arm64/boot/dts/overlays/README ${pkgdir}/boot/overlays
+	cp arch/arm64/boot/dts/overlays/README ${pkgdir}/boot/overlays/
 	echo "root=LABEL=ROOT_MNJRO rw rootwait console=ttyAMA0,115200 console=tty1 selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N dwc_otg.lpm_enable=0 kgdboc=ttyAMA0,115200 elevator=noop usbhid.mousepoll=8 snd-bcm2835.enable_compat_alsa=0 audit=0" > ${pkgdir}/boot/cmdline.txt
 	mkdir -p ${pkgdir}/usr/share/libalpm/hooks/
 	cp ${srcdir}/99-update-initramfs.hook ${pkgdir}/usr/share/libalpm/hooks/
