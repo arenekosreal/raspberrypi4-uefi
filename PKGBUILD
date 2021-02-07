@@ -23,8 +23,8 @@ if [ ${CARCH} != "aarch64" ];then
 fi
 options=(!strip)
 sha256sums=('SKIP'
-            '51e358cdad35c801ba29d0f94784c5202ca3468a5b3b7dae78e1de72d06b868a'
-            'd17e4c9145edd05c2b081bb5edd7962203c4b77c41d2405d584782d7263f863e'
+            '7f2470f77b9321c3201bf33f5444554d5ba94778aae5f0057818acd3b369d2c9'
+            'a78a818da59420e7aab11d34aeb10d6d3fc334618b7d49e923f94da4067ba589'
             '0c8a06c443b40f08cae7e0bc5e6244dbbfff658065695341b03e91dcf5308b63'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
@@ -181,6 +181,14 @@ package_raspberrypi4-uefi-kernel-git(){
 	done
 	cp arch/arm64/boot/dts/overlays/README ${pkgdir}/boot/overlays/
 	echo "root=LABEL=ROOT_MNJRO rw rootwait console=ttyAMA0,115200 console=tty1 selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N dwc_otg.lpm_enable=0 kgdboc=ttyAMA0,115200 elevator=noop usbhid.mousepoll=8 snd-bcm2835.enable_compat_alsa=0 audit=0" > ${pkgdir}/boot/cmdline.txt
+	mkdir -p ${pkgdir}/usr/bin
+	cat>${pkgdir}/usr/bin/modify_grub_cmdline<<EOF
+#!/usr/bin/sh
+CMDLINE="\`sed 's/^root=.\+ rw //' /boot/cmdline.txt\`"
+sed -i 's/^GRUB_CMDLINE_LINUX=""$/GRUB_CMDLINE_LINUX="\${CMDLINE}"/' /etc/default/grub
+echo "Finished modifying grub cmdline"
+EOF
+	chmod +x ${pkgdir}/usr/bin/modify_grub_cmdline
 	mkdir -p ${pkgdir}/usr/share/libalpm/hooks/
 	cp ${srcdir}/99-update-initramfs.hook ${pkgdir}/usr/share/libalpm/hooks/
 	sed -i "s/%KERNELVER%/`make kernelrelease`/g" ${pkgdir}/usr/share/libalpm/hooks/99-update-initramfs.hook

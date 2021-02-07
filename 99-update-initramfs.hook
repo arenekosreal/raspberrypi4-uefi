@@ -1,5 +1,5 @@
 [Trigger]
-Type = File
+Type = Path
 Operation = Install
 Operation = Upgrade
 Operation = Remove
@@ -7,5 +7,6 @@ Target = boot/vmlinuz-*
 [Action]
 Description = Using dracut to generate initramfs ...
 When = PostTransaction
-Exec = sh -c "dracut -f /boot/initramfs-%KERNELVER%.img %KERNELVER%"
+Exec = /usr/bin/dracut -f /boot/initramfs-%KERNELVER%.img %KERNELVER%
+Depends = dracut
 

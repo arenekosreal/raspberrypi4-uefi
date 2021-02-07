@@ -1,11 +1,11 @@
 [Trigger]
-Type=File
-Operation=Install
-Operation=Upgrade
-Operation=Remove
-Target=/etc/default/grub
-Target=boot/cmdline.txt
+Type = Path
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Target = boot/cmdline.txt
 [Action]
-Description=Modifying grub kernel cmdline ...
-When=PostTransaction
-Exec=sed -i "s/^GRUB_CMDLINE_LINUX=\"\"$/GRUB_CMDLINE_LINUX=`sed "s/root=.\+ rw //" /boot/cmdline.txt`" /etc/default/grub
+Description = Modifying grub kernel cmdline ...
+When = PostTransaction
+Exec = /usr/bin/modify_grub_cmdline
+Depends = raspberrypi4-uefi-kernel-git
