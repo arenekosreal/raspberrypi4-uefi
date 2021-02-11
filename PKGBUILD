@@ -66,67 +66,72 @@ prepare(){
     	echo "Use ${GIT_HUB} as mirrorsite."
     	if [ ! -d linux ];then
         	git clone --depth=1 -b rpi-${KBRANCH}.y ${GIT_HUB}/raspberrypi/linux.git ${srcdir}/linux
-		# add pkgrel to extraversion
-		sed -ri "s|^(EXTRAVERSION =)(.*)|\1 \2-${pkgrel}|" ${srcdir}/linux/Makefile
     	else
-        	if [ ${CARCH} != "aarch64" ];then
-            		export ARCH=arm64
-            		export CROSS_COMPILE=aarch64-linux-gnu-
-        	fi
         	cd linux
-        	git fetch origin
-        	#make clean
+        	git reset --hard rpi-${KBRANCH}.y
     	fi
     	# Will move this to source list when makepkg supports --depth=1 option or we have to clone a huge repository.
+
+	# add pkgrel to extraversion
+	sed -ri "s|^(EXTRAVERSION =)(.*)|\1 \2-${pkgrel}|" ${srcdir}/linux/Makefile
 	cd ${srcdir}/RPi4
-	if [ ${CARCH} == "aarch64" ];then
-		sed "s/export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-/# export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-/" -i build_firmware.sh 
-	# Remove cross-compile flag to start native compiling if running on aarch64 device.
+	if [ ${GIT_HUB} != "https://github.com" ];then
+		for dir in . edk2 edk2-platforms edk2/CryptoPkg/Library/OpensslLib/openssl edk2/BaseTools/Source/C/BrotliCompress/brotli edk2/MdeModulePkg/Library/BrotliCustomDecompressLib/brotli
+		do
+			echo "Modifying ${dir}/.gitmodules"
+			cd ${srcdir}/RPi4/${dir}/
+			sed -i "s_https://github.com_${GIT_HUB}_g; s_https://boringssl.googlesource.com_${GIT_HUB}/google_g" .gitmodules
+			git submodule update --init
+		done
+    		# Apply modification to let submodules on github also use mirrorsite.
+    	else
+		git submodule update --init --recursive
 	fi
-	sed "11s/^/# /" -i build_firmware.sh
-	# Remove debug build as its files are useless, we only need release build files.
-	# Or you can comment line 12 of build script to use debug build files.
-	for dir in . edk2 edk2-platforms edk2/CryptoPkg/Library/OpensslLib/openssl edk2/BaseTools/Source/C/BrotliCompress/brotli edk2/MdeModulePkg/Library/BrotliCustomDecompressLib/brotli
-	do
-		echo "Modifying ${dir}/.gitmodules"
-		cd ${srcdir}/RPi4/${dir}/
-		sed -i "s_https://github.com_${GIT_HUB}_g; s_https://boringssl.googlesource.com_${GIT_HUB}/google_g" .gitmodules
-		git submodule update --init
-	done
 	cd ${srcdir}/RPi4
-    	# Apply modification to let submodules on github also use mirrorsite.
-    
-	git submodule update --init --recursive || echo "Skipping getting some submodules due to Internet connection problem."
-	# Maybe this line should be removed.
-
-
-
+	patch --binary -d edk2 -p1 -i ../0001-MdeModulePkg-UefiBootManagerLib-Signal-ReadyToBoot-o.patch
 }
 
 build(){
-	cd ${srcdir}/RPi4
-	sh build_firmware.sh || sudo sh build_firmware.sh
-	cd ${srcdir}/linux
-	if [ ${CARCH} != "aarch64" ];then
-        	export ARCH=arm64
-        	export CROSS_COMPILE=aarch64-linux-gnu-
+	if [ ${CARCH} != "aarch64"];then
+		export ARCH=arm64
+		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
+
+
+	# Build UEFI Firware
+	cd ${srcdir}/RPi4
+	export FIRMWARECOMMIT=$(git rev-parse --short HEAD)
+	export FIRMWAREVER=git-${FIRMWARECOMMIT}
+	make -C edk2/BaseTools
+
+	if [ ${CARCH} != "aarch64" ];then
+		export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
+	fi
+	export WORKSPACE=${PWD}
+	export PACKAGES_PATH=${WORKSPACE}/edk2:${WORKSPACE}/edk2-platforms:${WORKSPACE}/edk2-non-osi
+	echo Argument1:$1 Argument2:$2
+	source edk2/edksetup.sh
+	build -a AARCH64 -t GCC5 -p edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc -b RELEASE --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor=L"https://github.com/pftf/RPi4" --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"UEFI Firmware ${FIRMWAREVER}" -D SECURE_BOOT_ENABLE=TRUE -D INCLUDE_TFTP_COMMAND=TRUE
+	unset FIRMWARECOMMIT FIRMWAREVER
+
+	# Build Kernel
+	cd ${srcdir}/linux
 	make bcm2711_defconfig
 	patch .config ${srcdir}/switch-power-gov-to-ondemand.patch
 	make prepare
-	make -j$(cat /proc/cpuinfo |grep "processor"|wc -l)
+	make -j$(nproc)
 }
 
 package_raspberrypi4-uefi-firmware-git(){
 	backup=("boot/config.txt")
-	local file
-	mkdir -p ${pkgdir}/boot/overlays
-	cd ${srcdir}/RPi4
 	pkgdesc="UEFI firmware for Raspberry Pi boot files for ${_pkgdesc}"
+	local file
+	mkdir -p ${srcdir}/boot/overlays
 	cp ${srcdir}/RPi4/Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd ${pkgdir}/boot/
 	cat>${pkgdir}/boot/config.txt<<EOF
 arm_64bit=1
 enable_uart=1
+uart_2ndstage=1
 enable_gic=1
 armstub=RPI_EFI.fd
 disable_commandline_tags=2
@@ -142,8 +147,8 @@ EOF
 	do
 		cp ${srcdir}/${file} ${pkgdir}/boot/overlays/
 	done
-    	install -Dm644 ${srcdir}/LICENCE.EDK2 "$pkgdir"/usr/share/licenses/$pkgname/LICENCE.EDK2
-    	install -Dm644 ${srcdir}/LICENCE.broadcom "$pkgdir"/usr/share/licenses/$pkgname/LICENCE.broadcom
+    	install -Dm644 ${srcdir}/LICENCE.EDK2 "${pkgdir}"/usr/share/licenses/${pkgname}/LICENCE.EDK2
+    	install -Dm644 ${srcdir}/LICENCE.broadcom "${pkgdir}"/usr/share/licenses/${pkgname}/LICENCE.broadcom
 	
 }
 

@@ -1,0 +1,29 @@
+sudo: required 
+arch: 
+  repos: 
+    - archlinuxcn=https://repo.archlinuxcn.org/$arch
+  packages: 
+    - yay 
+    - aarch64-linux-gcc
+    - base-devel
+    - grub
+    - dracut
+    - git
+    - acpica
+    - python
+    - rsync
+    - bc
+    - xmlto
+    - docbook-xsl
+    - kmod
+    - inetutils
+  script: 
+    - makepkg -C
+script: 
+  - "travis_wait 30 sleep 1800 &"
+  - curl -s https://raw.githubusercontent.com/fossasia/arch-travis/master/arch-travis.sh | bash
+deploy: 
+  provider: release
+  api_key: ${GIT_OAUTH_KEY}
+  file: *.tar.*
+  skip_cleanup: true
