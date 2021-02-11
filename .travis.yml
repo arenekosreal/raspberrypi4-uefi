@@ -32,7 +32,8 @@ script:
   - "sed -i "s/travis_yml arch repos/travis_yml arch_chroot repos/" arch-travis.sh"
   - "bash arch-travis.sh"
 deploy: 
-  provider: release
+  provider: releases
   api_key: ${GIT_OAUTH_KEY}
+  file_glob: true
   file: *.tar.*
   skip_cleanup: true
