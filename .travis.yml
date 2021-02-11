@@ -5,7 +5,7 @@ arch: arm64
 script: 
   - curl https://raw.githubusercontent.com/fossasia/arch-travis/master/arch-travis.sh -o arch-travis.sh 
   - sed -i 's/x86_64/aarch64/' arch-travis.sh
-  - sed -i "s/.travis.yml /arch-travis.yml /" arch-travis.sh 
+  - sed -i "s/\.travis.yml /arch-travis.yml /" arch-travis.sh 
   - sed -i "s/travis_yml arch script/travis_yml arch_chroot script/" arch-travis.sh 
   - sed -i "s/travis_yml arch packages/travis_yml arch_chroot packages/" arch-travis.sh 
   - sed -i "s/travis_yml arch repos/travis_yml arch_chroot repos/" arch-travis.sh
@@ -17,4 +17,3 @@ deploy:
 after_success:
  - mkdir -p releases 
  - mv *.tar.* releases
- 
