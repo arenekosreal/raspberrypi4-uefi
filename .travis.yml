@@ -23,8 +23,9 @@ arch:
   script: 
     - makepkg -CA
 script: 
-  - travis_wait 30 sleep 1800 &
-  - curl -s https://raw.githubusercontent.com/fossasia/arch-travis/master/arch-travis.sh | bash
+  - "travis_wait 30 sleep 1800 &"
+  - "curl https://raw.githubusercontent.com/fossasia/arch-travis/master/arch-travis.sh -o arch-travis.sh"
+  - "bash arch-travis.sh"
 deploy: 
   provider: release
   api_key: ${GIT_OAUTH_KEY}
