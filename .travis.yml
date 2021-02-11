@@ -3,6 +3,11 @@ language: c
 compiler:
   - gcc
   - clang
+matrix: 
+  include: 
+    - os: linux
+    - arch: arm64
+    - compiler: gcc
 arch: 
   repos: 
     - archlinuxcn=https://repo.archlinuxcn.org/$arch
@@ -11,7 +16,6 @@ arch:
     - aarch64-linux-gcc
     - grub
     - dracut
-    - git
     - acpica
     - python
     - rsync
@@ -25,6 +29,7 @@ arch:
 script: 
   - "travis_wait 30 sleep 1800 &"
   - "curl https://raw.githubusercontent.com/fossasia/arch-travis/master/arch-travis.sh -o arch-travis.sh"
+  - "sed -i 's/x86_64/aarch64/' arch-travis.sh"
   - "bash arch-travis.sh"
 deploy: 
   provider: release
