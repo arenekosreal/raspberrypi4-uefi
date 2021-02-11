@@ -1,15 +1,17 @@
 sudo: true
 os: linux
-language: c
+language: generic
 arch: arm64
+install: 
+  - sudo apt-get install libarchive-dev bsdtar -y
+  - git clone git://projects.archlinux.org/pacman.git
+  - cd pacman
+  - ./autogen.sh
+  - ./configure --disable-loc
+  - make
+  - sudo make install
 script: 
-  - curl https://raw.githubusercontent.com/fossasia/arch-travis/master/arch-travis.sh -o arch-travis.sh 
-  - sed -i 's/x86_64/aarch64/' arch-travis.sh
-  - sed -i "s/\.travis.yml /arch-travis.yml /" arch-travis.sh 
-  - sed -i "s/travis_yml arch script/travis_yml arch_chroot script/" arch-travis.sh 
-  - sed -i "s/travis_yml arch packages/travis_yml arch_chroot packages/" arch-travis.sh 
-  - sed -i "s/travis_yml arch repos/travis_yml arch_chroot repos/" arch-travis.sh
-  - bash arch-travis.sh 
+  - makepkg --conf /usr/local/etc/makepkg.conf
 deploy: 
   provider: releases
   api_key: ${GITHUB_TOKEN}
@@ -17,3 +19,6 @@ deploy:
 after_success:
  - mkdir -p releases 
  - mv *.tar.* releases
+env: 
+  global:
+    - CARCH: aarch64
