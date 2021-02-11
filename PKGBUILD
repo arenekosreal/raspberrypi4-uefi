@@ -10,11 +10,11 @@ GIT_RAW=https://raw.fastgit.org
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git")
-pkgver=5.10.13_uefi_d8a55b0
+pkgver=5.10.14_uefi_d8a55b0
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
-arch=("aarch64" "x86_64")
+arch=("aarch64")
 licence=("custom:LICENCE.EDK2" "custom:LICENCE.broadcom" "GPL")
 depends=("grub" "dracut")
 makedepends=("git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "inetutils")
@@ -28,9 +28,9 @@ sha256sums=('SKIP'
             '0c8a06c443b40f08cae7e0bc5e6244dbbfff658065695341b03e91dcf5308b63'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
-            '24239fdc50df04a3042d2aa0b551d06fe126aecc4fc236e41e5faa07e1f6c8ad'
-            'c2eb2ff734648cae829610867538f8faf43ae67f201a2ac12d9b68058d5b9ca3'
-            '0e07ea2d056832e8c3f46836c9657ce0c515f14a2060b376e260f099c1f3288d'
+            '738e7c1170a01f6d4217db135c29146c69b0a7bb0fdfae517aed69cdf48ad3d4'
+            'e6854f742bdba2f3906299ad27a17630355389f4b96e488227cfb525e49c1d0b'
+            '1268dd0451b2eea76dcc02aec53b0468223ad5de2998b2058a8b2035fe332fc8'
             '8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
             'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02')
 source=(
@@ -84,37 +84,33 @@ prepare(){
 			git submodule update --init
 		done
     		# Apply modification to let submodules on github also use mirrorsite.
-    	else
+    else
 		git submodule update --init --recursive
 	fi
 	cd ${srcdir}/RPi4
+	if [ ${CARCH} == "aarch64" ];then
+		sed -i "s/export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-/# export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-/" build_firmware.sh
+	fi
+	FIRMVER=git-$(git rev-parse --short HEAD)
+	DEBUGLINE=$(sed -n 's/DEBUG//p' build_firmware.sh)
+	sed -i "s'^build .\+ DEBUG'# ${DEBUGLINE}'" build_firmware.sh
+	# Disable build DEBUG version firmware
+	sed -i "s/\$APPVEYOR_REPO_TAG_NAME/${FIRMVER}/" build_firmware.sh
+	# Add git commit info in firmware version string
 	patch --binary -d edk2 -p1 -i ../0001-MdeModulePkg-UefiBootManagerLib-Signal-ReadyToBoot-o.patch
+	# apply patch in repo as repo does this in CI service
 }
 
 build(){
-	if [ ${CARCH} != "aarch64"];then
+	# Build UEFI Firware
+	cd ${srcdir}/RPi4
+	sh build_firmware.sh || sudo sh build_firmware.sh
+	# It may be failed to build on chroot environment with non-root user, use sudo to build it instead if failed.
+	# Build Kernel
+	if [ ${CARCH} != "aarch64" ];then
 		export ARCH=arm64
 		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
-
-
-	# Build UEFI Firware
-	cd ${srcdir}/RPi4
-	export FIRMWARECOMMIT=$(git rev-parse --short HEAD)
-	export FIRMWAREVER=git-${FIRMWARECOMMIT}
-	make -C edk2/BaseTools
-
-	if [ ${CARCH} != "aarch64" ];then
-		export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
-	fi
-	export WORKSPACE=${PWD}
-	export PACKAGES_PATH=${WORKSPACE}/edk2:${WORKSPACE}/edk2-platforms:${WORKSPACE}/edk2-non-osi
-	echo Argument1:$1 Argument2:$2
-	source edk2/edksetup.sh
-	build -a AARCH64 -t GCC5 -p edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc -b RELEASE --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor=L"https://github.com/pftf/RPi4" --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"UEFI Firmware ${FIRMWAREVER}" -D SECURE_BOOT_ENABLE=TRUE -D INCLUDE_TFTP_COMMAND=TRUE
-	unset FIRMWARECOMMIT FIRMWAREVER
-
-	# Build Kernel
 	cd ${srcdir}/linux
 	make bcm2711_defconfig
 	patch .config ${srcdir}/switch-power-gov-to-ondemand.patch
@@ -126,7 +122,7 @@ package_raspberrypi4-uefi-firmware-git(){
 	backup=("boot/config.txt")
 	pkgdesc="UEFI firmware for Raspberry Pi boot files for ${_pkgdesc}"
 	local file
-	mkdir -p ${srcdir}/boot/overlays
+	mkdir -p ${pkgdir}/boot/overlays
 	cp ${srcdir}/RPi4/Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd ${pkgdir}/boot/
 	cat>${pkgdir}/boot/config.txt<<EOF
 arm_64bit=1
@@ -173,7 +169,7 @@ package_raspberrypi4-uefi-kernel-git(){
 	make zinstall INSTALL_PATH=${pkgdir}/boot
 	make modules_install INSTALL_MOD_PATH=${pkgdir}/usr
 	ln -s "../extramodules-${basekernel}-rpi4-uefi" "${pkgdir}/usr/lib/modules/${kernver}/extramodules"
-	echo ${kernver} | install -Dm644 /dev/stdin ${pkgdir}/usr/lib/modules/${kernver}/extramodules-${basekernel}-rpi4-uefi/version
+	echo ${kernver} | install -Dm644 /dev/stdin ${pkgdir}/usr/lib/modules/extramodules-${basekernel}-rpi4-uefi/version
 	rm ${pkgdir}/usr/lib/modules/${kernver}/{source,build}
 	mkdir ${pkgdir}/boot/overlays
 	for file in $(ls arch/arm64/boot/dts/overlays/*.dtbo*);
