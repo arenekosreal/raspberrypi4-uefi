@@ -3,12 +3,9 @@ language: c
 compiler:
   - gcc
   - clang
-matrix: 
-  include: 
-    - os: linux
-    - arch: arm64
-    - compiler: gcc
 arch: 
+  - arm64
+arch_chroot: 
   repos: 
     - archlinuxcn=https://repo.archlinuxcn.org/$arch
   packages: 
@@ -30,6 +27,9 @@ script:
   - "travis_wait 30 sleep 1800 &"
   - "curl https://raw.githubusercontent.com/fossasia/arch-travis/master/arch-travis.sh -o arch-travis.sh"
   - "sed -i 's/x86_64/aarch64/' arch-travis.sh"
+  - "sed -i "s/travis_yml arch script/travis_yml arch_chroot script/" arch-travis.sh"
+  - "sed -i "s/travis_yml arch packages/travis_yml arch_chroot packages/" arch-travis.sh"
+  - "sed -i "s/travis_yml arch repos/travis_yml arch_chroot repos/" arch-travis.sh"
   - "bash arch-travis.sh"
 deploy: 
   provider: release
