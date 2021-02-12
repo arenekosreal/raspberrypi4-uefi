@@ -12,6 +12,7 @@ install:
   - ninja
   - sudo ninja install
 script: 
+  - cd ../..
   - makepkg
 deploy: 
   provider: releases
