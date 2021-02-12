@@ -13,7 +13,7 @@ install:
   - sudo ninja install
 script: 
   - cd ../..
-  - makepkg
+  - makepkg -d
 deploy: 
   provider: releases
   token: ${GITHUB_TOKEN}
