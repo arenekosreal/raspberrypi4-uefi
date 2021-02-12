@@ -3,15 +3,15 @@ os: linux
 language: generic
 arch: arm64
 install: 
-  - sudo apt-get install libarchive-dev bsdtar -y
+  - sudo apt-get install libarchive-dev bsdtar python3 python3-pip ninja-build -y
   - git clone git://projects.archlinux.org/pacman.git
   - cd pacman
-  - ./autogen.sh
-  - ./configure --disable-loc
-  - make
-  - sudo make install
+  - sudo pip3 install meson
+  - meson
+  - ninja
+  - sudo ninja install
 script: 
-  - makepkg --conf /usr/local/etc/makepkg.conf
+  - makepkg
 deploy: 
   provider: releases
   api_key: ${GITHUB_TOKEN}
