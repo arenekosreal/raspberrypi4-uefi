@@ -62,7 +62,7 @@ pkgver(){
 
 prepare(){
     	local file
-	local dir
+		local dir
     	echo "Use ${GIT_HUB} as mirrorsite."
     	if [ ! -d linux ];then
         	git clone --depth=1 -b rpi-${KBRANCH}.y ${GIT_HUB}/raspberrypi/linux.git ${srcdir}/linux
@@ -104,7 +104,7 @@ prepare(){
 build(){
 	# Build UEFI Firware
 	cd ${srcdir}/RPi4
-	sh build_firmware.sh || sudo sh build_firmware.sh
+	bash build_firmware.sh || sudo bash build_firmware.sh
 	# It may be failed to build on chroot environment with non-root user, use sudo to build it instead if failed.
 	# Build Kernel
 	if [ ${CARCH} != "aarch64" ];then
