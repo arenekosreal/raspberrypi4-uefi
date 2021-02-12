@@ -10,7 +10,7 @@ install:
   - meson build
   - cd build
   - ninja
-  - sudo ninja install
+  - travis_wait sudo ninja install
 script: 
   - cd ../..
   - makepkg -d
