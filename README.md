@@ -2,6 +2,8 @@
 
 LICENCE:  
 ![LICENCE.WTFPL](http://www.wtfpl.net/wp-content/uploads/2012/12/logo-220x1601.png)
+Build Status:
+![travis-build-status](https://travis-ci.com/zhanghua000/raspberrypi-uefi-boot.svg?branch=main)
 
 ## What is this?
 Files needed for booting Raspberry Pi 4 in UEFI mode.  

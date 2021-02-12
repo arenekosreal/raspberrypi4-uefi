@@ -5,8 +5,8 @@ GIT_HUB=https://github.com
 GIT_RAW=https://raw.githubusercontent.com
 
 # Uncomment these to use mirrorsite
-GIT_HUB=https://hub.fastgit.org
-GIT_RAW=https://raw.fastgit.org
+#GIT_HUB=https://hub.fastgit.org
+#GIT_RAW=https://raw.fastgit.org
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git")
