@@ -5,7 +5,7 @@ dist: focal
 service: 
   - docker
 script: 
-  - docker run -rm -ti agners/archlinuxarm-arm64v8
+  - docker run --rm -ti agners/archlinuxarm-arm64v8
   - docker cp PKGBUILD agners/archlinuxarm-arm64v8:/home/travis
   - docker exec -ti agners/archlinuxarm-arm64v8 "useradd travis -d /home/travis -m travis"
   - docker exec -ti agners/archlinuxarm-arm64v8 "echo 'travis ALL=(ALL) ALL' >> /etc/sudoers"
