@@ -1,7 +1,7 @@
 # Files for Booting Raspberry Pi in UEFI mode
 
 LICENCE:  
-![LICENCE.WTFPL](http://www.wtfpl.net/wp-content/uploads/2012/12/logo-220x1601.png)
+![LICENCE.WTFPL](https://img.shields.io/github/license/zhanghua000/raspberrypi-uefi-boot?logoColor=9cf&style=flat-square "WTFPL LICENCE")
 Build Status:
 ![travis-build-status](https://travis-ci.com/zhanghua000/raspberrypi-uefi-boot.svg?branch=main)
 
