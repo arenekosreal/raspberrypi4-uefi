@@ -3,10 +3,9 @@ language: generic
 arch: arm64
 dist: focal
 install: 
-  - sudo apt-get install libarchive-dev libarchive-tools python3 python3-pip ninja-build fakeroot iasl -y
+  - sudo apt-get install libarchive-dev libarchive-tools ninja-build meson fakeroot iasl -y
   - git clone git://projects.archlinux.org/pacman.git
   - cd pacman
-  - sudo pip3 install meson
   - meson build
   - cd build
   - ninja
