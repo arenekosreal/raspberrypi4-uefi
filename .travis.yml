@@ -2,24 +2,23 @@ os: linux
 language: generic
 arch: arm64
 dist: focal
-before_script: 
-  - sudo apt-get install libarchive-dev libarchive-tools ninja-build meson fakeroot iasl -y
-  - git clone git://projects.archlinux.org/pacman.git
-  - cd pacman
-  - meson build
-  - cd build
-  - ninja
-  - sudo ninja install
+service: 
+  - docker
 script: 
-  - cd ../..
-  - makepkg -d
+  - docker run -rm -ti agners/archlinuxarm-arm64v8
+  - docker cp PKGBUILD agners/archlinuxarm-arm64v8:/home/travis
+  - docker exec -ti agners/archlinuxarm-arm64v8 "useradd travis -d /home/travis -m travis"
+  - docker exec -ti agners/archlinuxarm-arm64v8 "echo 'travis ALL=(ALL) ALL' >> /etc/sudoers"
+  - docker exec -ti agners/archlinuxarm-arm64v8 "pacman -Syyu --noconfirm"
+  - docker exec -ti agners/archlinuxarm-arm64v8 "pacman -S git acpica base-devel rsync bc xmlto docbook-xsl kmod inetutils --noconfirm --needed"
+  - docker exec -ti agners/archlinuxarm-arm64v8 "makepkg -d"
 deploy: 
   provider: releases
   token: ${GITHUB_TOKEN}
   file: releases/**
 after_success:
  - mkdir -p releases 
- - mv *.tar.* releases
+ - docker cp agners/archlinuxarm-arm64v8:/home/travis/*.tar.* releases
 env: 
   global:
     - CARCH: aarch64
