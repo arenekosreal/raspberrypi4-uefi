@@ -1,4 +1,3 @@
-sudo: true
 os: linux
 language: generic
 arch: arm64
@@ -7,14 +6,15 @@ install:
   - git clone git://projects.archlinux.org/pacman.git
   - cd pacman
   - sudo pip3 install meson
-  - meson
+  - meson build
+  - cd build
   - ninja
   - sudo ninja install
 script: 
   - makepkg
 deploy: 
   provider: releases
-  api_key: ${GITHUB_TOKEN}
+  token: ${GITHUB_TOKEN}
   file: releases/**
 after_success:
  - mkdir -p releases 
