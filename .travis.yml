@@ -2,14 +2,14 @@ os: linux
 language: generic
 arch: arm64
 dist: focal
-install: 
+before_script: 
   - sudo apt-get install libarchive-dev libarchive-tools ninja-build meson fakeroot iasl -y
   - git clone git://projects.archlinux.org/pacman.git
   - cd pacman
   - meson build
   - cd build
   - ninja
-  - travis_wait sudo ninja install
+  - sudo ninja install
 script: 
   - cd ../..
   - makepkg -d
