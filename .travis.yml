@@ -2,7 +2,7 @@ os: linux
 language: generic
 arch: arm64
 dist: focal
-service: 
+services: 
   - docker
 script: 
   - travis_wait docker build -t archlinuxarm-travis:v1 . 
