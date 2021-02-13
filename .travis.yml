@@ -27,10 +27,7 @@ deploy:
   on:
     branch: main
     tags: true
-  draft: true
 after_success:
- - ls -l .
  - mkdir -p releases 
  - cp *.tar.* releases/
- - ls -l releases
 
