@@ -1,13 +1,18 @@
+sudo: required
 os: linux
 language: generic
+addons:
+  apt:
+    packages:
+      - docker-ce
 arch: arm64
 dist: focal
 services: 
   - docker
 script: 
-  - travis_wait docker build -t archlinuxarm-travis:v1 . 
-  - docker run -itd --name archlinuxarm-travis -v ${PWD}:/home/travis archlinuxarm-travis:v1
-  - travis_wait docker exec -i archlinuxarm-travis su -l travis -c 'makepkg -d'
+  - docker build -t archlinuxarm-travis:v1 .
+  - docker run -itd --name archlinuxarm-travis -v ${PWD}:/home/travis/build_files archlinuxarm-travis:v1
+  - docker exec -i archlinuxarm-travis su -l travis -c 'cd build_files && makepkg -d'
   - docker stop archlinuarm-travis
 deploy: 
   provider: releases
