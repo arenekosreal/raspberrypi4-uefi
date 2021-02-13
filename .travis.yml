@@ -15,11 +15,6 @@ script:
   - sudo docker run -itd --name archlinuxarm-travis -v ${PWD}:/home/travis/build_files archlinuxarm-travis:v1
   - sudo docker exec -i archlinuxarm-travis su -l travis -c 'cd build_files && makepkg -d'
   - sudo docker stop archlinuxarm-travis
-before_deploy:
-  - git config --local user.name "zhanghua000"
-  - git config --local user.email "zhanghua.00@qq.com"
-  - export TRAVIS_TAG=$(date +'%Y%m%d%H%M')-$(git log --format=%h -1)
-  - git tag $TRAVIS_TAG
 deploy: 
   provider: releases
   token: ${GITHUB_TOKEN}
@@ -29,5 +24,5 @@ deploy:
     tags: true
 after_success:
   - mkdir -p releases 
-  - cp *.tar.* releases/
+  - cp raspberrypi-uefi-*.tar.zst releases/
 
