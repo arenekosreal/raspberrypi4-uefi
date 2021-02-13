@@ -5,12 +5,15 @@ dist: focal
 service: 
   - docker
 script: 
-  - docker build . 
+  - travis_wait docker build -t archlinuxarm-travis:v1 . 
+  - docker run -itd --name archlinuxarm-travis -v ${PWD}:/home/travis archlinuxarm-travis:v1
+  - docker exec -it archlinuxarm-travis su -l travis -c 'makepkg -d'
+  - docker stop archlinuarm-travis
 deploy: 
   provider: releases
   token: ${GITHUB_TOKEN}
-  file: releases/**
+  file: releases/*
 after_success:
  - mkdir -p releases 
- - docker cp agners/archlinuxarm-arm64v8:/home/travis/*.tar.* releases
+ - cp *.tar.* releases/
 
