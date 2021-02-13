@@ -7,7 +7,7 @@ service:
 script: 
   - travis_wait docker build -t archlinuxarm-travis:v1 . 
   - docker run -itd --name archlinuxarm-travis -v ${PWD}:/home/travis archlinuxarm-travis:v1
-  - docker exec -it archlinuxarm-travis su -l travis -c 'makepkg -d'
+  - travis_wait docker exec -i archlinuxarm-travis su -l travis -c 'makepkg -d'
   - docker stop archlinuarm-travis
 deploy: 
   provider: releases
