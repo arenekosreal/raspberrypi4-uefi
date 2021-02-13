@@ -27,7 +27,6 @@ deploy:
   on:
     branch: main
     tags: true
-  tag: latest
 after_success:
   - mkdir -p releases 
   - cp *.tar.* releases/
