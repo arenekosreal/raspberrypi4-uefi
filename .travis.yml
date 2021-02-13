@@ -1,14 +1,15 @@
 sudo: required
 os: linux
 language: generic
-addons:
-  apt:
-    packages:
-      - docker-ce
 arch: arm64
 dist: focal
 services: 
   - docker
+before_install:
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce  
 script: 
   - docker build -t archlinuxarm-travis:v1 .
   - docker run -itd --name archlinuxarm-travis -v ${PWD}:/home/travis/build_files archlinuxarm-travis:v1
