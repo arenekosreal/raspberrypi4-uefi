@@ -38,8 +38,8 @@ source=(
 	99-update-initramfs.hook
 	98-modify-grub-kernel-cmdline.hook
 	switch-power-gov-to-ondemand.patch
-	LICENCE.EDK2::${GIT_HUB}/tianocore/edk2/raw/master/License.txt
-	LICENCE.broadcom::${GIT_HUB}/raspberrypi/firmware/raw/master/boot/LICENCE.broadcom
+	LICENCE.EDK2::${GIT_RAW}/tianocore/edk2/master/License.txt
+	LICENCE.broadcom::${GIT_RAW}/raspberrypi/firmware/master/boot/LICENCE.broadcom
 	${GIT_RAW}/raspberrypi/firmware/master/boot/bcm2711-rpi-4-b.dtb
 	${GIT_RAW}/raspberrypi/firmware/master/boot/fixup4.dat
 	${GIT_RAW}/raspberrypi/firmware/master/boot/start4.elf

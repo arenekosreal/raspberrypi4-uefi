@@ -10,6 +10,14 @@ before_install:
   - sudo add-apt-repository "deb [arch=arm64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
   - sudo apt-get update
   - sudo apt-get -y install docker-ce docker-ce-cli containerd.io
+before_script:
+  - curl https://raw.github.com/tianocore/edk2/master/License.txt -o LICENCE.EDK2
+  - curl https://raw.github.com/raspberrypi/firmware/master/boot/LICENCE.broadcom -o LICENCE.broadcom
+  - curl https://raw.github.com/raspberrypi/firmware/master/boot/bcm2711-rpi-4-b.dtb -o bcm2711-rpi-4-b.dtb
+  - curl https://raw.github.com/raspberrypi/firmware/master/boot/fixup4.dat -o fixup4.dat
+  - curl https://raw.github.com/raspberrypi/firmware/master/boot/start4.elf -o start4.elf
+  - curl https://raw.github.com/raspberrypi/firmware/master/boot/overlays/miniuart-bt.dtbo -o miniuart-bt.dtbo
+  - curl https://raw.github.com/raspberrypi/firmware/master/boot/overlays/disable-bt.dtbo -o disable-bt.dtbo
 script: 
   - sudo docker build -t archlinuxarm-travis:v1 .
   - sudo docker run -itd --name archlinuxarm-travis -v ${PWD}:/home/travis/build_files archlinuxarm-travis:v1
