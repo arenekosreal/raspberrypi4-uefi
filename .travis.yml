@@ -7,7 +7,7 @@ services:
 before_script:
   - sudo docker build --tag zhanghua00/archlinuxarm-arm64v8-travis:latest .
 script: 
-  - sudo docker run -i --rm -v ${PWD}:/home/travis/build_files -u travis -w /home/travis/build_files zhanghua00/archlinuxarm-arm64v8-travis:latest makepkg -dC
+  - sudo docker run --rm -v ${PWD}:/home/travis/build_files -u travis -w /home/travis/build_files zhanghua00/archlinuxarm-arm64v8-travis:latest makepkg -dC
 deploy: 
   provider: releases
   token: ${GITHUB_TOKEN}
