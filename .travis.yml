@@ -4,12 +4,6 @@ arch: arm64
 dist: focal
 services: 
   - docker
-before_install:
-  - sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
-  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  - sudo add-apt-repository "deb [arch=arm64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  - sudo apt-get update
-  - sudo apt-get -y install docker-ce docker-ce-cli containerd.io
 script: 
   - travis_wait 10 sudo docker pull zhanghua00/archlinuxarm-arm64v8-travis:latest
   - travis_wait 30 sudo docker run -i --rm -v ${PWD}:/home/travis/build_files -u travis -w /home/travis/build_files zhanghua00/archlinuxarm-arm64v8-travis:latest makepkg -dC
