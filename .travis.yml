@@ -22,5 +22,4 @@ deploy:
   on:
     branch: main
     tags: true
-  skip_cleanup: true
-
+  cleanup: false
