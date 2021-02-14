@@ -13,7 +13,7 @@ before_install:
 script: 
   - sudo docker build -t archlinuxarm-travis:v1 .
   - sudo docker run -itd --rm --name archlinuxarm-travis -v ${PWD}:/home/travis/build_files archlinuxarm-travis:v1
-  - sudo docker exec -u travis -w /home/travis/build_biles archlinuxarm-travis makepkg -dC
+  - sudo docker exec -u travis -w /home/travis/build_files archlinuxarm-travis makepkg -dC
   - sudo docker stop archlinuxarm-travis
 deploy: 
   provider: releases
