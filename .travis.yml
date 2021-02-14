@@ -8,6 +8,8 @@ before_script:
   - sudo docker build --tag zhanghua00/archlinuxarm-arm64v8-travis:latest .
 script: 
   - sudo docker run --rm -v ${PWD}:/home/travis/build_files -u travis -w /home/travis/build_files zhanghua00/archlinuxarm-arm64v8-travis:latest makepkg -dC
+  - ls -l raspberrypi-uefi-*.tar.zst
+  - ls -l .
 deploy: 
   provider: releases
   token: ${GITHUB_TOKEN}
