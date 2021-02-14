@@ -4,8 +4,9 @@ arch: arm64
 dist: focal
 services: 
   - docker
+before_script:
+  - sudo docker build --tag zhanghua00/archlinuxarm-arm64v8-travis:latest .
 script: 
-  - sudo docker pull zhanghua00/archlinuxarm-arm64v8-travis:latest
   - sudo docker run -i --rm -v ${PWD}:/home/travis/build_files -u travis -w /home/travis/build_files zhanghua00/archlinuxarm-arm64v8-travis:latest makepkg -dC
 deploy: 
   provider: releases
