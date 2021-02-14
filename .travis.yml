@@ -5,8 +5,8 @@ dist: focal
 services: 
   - docker
 script: 
-  - travis_wait 10 sudo docker pull zhanghua00/archlinuxarm-arm64v8-travis:latest
-  - travis_wait 30 sudo docker run -i --rm -v ${PWD}:/home/travis/build_files -u travis -w /home/travis/build_files zhanghua00/archlinuxarm-arm64v8-travis:latest makepkg -dC
+  - docker pull zhanghua00/archlinuxarm-arm64v8-travis:latest
+  - docker run -i --rm -v ${PWD}:/home/travis/build_files -u travis -w /home/travis/build_files zhanghua00/archlinuxarm-arm64v8-travis:latest makepkg -dC
 deploy: 
   provider: releases
   token: ${GITHUB_TOKEN}
