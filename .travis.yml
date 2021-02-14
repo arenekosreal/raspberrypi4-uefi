@@ -11,9 +11,8 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y install docker-ce docker-ce-cli containerd.io
 script: 
-  - travis_wait 10 sudo docker build -t archlinuxarm-travis:v1 .
-  - travis_wait 30 sudo docker run -i --rm --name archlinuxarm-travis -v ${PWD}:/home/travis/build_files -u travis -w /home/travis/build_files archlinuxarm-travis:v1 makepkg -dC
-  - sudo docker stop archlinuxarm-travis
+  - travis_wait 10 sudo docker pull zhanghua00/archlinuxarm-arm64v8-travis:latest
+  - travis_wait 30 sudo docker run -i --rm -v ${PWD}:/home/travis/build_files -u travis -w /home/travis/build_files zhanghua00/archlinuxarm-arm64v8-travis:latest makepkg -dC
 deploy: 
   provider: releases
   token: ${GITHUB_TOKEN}
