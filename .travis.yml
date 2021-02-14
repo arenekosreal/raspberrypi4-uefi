@@ -12,7 +12,7 @@ before_install:
   - sudo apt-get -y install docker-ce docker-ce-cli containerd.io
 script: 
   - sudo docker build -t archlinuxarm-travis:v1 .
-  - sudo docker run -i --rm --name archlinuxarm-travis -v ${PWD}:/home/travis/build_files -u travis -w /home/travis/build_files archlinuxarm-travis:v1 makepkg -dC
+  - travis_wait 30 sudo docker run -i --rm --name archlinuxarm-travis -v ${PWD}:/home/travis/build_files -u travis -w /home/travis/build_files archlinuxarm-travis:v1 makepkg -dC
   - sudo docker stop archlinuxarm-travis
 deploy: 
   provider: releases
