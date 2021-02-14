@@ -1,5 +1,5 @@
 os: linux
-language: generic
+language: minimal
 arch: arm64
 dist: focal
 services: 
