@@ -5,8 +5,8 @@ dist: focal
 services: 
   - docker
 script: 
-  - docker pull zhanghua00/archlinuxarm-arm64v8-travis:latest
-  - docker run -i --rm -v ${PWD}:/home/travis/build_files -u travis -w /home/travis/build_files zhanghua00/archlinuxarm-arm64v8-travis:latest makepkg -dC
+  - sudo docker pull zhanghua00/archlinuxarm-arm64v8-travis:latest
+  - sudo docker run -i --rm -v ${PWD}:/home/travis/build_files -u travis -w /home/travis/build_files zhanghua00/archlinuxarm-arm64v8-travis:latest makepkg -dC
 deploy: 
   provider: releases
   token: ${GITHUB_TOKEN}
