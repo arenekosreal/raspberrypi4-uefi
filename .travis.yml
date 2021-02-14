@@ -25,3 +25,4 @@ deploy:
   edge: true
   release_notes: CI build packages for PKGBUILD
   name: RaspberryPi UEFI Boot Files
+  tag_name: $(date +'%Y%m%d%H%M')-$(git log --format=%h -1)
