@@ -26,11 +26,9 @@ script:
 deploy: 
   provider: releases
   token: ${GITHUB_TOKEN}
-  file: releases/*.tar.*
+  file: raspberrypi-uefi-*.tar.zst
   on:
     branch: main
     tags: true
-after_success:
-  - mkdir -p releases 
-  - cp raspberrypi-uefi-*.tar.zst releases/
+  skip_cleanup: true
 
