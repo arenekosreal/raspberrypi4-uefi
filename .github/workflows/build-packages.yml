@@ -6,6 +6,7 @@ on:
     branches: [ main ]
 jobs:
   build:
+    if: contains(toJson(github.event.commits),"skip_ci") == false # Use skip_ci in commit info to skip Auto Build
     name: Build and Upload Packages for PKGBUILD in this repository
     runs-on: ubuntu-latest
     steps:
