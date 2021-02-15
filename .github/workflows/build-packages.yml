@@ -33,13 +33,15 @@ jobs:
         uses: addnab/docker-run-action@v1
         with:
           shell: bash
-          run: makepkg -Cd
+          run: 'makepkg -Cd'
           options: -v ${GITHUB_WORKSPACE}:/home/builder/build_files -u builder -w /home/builder/build_files
-
-#      - name: Push to GitHub Releases
-#        uses: actions/create-release@v1
-#        env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with: 
-#           tag_name: ${{ github.ref }}
+      - name: Push to GitHub Releases
+        uses: ncipollo/release-action@v1
+        with: 
+          artifacts: raspberrypi4-uefi-*.pkg.tar.zst
+          name: Raspberry Pi 4 UEFI Boot Packages for Arch Based Linux Distribution
+          body: CI Build for commit ${{ github.sha }}
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
   
