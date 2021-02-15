@@ -33,7 +33,7 @@ jobs:
         uses: addnab/docker-run-action@v1
         with:
           image: ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest
-          options: -v /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static -v ${GITHUB_WORKSPACE}:/home/builder/build_files -w /home/builder/build_files 
+          options: -v /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static -v ${{ github.workspace }}:/home/builder/build_files -w /home/builder/build_files 
           run: |
             sudo chown -R builder:builder /home/builder/build_files 
             makepkg -dC
