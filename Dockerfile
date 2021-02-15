@@ -6,7 +6,7 @@ RUN 	sed -i '2iServer = https://mirrors.tuna.tsinghua.edu.cn/archlinuxarm/\$arch
 		acpica python rsync bc xmlto docbook-xsl kmod inetutils \
 		--noconfirm --needed \
 	&& rm -f /var/cache/pacman/pkg/* /var/lib/pacman/sync/* /etc/pacman.d/mirrorlist.pacnew \
-	&& useradd -m travis -d /home/travis \
-	&& echo 'travis ALL=(ALL) ALL' >> /etc/sudoers \
+	&& useradd -m builder -d /home/builder \
+	&& echo 'builder ALL=(ALL) ALL' >> /etc/sudoers \
 	&& sed -i "s/PKGEXT='.pkg.tar.xz'/PKGEXT='.pkg.tar.zst'/; s/COMPRESSZST=(zstd -c -z -q -)/COMPRESSZST=(zstd -c -z -q - --threads=0)/" \
 		/etc/makepkg.conf
