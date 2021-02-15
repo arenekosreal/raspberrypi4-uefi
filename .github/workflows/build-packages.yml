@@ -29,15 +29,13 @@ jobs:
           platforms: linux/arm64
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest
           push: false
-      - name: Debug Info
-        run: echo ${GITHUB_WORKSPACE}
       - name: Build Package use Images Built before 
         uses: addnab/docker-run-action@v1
         with:
           image: ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest
           shell: bash
           run: sudo chown builder:builder . && makepkg -Cd
-          options: -v ${GITHUB_WORKSPACE}:/home/builder/build_files -u builder -w /home/builder/build_files
+          options: -u builder -w /github/workspace
       - name: Push to GitHub Releases
         uses: ncipollo/release-action@v1
         with: 
