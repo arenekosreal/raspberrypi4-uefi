@@ -9,6 +9,8 @@ jobs:
     name: Build and Upload Packages for PKGBUILD in this repository
     runs-on: ubuntu-latest
     steps:
+      - name: Debug Info
+        run: echo ${{ secrets.DOCKERHUB_USERNAME }}
       - name: Checkout
         uses: actions/checkout@v2 
       - name: Setup QEMU
