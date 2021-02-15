@@ -17,6 +17,8 @@ jobs:
         uses: docker/setup-qemu-action@v1.0.1 
       - uses: actions/checkout@v2 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag archlinuxarm-ci:v1
+        run: docker build . --file Dockerfile --tag zhanghua00/archlinuxarm-ci:v1
       - name: Build Package
-        run: docker run -v ${GITHUB_WORKSPACE}:/home/builder/build_files -u builder -w /home/builder/build_files archlinuxarm-ci:v1 makepkg -Cd
+        run: sudo docker run -v ${GITHUB_WORKSPACE}:/home/builder/build_files -u builder -w /home/builder/build_files zhanghua00/archlinuxarm-ci:v1 makepkg -Cd
+#      - name: Push Docker Image to Docker Hub
+#        uses: docker/build-push-action@v2.2.2
