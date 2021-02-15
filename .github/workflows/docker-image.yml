@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Setup Docker QEMU
+    - uses: docker/setup-qemu-action@v1.0.1 
+    - uses: actions/checkout@v2 
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag archlinuxarm-ci:v1
