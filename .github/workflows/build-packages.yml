@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Auto Build Arch Packages
 
 on:
   push:
@@ -13,7 +13,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: docker/setup-qemu-action@v1.0.1 
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v1.0.1 
       - uses: actions/checkout@v2 
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag archlinuxarm-ci:v1
+      - name: Build Package
+        run: docker run -v ${PWD}:/home/travis/build_files -u travis -w /home/travis/build_files makepkg -Cd
