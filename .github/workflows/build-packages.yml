@@ -19,4 +19,4 @@ jobs:
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag archlinuxarm-ci:v1
       - name: Build Package
-        run: docker run -v ${PWD}:/home/travis/build_files -u travis -w /home/travis/build_files archlinuxarm-ci:v1 makepkg -Cd
+        run: docker run -v ${GITHUB_WORKSPACE}:/home/travis/build_files -u travis -w /home/travis/build_files archlinuxarm-ci:v1 makepkg -Cd
