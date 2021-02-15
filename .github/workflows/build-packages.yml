@@ -35,7 +35,7 @@ jobs:
           image: ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest
           shell: bash
           run: makepkg -Cd
-          options: -v ${GITHUB_WORKSPACE}:/home/builder/build_files -u builder -w /home/builder/build_files
+          options: -v ${{ github.workspace }}:/home/builder/build_files -u builder -w /home/builder/build_files
       - name: Push to GitHub Releases
         uses: ncipollo/release-action@v1
         with: 
