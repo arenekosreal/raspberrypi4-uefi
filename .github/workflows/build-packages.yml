@@ -28,7 +28,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/arm64
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest
-          push: false
+          push: true
       - name: Build Package use Images Built before 
         uses: addnab/docker-run-action@v1
         with:
