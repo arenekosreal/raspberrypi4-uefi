@@ -7,6 +7,6 @@ RUN 	sed -i '2iServer = https://mirrors.tuna.tsinghua.edu.cn/archlinuxarm/\$arch
 		--noconfirm --needed \
 	&& rm -f /var/cache/pacman/pkg/* /var/lib/pacman/sync/* /etc/pacman.d/mirrorlist.pacnew \
 	&& useradd -m builder -d /home/builder \
-	&& echo 'builder ALL=(ALL) ALL' >> /etc/sudoers \
+	&& echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
 	&& sed -i "s/PKGEXT='.pkg.tar.xz'/PKGEXT='.pkg.tar.zst'/; s/COMPRESSZST=(zstd -c -z -q -)/COMPRESSZST=(zstd -c -z -q - --threads=0)/" \
 		/etc/makepkg.conf
