@@ -30,7 +30,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest
           push: false
       - name: Build Package use Images Built before 
-        run: sudo docker run -v ${GITHUB_WORKSPACE}:/home/builder/build_files -w /home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest "chown -R builder:builder /home/builder/builder_files && su -l builder -c 'cd builder_files && makepkg -dC'"
+        run: sudo docker run -v ${GITHUB_WORKSPACE}:/home/builder/build_files -w /home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest "chown -R builder:builder /home/builder/build_files && su -l builder -c 'cd build_files && makepkg -dC'"
       - name: Push to GitHub Releases
         uses: ncipollo/release-action@v1
         with: 
