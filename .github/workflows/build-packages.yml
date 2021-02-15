@@ -30,12 +30,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest
           push: false
       - name: Build Package use Images Built before 
-        uses: addnab/docker-run-action@v1
-        with:
-          image: ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest
-          shell: bash
-          run: sudo chown builder:builder . && makepkg -Cd
-          options: -u builder -w /github/workspace
+        run: sudo docker -v ${GITHUB_WORKSPACE}:/home/builder/build_files -w /home/builder/build_files run ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest "chown -R builder:builder /home/builder/builder_files && su -l builder -c 'make-kg -dC'"
       - name: Push to GitHub Releases
         uses: ncipollo/release-action@v1
         with: 
