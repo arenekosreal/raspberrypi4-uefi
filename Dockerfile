@@ -15,4 +15,4 @@ RUN 	sed -i "s/PKGEXT='.pkg.tar.xz'/PKGEXT='.pkg.tar.zst'/; s/COMPRESSZST=(zstd 
 COPY start-build.sh /home/builder/start-build.sh
 USER builder
 WORKDIR /home/builder/build_files
-ENTRYPOINT ['/usr/bin/bash','-l','/home/builder/start-build.sh']
+ENTRYPOINT ["/usr/bin/bash", "-l", "/home/builder/start-build.sh"]
