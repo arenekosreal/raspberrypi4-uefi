@@ -48,4 +48,3 @@ jobs:
           draft: false
           prerelease: false
           tag_name: ${TAG}
-  
