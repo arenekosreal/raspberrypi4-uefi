@@ -9,5 +9,10 @@ RUN 	sed -i "s/PKGEXT='.pkg.tar.xz'/PKGEXT='.pkg.tar.zst'/; s/COMPRESSZST=(zstd 
 		--noconfirm --needed \
 	&& rm -f /var/cache/pacman/pkg/* /var/lib/pacman/sync/* /etc/pacman.d/mirrorlist.pacnew \
 	&& useradd -m builder -d /home/builder \
-	&& echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers 
-
+	&& echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers \
+	&& mkdir -p /home/builder/build_files \
+	&& chown -R builder:builder /home/builder/build_files
+COPY start-build.sh /home/builder/build_files/start-build.sh
+USER builder
+WORKDIR /home/builder/build_files
+ENTRYPOINT ['/usr/bin/bash','-l','/home/builder/build_files/start-build.sh']
