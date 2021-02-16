@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
+cd build_files
 sudo chown -R builder:builder .
-makepkg -dC
+makepkg -fC --syncdeps --noconfirm
