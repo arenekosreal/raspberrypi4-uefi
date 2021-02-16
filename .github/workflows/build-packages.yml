@@ -9,21 +9,14 @@ jobs:
     name: Build and Upload Packages for PKGBUILD in this repository
     runs-on: ubuntu-latest
     steps:
-      - name: Install Requirement
-        run: sudo apt-get install qemu-user-static -y
+      - name: Install Requirements
+        run: sudo apt-get install qemu-user-static binfmt-support -y
       - name: Checkout
         uses: actions/checkout@v2 
       - name: Run QEMU User Static Docker Image to Build
         run: sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-      - name: Build Package use Images Built before 
-        uses: addnab/docker-run-action@v1
-        with:
-          image: ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest
-          options: -v /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static -v ${{ github.workspace }}:/home/builder/build_files -w /home/builder/build_files -u builder --rm
-          run: |
-            sudo chown -R builder:builder /home/builder/build_files 
-            makepkg -dC
-          shell: bash
+      - name: Build Package use Images Built before
+        run: sudo docker run --rm -v /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static -v ${{ github.workspace }}:/home/builder/build_files -w /home/builder/build_files -u builder ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest bash -c 'sudo chown -R builder:builder . && makepkg -dC'  
       - name: Push to GitHub Releases
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -34,7 +27,10 @@ jobs:
           KERNELHEADERSHA: $(sha256sum raspberrypi4-uefi-kernel-headers-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst | cut -d " " -f 1)
         uses: softprops/action-gh-release@v0.1.5
         with: 
-          files: raspberrypi4-uefi-*.pkg.tar.zst
+          files: |
+            raspberrypi4-uefi-firmware-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst
+            raspberrypi4-uefi-kernel-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst
+            raspberrypi4-uefi-kernel-headers-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst
           name: Raspberry Pi 4 UEFI Boot Packages for Arch Based Linux Distribution
           body: |
             CI Build for commit ${{ github.sha }}
@@ -51,5 +47,5 @@ jobs:
             ${KERNELHEADERSHA}
           draft: false
           prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${TAG}
   
