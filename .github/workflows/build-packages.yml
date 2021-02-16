@@ -15,8 +15,8 @@ jobs:
         uses: actions/checkout@v2 
       - name: Run QEMU User Static Docker Image to Build
         run: sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-      - name: Build Package use Images Built before
-        run: sudo docker run --rm -v /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static -v ${{ github.workspace }}:/home/builder/build_files -w /home/builder/build_files -u builder ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest bash -c 'sudo chown -R builder:builder . && makepkg -dC'  
+      - name: Build Package use Image Built before
+        run: sudo docker run --rm -v /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest
       - name: Push to GitHub Releases
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
