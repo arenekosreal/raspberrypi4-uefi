@@ -23,21 +23,21 @@ if [ ${CARCH} != "aarch64" ];then
 fi
 options=(!strip)
 sha256sums=('SKIP'
-            '7f2470f77b9321c3201bf33f5444554d5ba94778aae5f0057818acd3b369d2c9'
+            '6df467adcd5636185c3c36c5c8e628c5886d7362144214d65978fff12cd03504'
             'a78a818da59420e7aab11d34aeb10d6d3fc334618b7d49e923f94da4067ba589'
-            '0c8a06c443b40f08cae7e0bc5e6244dbbfff658065695341b03e91dcf5308b63'
+            'e136c2757158be2699ecb5095b3ffef24af7ff28561bc198213626796f072c8f'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
-            '738e7c1170a01f6d4217db135c29146c69b0a7bb0fdfae517aed69cdf48ad3d4'
-            'e6854f742bdba2f3906299ad27a17630355389f4b96e488227cfb525e49c1d0b'
-            '1268dd0451b2eea76dcc02aec53b0468223ad5de2998b2058a8b2035fe332fc8'
+            '24239fdc50df04a3042d2aa0b551d06fe126aecc4fc236e41e5faa07e1f6c8ad'
+            'c2eb2ff734648cae829610867538f8faf43ae67f201a2ac12d9b68058d5b9ca3'
+            '0e07ea2d056832e8c3f46836c9657ce0c515f14a2060b376e260f099c1f3288d'
             '8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
             'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02')
 source=(
 	"git+${GIT_HUB}/pftf/RPi4"
 	99-update-initramfs.hook
 	98-modify-grub-kernel-cmdline.hook
-	switch-power-gov-to-ondemand.patch
+	kernel-config-patch-for-raspberrypi-4b.patch
 	LICENCE.EDK2::${GIT_RAW}/tianocore/edk2/master/License.txt
 	LICENCE.broadcom::${GIT_RAW}/raspberrypi/firmware/master/boot/LICENCE.broadcom
 	${GIT_RAW}/raspberrypi/firmware/master/boot/bcm2711-rpi-4-b.dtb
@@ -65,7 +65,7 @@ prepare(){
 		local dir
     	echo "Use ${GIT_HUB} as mirrorsite."
     	if [ ! -d linux ];then
-        	git clone --depth=1 -b rpi-${KBRANCH}.y ${GIT_HUB}/raspberrypi/linux.git ${srcdir}/linux
+        	git clone --depth=1 ${GIT_HUB}/torvalds/linux.git ${srcdir}/linux
     	else
         	cd linux
         	git reset --hard rpi-${KBRANCH}.y
@@ -112,8 +112,9 @@ build(){
 		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
 	cd ${srcdir}/linux
-	make bcm2711_defconfig
-	patch .config ${srcdir}/switch-power-gov-to-ondemand.patch
+	make defconfig
+	patch .config ${srcdir}/kernel-config-patch-for-raspberrypi-4b.patch 
+	# Have merged bcm2711_defconfig in raspberrypi's repo as much as i can
 	make prepare
 	make -j$(nproc)
 }
@@ -168,6 +169,7 @@ package_raspberrypi4-uefi-kernel-git(){
 	basekernel=${basekernel%.*}
 	make zinstall INSTALL_PATH=${pkgdir}/boot
 	make modules_install INSTALL_MOD_PATH=${pkgdir}/usr
+	make dtbs_install INSTALL_DTB_PATH=${pkgdir}/boot/dtbs
 	ln -s "../extramodules-${basekernel}-rpi4-uefi" "${pkgdir}/usr/lib/modules/${kernver}/extramodules"
 	echo ${kernver} | install -Dm644 /dev/stdin ${pkgdir}/usr/lib/modules/extramodules-${basekernel}-rpi4-uefi/version
 	rm ${pkgdir}/usr/lib/modules/${kernver}/{source,build}

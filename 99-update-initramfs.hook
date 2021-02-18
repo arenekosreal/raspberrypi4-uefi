@@ -3,7 +3,8 @@ Type = Path
 Operation = Install
 Operation = Upgrade
 Operation = Remove
-Target = boot/vmlinuz-*
+Target = boot/vmlinu*
+Target = usr/lib/initcpio/*
 [Action]
 Description = Using dracut to generate initramfs ...
 When = PostTransaction
