@@ -1,22 +1,30 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
-KBRANCH=5.10
+KBRANCH=5.11
+# Only need if you are using raspberrypi kernel
+USE_GENERIC_KERNEL=False
+# Weather using generic kernel or raspberrypi kernel
+
 GIT_HUB=https://github.com
 GIT_RAW=https://raw.githubusercontent.com
 
 # Uncomment these to use mirrorsite
+# Mirrorsite 1
 #GIT_HUB=https://hub.fastgit.org
 #GIT_RAW=https://raw.fastgit.org
+# Mirrorsite 2
+GIT_HUB=https://github.com.cnpmjs.org
+GIT_RAW=https://raw.sevencdn.com
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git")
-pkgver=5.10.14_uefi_d8a55b0
+pkgver=5.11.0_uefi_d8a55b0
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
 arch=("aarch64")
 licence=("custom:LICENCE.EDK2" "custom:LICENCE.broadcom" "GPL")
-depends=("grub" "dracut")
+depends=("grub" "dracut" "raspberrypi-bootloader")
 makedepends=("git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "inetutils")
 if [ ${CARCH} != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
@@ -25,24 +33,22 @@ options=(!strip)
 sha256sums=('SKIP'
             '6df467adcd5636185c3c36c5c8e628c5886d7362144214d65978fff12cd03504'
             'a78a818da59420e7aab11d34aeb10d6d3fc334618b7d49e923f94da4067ba589'
-            'e136c2757158be2699ecb5095b3ffef24af7ff28561bc198213626796f072c8f'
+            '721b2aa77eea2e211f439c0dc3709a602c4b6879baf637c377fb645010ce939d'
+            '3d9e0585508ea4692b88feba36cb5fba200e5e2b16c6b31dd415a4cb046ac60d'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
-            '24239fdc50df04a3042d2aa0b551d06fe126aecc4fc236e41e5faa07e1f6c8ad'
-            'c2eb2ff734648cae829610867538f8faf43ae67f201a2ac12d9b68058d5b9ca3'
-            '0e07ea2d056832e8c3f46836c9657ce0c515f14a2060b376e260f099c1f3288d'
+            'c70512faf59ce39e0a82f402cfa19a72472d45fa10435b13a890eaba9223b6ed'
             '8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
             'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02')
 source=(
 	"git+${GIT_HUB}/pftf/RPi4"
 	99-update-initramfs.hook
 	98-modify-grub-kernel-cmdline.hook
-	kernel-config-patch-for-raspberrypi-4b.patch
+	generic-kernel-config-patch-for-raspberrypi-4b.patch
+	raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch
 	LICENCE.EDK2::${GIT_RAW}/tianocore/edk2/master/License.txt
 	LICENCE.broadcom::${GIT_RAW}/raspberrypi/firmware/master/boot/LICENCE.broadcom
 	${GIT_RAW}/raspberrypi/firmware/master/boot/bcm2711-rpi-4-b.dtb
-	${GIT_RAW}/raspberrypi/firmware/master/boot/fixup4.dat
-	${GIT_RAW}/raspberrypi/firmware/master/boot/start4.elf
 	${GIT_RAW}/raspberrypi/firmware/master/boot/overlays/miniuart-bt.dtbo
 	${GIT_RAW}/raspberrypi/firmware/master/boot/overlays/disable-bt.dtbo
 )
@@ -56,19 +62,26 @@ pkgver(){
 	FIRMWAREVER=$(git rev-parse --short HEAD)
 	cd ${srcdir}/linux
 	#KERNELVER=$(git rev-parse --short HEAD)
-	KERNELVER=$(make kernelversion | sed "s/-1//;s/-/_/;s/_v8+//")
+	KERNELVER=$(make kernelrelease | sed "s/-.*+//")
 	echo ${KERNELVER}_uefi_${FIRMWAREVER}
 }
 
 prepare(){
     	local file
-		local dir
+	local dir
     	echo "Use ${GIT_HUB} as mirrorsite."
     	if [ ! -d linux ];then
-        	git clone --depth=1 ${GIT_HUB}/torvalds/linux.git ${srcdir}/linux
+		if [ ${USE_GENERIC_KERNEL} == True ];then
+			git clone --depth=1 ${GIT_HUB}/torvalds/linux.git ${srcdir}/linux
+		else
+        		git clone --depth=1 -b rpi-${KBRANCH}.y ${GIT_HUB}/raspberrypi/linux.git ${srcdir}/linux
+		fi
     	else
         	cd linux
-        	git reset --hard rpi-${KBRANCH}.y
+        	#git reset --hard HEAD
+		if [ -f .config ];then
+			mv .config .config.old
+		fi
     	fi
     	# Will move this to source list when makepkg supports --depth=1 option or we have to clone a huge repository.
 
@@ -84,7 +97,7 @@ prepare(){
 			git submodule update --init
 		done
     		# Apply modification to let submodules on github also use mirrorsite.
-    else
+    	else
 		git submodule update --init --recursive
 	fi
 	cd ${srcdir}/RPi4
@@ -112,9 +125,16 @@ build(){
 		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
 	cd ${srcdir}/linux
-	make defconfig
-	patch .config ${srcdir}/kernel-config-patch-for-raspberrypi-4b.patch 
-	# Have merged bcm2711_defconfig in raspberrypi's repo as much as i can
+	if [ ${USE_GENERIC_KERNEL} == True ];then
+		make defconfig
+		patch .config ${srcdir}/generic-kernel-config-patch-for-raspberrypi-4b.patch
+		# Have merged bcm2711_defconfig in raspberrypi's repo as much as I can
+	else
+		make bcm2711_defconfig
+		patch .config ${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch
+		# Have enabled ACPI subsystem based on bcm2711_defconfig
+	fi
+	yes "" | make oldconfig
 	make prepare
 	make -j$(nproc)
 }
@@ -136,10 +156,7 @@ device_tree_address=0x1f0000
 device_tree_end=0x200000
 dtoverlay=miniuart-bt
 EOF
-	for file in bcm2711-rpi-4-b.dtb fixup4.dat start4.elf
-	do
-		cp ${srcdir}/${file} ${pkgdir}/boot/
-	done
+	cp ${srcdir}/bcm2711-rpi-4-b.dtb ${pkgdir}/boot/
 	for file in miniuart-bt.dtbo disable-bt.dtbo
 	do
 		cp ${srcdir}/${file} ${pkgdir}/boot/overlays/
@@ -169,25 +186,33 @@ package_raspberrypi4-uefi-kernel-git(){
 	basekernel=${basekernel%.*}
 	make zinstall INSTALL_PATH=${pkgdir}/boot
 	make modules_install INSTALL_MOD_PATH=${pkgdir}/usr
-	make dtbs_install INSTALL_DTB_PATH=${pkgdir}/boot/dtbs
+	make dtbs_install INSTALL_DTBS_PATH=${pkgdir}/boot/dtbs
+	cp .config ${pkgdir}/boot/config-${kernver}
 	ln -s "../extramodules-${basekernel}-rpi4-uefi" "${pkgdir}/usr/lib/modules/${kernver}/extramodules"
 	echo ${kernver} | install -Dm644 /dev/stdin ${pkgdir}/usr/lib/modules/extramodules-${basekernel}-rpi4-uefi/version
 	rm ${pkgdir}/usr/lib/modules/${kernver}/{source,build}
-	mkdir ${pkgdir}/boot/overlays
-	for file in $(ls arch/arm64/boot/dts/overlays/*.dtbo*);
-	do
-		if [[  ${file} == "arch/arm64/boot/dts/overlays/miniuart-bt.dtbo" ]] || [[ ${file} == "arch/arm64/boot/dts/overlays/disable-bt.dtbo"  ]];
-		then
-			continue
-		fi
-		cp ${file} ${pkgdir}/boot/overlays/
-	done
-	cp arch/arm64/boot/dts/overlays/README ${pkgdir}/boot/overlays/
+	if [ ${USE_GENERIC_KERNEL} == False ];then
+		mkdir ${pkgdir}/boot/overlays
+		for file in $(ls arch/arm64/boot/dts/overlays/*.dtbo*);
+		do
+			if [[  ${file} == "arch/arm64/boot/dts/overlays/miniuart-bt.dtbo" ]] || [[ ${file} == "arch/arm64/boot/dts/overlays/disable-bt.dtbo"  ]];
+			then
+				continue
+			fi
+			cp ${file} ${pkgdir}/boot/overlays/
+		done
+		cp arch/arm64/boot/dts/overlays/README ${pkgdir}/boot/overlays/
+	fi
 	echo "root=LABEL=ROOT_MNJRO rw rootwait console=ttyAMA0,115200 console=tty1 selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N dwc_otg.lpm_enable=0 kgdboc=ttyAMA0,115200 elevator=noop usbhid.mousepoll=8 snd-bcm2835.enable_compat_alsa=0 audit=0" > ${pkgdir}/boot/cmdline.txt
 	mkdir -p ${pkgdir}/usr/bin
 	cat>${pkgdir}/usr/bin/modify_grub_cmdline<<EOF
 #!/usr/bin/sh
-CMDLINE="\`sed 's/^root=.\+ rw //' /boot/cmdline.txt\`"
+if [ -f /boot/cmdline.txt.pacsave ];then
+	CMDFILE=/boot/cmdline.txt.pacsave
+else
+	CMDFILE=/boot/cmdline.txt
+fi
+CMDLINE="\`sed 's/^root=.\+ rw //' \${CMDFILE}\`"
 sed -i 's/^GRUB_CMDLINE_LINUX=""$/GRUB_CMDLINE_LINUX="\${CMDLINE}"/' /etc/default/grub
 echo "Finished modifying grub cmdline"
 EOF
