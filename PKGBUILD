@@ -62,7 +62,7 @@ pkgver(){
 	FIRMWAREVER=$(git rev-parse --short HEAD)
 	cd ${srcdir}/linux
 	#KERNELVER=$(git rev-parse --short HEAD)
-	KERNELVER=$(make kernelrelease | sed "s/-.*+//")
+	KERNELVER=$(make kernelversion | sed "s/-.*//")
 	echo ${KERNELVER}_uefi_${FIRMWAREVER}
 }
 
@@ -70,23 +70,42 @@ prepare(){
     	local file
 	local dir
     	echo "Use ${GIT_HUB} as mirrorsite."
-    	if [ ! -d linux ];then
+    	if [ ! -d ${srcdir}/linux ];then
+		mkdir ${srcdir}/linux
+		cd ${srcdir}/linux
+		git init -q
 		if [ ${USE_GENERIC_KERNEL} == True ];then
-			git clone --depth=1 ${GIT_HUB}/torvalds/linux.git ${srcdir}/linux
+			git fetch --depth=1 ${GIT_HUB}/torvalds/linux.git master:makepkg
 		else
-        		git clone --depth=1 -b rpi-${KBRANCH}.y ${GIT_HUB}/raspberrypi/linux.git ${srcdir}/linux
+        		git fetch --depth=1 ${GIT_HUB}/raspberrypi/linux.git rpi-${KBRANCH}.y:makepkg
 		fi
+		git checkout makepkg
+		sed -ri "s|^(EXTRAVERSION =)(.*)|\1 \2-${pkgrel}|" ${srcdir}/linux/Makefile
+		# add pkgrel to extraversion
     	else
-        	cd linux
+        	cd ${srcdir}/linux
         	#git reset --hard HEAD
 		if [ -f .config ];then
 			mv .config .config.old
 		fi
     	fi
-    	# Will move this to source list when makepkg supports --depth=1 option or we have to clone a huge repository.
-
-	# add pkgrel to extraversion
-	sed -ri "s|^(EXTRAVERSION =)(.*)|\1 \2-${pkgrel}|" ${srcdir}/linux/Makefile
+	# Move this to source once it supports --depth=1 option
+	cd ${srcdir}/linux
+	if [ ${CARCH} != "aarch64" ];then
+		export ARCH=arm64
+		export CROSS_COMPILE=aarch64-linux-gnu-
+	fi
+	if [ ${USE_GENERIC_KERNEL} == True ];then
+		make defconfig
+		patch .config ${srcdir}/generic-kernel-config-patch-for-raspberrypi-4b.patch
+		# Have merged bcm2711_defconfig in raspberrypi's repo as much as I can
+	else
+		make bcm2711_defconfig
+		patch .config ${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch
+		# Have enabled ACPI subsystem based on bcm2711_defconfig	
+	fi
+	yes "" | make oldconfig
+	make prepare
 	cd ${srcdir}/RPi4
 	if [ ${GIT_HUB} != "https://github.com" ];then
 		for dir in . edk2 edk2-platforms edk2/CryptoPkg/Library/OpensslLib/openssl edk2/BaseTools/Source/C/BrotliCompress/brotli edk2/MdeModulePkg/Library/BrotliCustomDecompressLib/brotli
@@ -125,17 +144,6 @@ build(){
 		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
 	cd ${srcdir}/linux
-	if [ ${USE_GENERIC_KERNEL} == True ];then
-		make defconfig
-		patch .config ${srcdir}/generic-kernel-config-patch-for-raspberrypi-4b.patch
-		# Have merged bcm2711_defconfig in raspberrypi's repo as much as I can
-	else
-		make bcm2711_defconfig
-		patch .config ${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch
-		# Have enabled ACPI subsystem based on bcm2711_defconfig
-	fi
-	yes "" | make oldconfig
-	make prepare
 	make -j$(nproc)
 }
 
