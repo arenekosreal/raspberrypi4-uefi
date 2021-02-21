@@ -8,6 +8,6 @@ Target = usr/lib/initcpio/*
 [Action]
 Description = Using dracut to generate initramfs ...
 When = PostTransaction
-Exec = /usr/bin/dracut -f /boot/initramfs-%KERNELVER%.img %KERNELVER%
+Exec = /usr/bin/sh -c '/usr/bin/dracut -f /boot/initramfs-%KERNELVER%.img %KERNELVER% && /usr/bin/dracut -f /boot/initramfs-%KERNELVER%-fallback.img'
 Depends = dracut
 

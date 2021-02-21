@@ -31,7 +31,8 @@ if [ ${CARCH} != "aarch64" ];then
 fi
 options=(!strip)
 sha256sums=('SKIP'
-            '6df467adcd5636185c3c36c5c8e628c5886d7362144214d65978fff12cd03504'
+            '29e3aa43312b3b33908bda0009d08ca8642c1fcb2cd5cf3e9e5bb06685bdbd45'
+            'bfd8f36e8572ae3565365faa63256d8b5d146952fdf1544248fd191e4fa975ae'
             'a78a818da59420e7aab11d34aeb10d6d3fc334618b7d49e923f94da4067ba589'
             '721b2aa77eea2e211f439c0dc3709a602c4b6879baf637c377fb645010ce939d'
             '3612fc31b87fd826fb6f49b5baa380672ad6c701396d1418845dd0ccc261ec15'
@@ -42,8 +43,9 @@ sha256sums=('SKIP'
             'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02')
 source=(
 	"git+${GIT_HUB}/pftf/RPi4"
-	99-update-initramfs.hook
-	98-modify-grub-kernel-cmdline.hook
+	99-update-grub.hook
+	98-update-initramfs.hook
+	97-modify-grub-kernel-cmdline.hook
 	generic-kernel-config-patch-for-raspberrypi-4b.patch
 	raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch
 	LICENCE.EDK2::${GIT_RAW}/tianocore/edk2/master/License.txt
@@ -164,11 +166,15 @@ device_tree_address=0x1f0000
 device_tree_end=0x200000
 dtoverlay=miniuart-bt
 EOF
-	cp ${srcdir}/bcm2711-rpi-4-b.dtb ${pkgdir}/boot/
-	for file in miniuart-bt.dtbo disable-bt.dtbo
-	do
-		cp ${srcdir}/${file} ${pkgdir}/boot/overlays/
-	done
+	if [ ${USE_GENERIC_KERNEL} == True ];then
+		cp ${srcdir}/bcm2711-rpi-4-b.dtb ${pkgdir}/boot
+	
+		for file in miniuart-bt.dtbo disable-bt.dtbo
+		do
+			cp ${srcdir}/${file} ${pkgdir}/boot/overlays/
+		done
+	fi
+	# Raspberry Pi Kernel have provided these files
     	install -Dm644 ${srcdir}/LICENCE.EDK2 "${pkgdir}"/usr/share/licenses/${pkgname}/LICENCE.EDK2
     	install -Dm644 ${srcdir}/LICENCE.broadcom "${pkgdir}"/usr/share/licenses/${pkgname}/LICENCE.broadcom
 	
@@ -187,7 +193,7 @@ package_raspberrypi4-uefi-kernel-git(){
         	export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
     	local file
-	mkdir -p ${pkgdir}/{boot,usr/include}
+	mkdir -p ${pkgdir}/boot
 	cd ${srcdir}/linux
 	kernver=$(make kernelrelease)
 	basekernel=${kernver%%-*}
@@ -195,22 +201,16 @@ package_raspberrypi4-uefi-kernel-git(){
 	make zinstall INSTALL_PATH=${pkgdir}/boot
 	make modules_install INSTALL_MOD_PATH=${pkgdir}/usr
 	make dtbs_install INSTALL_DTBS_PATH=${pkgdir}/boot/dtbs
+	if [ ${USE_GENERIC_KERNEL} == False ];then
+		cp arch/arm64/boot/dts/broadcom/bcm271*-rpi-*.dtb ${pkgdir}/boot
+		mkdir ${pkgdir}/boot/overlays
+		cp arch/arm64/boot/dts/overlays/*.dtbo* ${pkgdir}/boot/overlays/
+		cp arch/arm64/boot/dts/overlays/README ${pkgdir}/boot/overlays/
+	fi
 	cp .config ${pkgdir}/boot/config-${kernver}
 	ln -s "../extramodules-${basekernel}-rpi4-uefi" "${pkgdir}/usr/lib/modules/${kernver}/extramodules"
 	echo ${kernver} | install -Dm644 /dev/stdin ${pkgdir}/usr/lib/modules/extramodules-${basekernel}-rpi4-uefi/version
 	rm ${pkgdir}/usr/lib/modules/${kernver}/{source,build}
-	if [ ${USE_GENERIC_KERNEL} == False ];then
-		mkdir ${pkgdir}/boot/overlays
-		for file in $(ls arch/arm64/boot/dts/overlays/*.dtbo*);
-		do
-			if [[  ${file} == "arch/arm64/boot/dts/overlays/miniuart-bt.dtbo" ]] || [[ ${file} == "arch/arm64/boot/dts/overlays/disable-bt.dtbo"  ]];
-			then
-				continue
-			fi
-			cp ${file} ${pkgdir}/boot/overlays/
-		done
-		cp arch/arm64/boot/dts/overlays/README ${pkgdir}/boot/overlays/
-	fi
 	echo "root=LABEL=ROOT_MNJRO rw rootwait console=ttyAMA0,115200 console=tty1 selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N dwc_otg.lpm_enable=0 kgdboc=ttyAMA0,115200 elevator=noop usbhid.mousepoll=8 snd-bcm2835.enable_compat_alsa=0 audit=0" > ${pkgdir}/boot/cmdline.txt
 	mkdir -p ${pkgdir}/usr/bin
 	cat>${pkgdir}/usr/bin/modify_grub_cmdline<<EOF
@@ -226,9 +226,10 @@ echo "Finished modifying grub cmdline"
 EOF
 	chmod +x ${pkgdir}/usr/bin/modify_grub_cmdline
 	mkdir -p ${pkgdir}/usr/share/libalpm/hooks/
-	cp ${srcdir}/99-update-initramfs.hook ${pkgdir}/usr/share/libalpm/hooks/
-	sed -i "s/%KERNELVER%/`make kernelrelease`/g" ${pkgdir}/usr/share/libalpm/hooks/99-update-initramfs.hook
-	cp ${srcdir}/98-modify-grub-kernel-cmdline.hook ${pkgdir}/usr/share/libalpm/hooks/
+	cp ${srcdir}/98-update-initramfs.hook ${pkgdir}/usr/share/libalpm/hooks/
+	sed -i "s/%KERNELVER%/`make kernelrelease`/g" ${pkgdir}/usr/share/libalpm/hooks/98-update-initramfs.hook
+	cp ${srcdir}/97-modify-grub-kernel-cmdline.hook ${pkgdir}/usr/share/libalpm/hooks/
+	cp ${srcdir}/99-update-grub.hook ${pkgdir}/usr/share/libalpm/hooks/
 }
 package_raspberrypi4-uefi-kernel-headers-git(){
 	if [ ${CARCH} != "aarch64" ];then
