@@ -9,14 +9,12 @@ jobs:
     name: Build and Upload Packages for PKGBUILD in this repository
     runs-on: ubuntu-latest
     steps:
-      - name: Install Requirements
-        run: sudo apt-get install qemu-user-static binfmt-support -y
       - name: Checkout
         uses: actions/checkout@v2 
-      - name: Run QEMU User Static Docker Image to Build
-        run: sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - name: Setup QEMU to build aarch64 Package on x86_64 platform
+        uses: docker/setup-qemu-action@v1.0.1
       - name: Build Package use Image Built before
-        run: sudo docker run --rm -v /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest
+        run: sudo docker run --rm -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest
       - name: Push to GitHub Releases
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
