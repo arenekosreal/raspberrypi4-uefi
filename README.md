@@ -27,6 +27,7 @@ If you are not using Arch Linux, you may have to understand Arch Build System an
 2. UEFI firmware is experimental, that means maybe some features may not work properly. You can get more infomation at [there](https://github.com/pftf/RPi4)  
 3. Install grub with `--removeable` flag, or you have to choose boot from `/EFI/grub/grubaa64.efi` file in UEFI manually when your Pi is powering on.
 4. This project is designed for `aarch64`(arm64) architecture, it is just for test so you can compile on `x86_64` machine with `aarch64-linux-gnu-gcc` toolchain. Due to my ability, if you compiled on a `x86_64` computer, the software package will be treat as `x86_64` package and you can't install it directly on your Pi although all binary files in this package is designed for running on `aarch64` machine. So I recommend you to compile this package directly on your Pi and install it or manually copy generated files to your filesystem.  
+5. According to pftf, Raspberry Pi can't use SD card because there is not any SD card driver, but I can use it with the kernel provided by Raspberrypi Foundation(USE_GENERIC_KERNEL=False in PKGBUILD) and set SDArasan SD/SDIO Host Controller in Firmware Settings. Of course it will be much slower than USB 3.0 even I directly find a SD card reader and connect to USB 3.0 Port of my Raspberry Pi.
 
 ## References
 

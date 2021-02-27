@@ -10,15 +10,15 @@ GIT_RAW=https://raw.githubusercontent.com
 
 # Uncomment these to use mirrorsite
 # Mirrorsite 1
-#GIT_HUB=https://hub.fastgit.org
-#GIT_RAW=https://raw.fastgit.org
+GIT_HUB=https://hub.fastgit.org
+GIT_RAW=https://raw.fastgit.org
 # Mirrorsite 2
-GIT_HUB=https://github.com.cnpmjs.org
-GIT_RAW=https://raw.sevencdn.com
+#GIT_HUB=https://github.com.cnpmjs.org
+#GIT_RAW=https://raw.sevencdn.com
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git")
-pkgver=5.11.0_uefi_d8a55b0
+pkgver=5.11.0_a40f92d05_uefi_72604e8
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -64,7 +64,7 @@ pkgver(){
 	FIRMWAREVER=$(git rev-parse --short HEAD)
 	cd ${srcdir}/linux
 	#KERNELVER=$(git rev-parse --short HEAD)
-	KERNELVER=$(make kernelversion | sed "s/-.*//")
+	KERNELVER=$(make kernelversion | sed "s/-.*//")_$(git log --format=%h -1)
 	echo ${KERNELVER}_uefi_${FIRMWAREVER}
 }
 
