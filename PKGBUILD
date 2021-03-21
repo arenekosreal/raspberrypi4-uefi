@@ -1,6 +1,6 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
-KBRANCH=5.11
+KBRANCH=5.12
 # Only need if you are using raspberrypi kernel
 USE_GENERIC_KERNEL=False
 # Weather using generic kernel or raspberrypi kernel
@@ -18,7 +18,7 @@ GIT_RAW=https://raw.fastgit.org
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git")
-pkgver=5.11.0_a40f92d05_uefi_72604e8
+pkgver=5.12.0_425ed5a96_uefi_d9e569d
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -26,26 +26,25 @@ arch=("aarch64")
 licence=("custom:LICENCE.EDK2" "custom:LICENCE.broadcom" "GPL")
 depends=("grub" "dracut" "raspberrypi-bootloader")
 makedepends=("git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "inetutils")
+optdepends=("dracut-hook: Auto generate new initcpio and delete old initcpio when using dracut")
 if [ ${CARCH} != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
 fi
 options=(!strip)
 sha256sums=('SKIP'
-            '29e3aa43312b3b33908bda0009d08ca8642c1fcb2cd5cf3e9e5bb06685bdbd45'
-            'bfd8f36e8572ae3565365faa63256d8b5d146952fdf1544248fd191e4fa975ae'
             'a78a818da59420e7aab11d34aeb10d6d3fc334618b7d49e923f94da4067ba589'
+            '29e3aa43312b3b33908bda0009d08ca8642c1fcb2cd5cf3e9e5bb06685bdbd45'
             '721b2aa77eea2e211f439c0dc3709a602c4b6879baf637c377fb645010ce939d'
-            '3612fc31b87fd826fb6f49b5baa380672ad6c701396d1418845dd0ccc261ec15'
+            '120206910b774bd9f2852796313fd05e54b0f6e8c9ddcf7789e48233bd1f3bf7'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
-            '8d8eb9a1ab9d0f2f8615c72a21b165469f8a209fc2b4f16721412f5e129fc936'
+            '1472dcd1856ebf29fad4a0e355a146706792664382b504e22ba0d680223f578b'
             '8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
             'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02')
 source=(
 	"git+${GIT_HUB}/pftf/RPi4"
-	99-update-grub.hook
-	98-update-initramfs.hook
 	97-modify-grub-kernel-cmdline.hook
+	99-update-grub.hook
 	generic-kernel-config-patch-for-raspberrypi-4b.patch
 	raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch
 	LICENCE.EDK2::${GIT_RAW}/tianocore/edk2/master/License.txt
@@ -226,8 +225,6 @@ echo "Finished modifying grub cmdline"
 EOF
 	chmod +x ${pkgdir}/usr/bin/modify_grub_cmdline
 	mkdir -p ${pkgdir}/usr/share/libalpm/hooks/
-	cp ${srcdir}/98-update-initramfs.hook ${pkgdir}/usr/share/libalpm/hooks/
-	sed -i "s/%KERNELVER%/`make kernelrelease`/g" ${pkgdir}/usr/share/libalpm/hooks/98-update-initramfs.hook
 	cp ${srcdir}/97-modify-grub-kernel-cmdline.hook ${pkgdir}/usr/share/libalpm/hooks/
 	cp ${srcdir}/99-update-grub.hook ${pkgdir}/usr/share/libalpm/hooks/
 }
