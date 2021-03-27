@@ -5,20 +5,20 @@ KBRANCH=5.12
 USE_GENERIC_KERNEL=False
 # Weather using generic kernel or raspberrypi kernel
 
-GIT_HUB=https://github.com
-GIT_RAW=https://raw.githubusercontent.com
+GIT_HUB=https://github.com/
+GIT_RAW=https://raw.githubusercontent.com/
 
 # Uncomment these to use mirrorsite
 # Mirrorsite 1
-GIT_HUB=https://hub.fastgit.org
-GIT_RAW=https://raw.fastgit.org
+#GIT_HUB=https://hub.fastgit.org/
+#GIT_RAW=https://raw.fastgit.org/
 # Mirrorsite 2
-#GIT_HUB=https://github.com.cnpmjs.org
-#GIT_RAW=https://raw.sevencdn.com
+#GIT_HUB=https://github.com.cnpmjs.org/
+#GIT_RAW=https://raw.sevencdn.com/
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git")
-pkgver=5.12.0_425ed5a96_uefi_d9e569d
+pkgver=5.12.0_c93a86897_uefi_07ab11c
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -34,24 +34,24 @@ options=(!strip)
 sha256sums=('SKIP'
             'a78a818da59420e7aab11d34aeb10d6d3fc334618b7d49e923f94da4067ba589'
             '29e3aa43312b3b33908bda0009d08ca8642c1fcb2cd5cf3e9e5bb06685bdbd45'
-            '721b2aa77eea2e211f439c0dc3709a602c4b6879baf637c377fb645010ce939d'
-            '120206910b774bd9f2852796313fd05e54b0f6e8c9ddcf7789e48233bd1f3bf7'
+            'f2394636d71522c7761f051e189050b4798f403a6bcd93e77ee772b5d13c723e'
+            '0a6eb2a5a986e1d77ecec35805e04d6c9b54984c56a776d56ce87719ff532bb1'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
-            '1472dcd1856ebf29fad4a0e355a146706792664382b504e22ba0d680223f578b'
+            'a1a4c6ab38c8daa18e83a15deaa2de6d31e5b51a8adc4cfbb8a7b25df7310341'
             '8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
             'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02')
 source=(
-	"git+${GIT_HUB}/pftf/RPi4"
+	"git+${GIT_HUB}pftf/RPi4"
 	97-modify-grub-kernel-cmdline.hook
 	99-update-grub.hook
 	generic-kernel-config-patch-for-raspberrypi-4b.patch
 	raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch
-	LICENCE.EDK2::${GIT_RAW}/tianocore/edk2/master/License.txt
-	LICENCE.broadcom::${GIT_RAW}/raspberrypi/firmware/master/boot/LICENCE.broadcom
-	${GIT_RAW}/raspberrypi/firmware/master/boot/bcm2711-rpi-4-b.dtb
-	${GIT_RAW}/raspberrypi/firmware/master/boot/overlays/miniuart-bt.dtbo
-	${GIT_RAW}/raspberrypi/firmware/master/boot/overlays/disable-bt.dtbo
+	LICENCE.EDK2::${GIT_RAW}tianocore/edk2/master/License.txt
+	LICENCE.broadcom::${GIT_RAW}raspberrypi/firmware/master/boot/LICENCE.broadcom
+	${GIT_RAW}raspberrypi/firmware/master/boot/bcm2711-rpi-4-b.dtb
+	${GIT_RAW}raspberrypi/firmware/master/boot/overlays/miniuart-bt.dtbo
+	${GIT_RAW}raspberrypi/firmware/master/boot/overlays/disable-bt.dtbo
 )
 
 pkgver(){
@@ -76,9 +76,9 @@ prepare(){
 		cd ${srcdir}/linux
 		git init -q
 		if [ ${USE_GENERIC_KERNEL} == True ];then
-			git fetch --depth=1 ${GIT_HUB}/torvalds/linux.git master:makepkg
+			git fetch --depth=1 ${GIT_HUB}torvalds/linux.git master:makepkg
 		else
-        		git fetch --depth=1 ${GIT_HUB}/raspberrypi/linux.git rpi-${KBRANCH}.y:makepkg
+        		git fetch --depth=1 ${GIT_HUB}raspberrypi/linux.git rpi-${KBRANCH}.y:makepkg
 		fi
 		git checkout makepkg
 		sed -ri "s|^(EXTRAVERSION =)(.*)|\1 \2-${pkgrel}|" ${srcdir}/linux/Makefile
@@ -121,15 +121,19 @@ prepare(){
 		git submodule update --init --recursive
 	fi
 	cd ${srcdir}/RPi4
-	if [ ${CARCH} == "aarch64" ];then
-		sed -i "s/export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-/# export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-/" build_firmware.sh
-	fi
 	FIRMVER=git-$(git rev-parse --short HEAD)
-	DEBUGLINE=$(sed -n 's/DEBUG//p' build_firmware.sh)
-	sed -i "s'^build .\+ DEBUG'# ${DEBUGLINE}'" build_firmware.sh
-	# Disable build DEBUG version firmware
-	sed -i "s/\$APPVEYOR_REPO_TAG_NAME/${FIRMVER}/" build_firmware.sh
-	# Add git commit info in firmware version string
+	cat>build_firmware.sh<<EOF
+make -C edk2/BaseTools
+export WORKSPACE=\$PWD
+export PACKAGES_PATH=\$WORKSPACE/edk2:\$WORKSPACE/edk2-platforms:\$WORKSPACE/edk2-non-osi
+export GCC5_AARCH64_PREFIX=""
+export BUILD_FLAGS="-D SECURE_BOOT_ENABLE=TRUE -D INCLUDE_TFTP_COMMAND=TRUE -D NETWORK_ISCSI_ENABLE=TRUE"
+source edk2/edksetup.sh
+# EDK2's 'build' command doesn't play nice with spaces in environmnent variables, so we can't move the PCDs there...
+build -a AARCH64 -t GCC5 -p edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc -b RELEASE --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor=L"https://github.com/pftf/RPi4" --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"UEFI Firmware ${FIRMVER}" \${BUILD_FLAGS}
+
+EOF
+	chmod +x build_firmware.sh	
 	patch --binary -d edk2 -p1 -i ../0001-MdeModulePkg-UefiBootManagerLib-Signal-ReadyToBoot-o.patch
 	# apply patch in repo as repo does this in CI service
 }
