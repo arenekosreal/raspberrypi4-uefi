@@ -18,7 +18,7 @@ GIT_RAW=https://raw.githubusercontent.com/
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git")
-pkgver=5.12.0_c93a86897_uefi_07ab11c
+pkgver=5.12.0_f6b1c60fe_uefi_07ab11c
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -35,7 +35,7 @@ sha256sums=('SKIP'
             'a78a818da59420e7aab11d34aeb10d6d3fc334618b7d49e923f94da4067ba589'
             '29e3aa43312b3b33908bda0009d08ca8642c1fcb2cd5cf3e9e5bb06685bdbd45'
             'f2394636d71522c7761f051e189050b4798f403a6bcd93e77ee772b5d13c723e'
-            '0a6eb2a5a986e1d77ecec35805e04d6c9b54984c56a776d56ce87719ff532bb1'
+            '88375a68f39a15c1867203384d945042a8e3e50cebcbd0899013d8520b23a8a5'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
             'a1a4c6ab38c8daa18e83a15deaa2de6d31e5b51a8adc4cfbb8a7b25df7310341'
@@ -81,11 +81,9 @@ prepare(){
         		git fetch --depth=1 ${GIT_HUB}raspberrypi/linux.git rpi-${KBRANCH}.y:makepkg
 		fi
 		git checkout makepkg
-		sed -ri "s|^(EXTRAVERSION =)(.*)|\1 \2-${pkgrel}|" ${srcdir}/linux/Makefile
-		# add pkgrel to extraversion
     	else
         	cd ${srcdir}/linux
-        	#git reset --hard HEAD
+        	git reset --hard HEAD
 		if [ -f .config ];then
 			mv .config .config.old
 		fi
@@ -96,17 +94,18 @@ prepare(){
 		export ARCH=arm64
 		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
+	sed -ri "s|^(EXTRAVERSION =)(.*)|\1 \2-${pkgrel}|" Makefile
+	# Add pkgrel to extraversion
 	if [ ${USE_GENERIC_KERNEL} == True ];then
 		make defconfig
-		patch .config ${srcdir}/generic-kernel-config-patch-for-raspberrypi-4b.patch
+		patch -p0 < ${srcdir}/generic-kernel-config-patch-for-raspberrypi-4b.patch
 		# Have merged bcm2711_defconfig in raspberrypi's repo as much as I can
 	else
 		make bcm2711_defconfig
-		patch .config ${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch
+		patch -p0 < ${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch
 		# Have enabled ACPI subsystem based on bcm2711_defconfig	
 	fi
-	yes "" | make oldconfig
-	make prepare
+	yes "" | make prepare
 	cd ${srcdir}/RPi4
 	if [ ${GIT_HUB} != "https://github.com" ];then
 		for dir in . edk2 edk2-platforms edk2/CryptoPkg/Library/OpensslLib/openssl edk2/BaseTools/Source/C/BrotliCompress/brotli edk2/MdeModulePkg/Library/BrotliCustomDecompressLib/brotli
