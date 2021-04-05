@@ -107,12 +107,12 @@ prepare(){
 	fi
 	yes "" | make prepare
 	cd ${srcdir}/RPi4
-	if [ ${GIT_HUB} != "https://github.com" ];then
+	if [ ${GIT_HUB} != "https://github.com/" ];then
 		for dir in . edk2 edk2-platforms edk2/CryptoPkg/Library/OpensslLib/openssl edk2/BaseTools/Source/C/BrotliCompress/brotli edk2/MdeModulePkg/Library/BrotliCustomDecompressLib/brotli
 		do
 			echo "Modifying ${dir}/.gitmodules"
 			cd ${srcdir}/RPi4/${dir}/
-			sed -i "s_https://github.com_${GIT_HUB}_g; s_https://boringssl.googlesource.com_${GIT_HUB}/google_g" .gitmodules
+			sed -i "s_https://github.com/_${GIT_HUB}_g; s_https://boringssl.googlesource.com_${GIT_HUB}/google_g" .gitmodules
 			git submodule update --init
 		done
     		# Apply modification to let submodules on github also use mirrorsite.
@@ -122,7 +122,7 @@ prepare(){
 	cd ${srcdir}/RPi4
 	FIRMVER=git-$(git rev-parse --short HEAD)
 	cat>build_firmware.sh<<EOF
-make -C edk2/BaseTools
+#!/usr/bin/env bash
 export WORKSPACE=\$PWD
 export PACKAGES_PATH=\$WORKSPACE/edk2:\$WORKSPACE/edk2-platforms:\$WORKSPACE/edk2-non-osi
 export GCC5_AARCH64_PREFIX=""
@@ -140,6 +140,7 @@ EOF
 build(){
 	# Build UEFI Firware
 	cd ${srcdir}/RPi4
+	make -C edk2/BaseTools
 	bash build_firmware.sh || sudo bash build_firmware.sh
 	# It may be failed to build on chroot environment with non-root user, use sudo to build it instead if failed.
 	# Build Kernel
