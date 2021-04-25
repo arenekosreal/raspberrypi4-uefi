@@ -18,7 +18,7 @@ GIT_RAW=https://raw.fastgit.org/
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git")
-pkgver=5.12.0_f22435957_uefi_0bc0a4e
+pkgver=5.12.0_34db7f0bd_uefi_0bc0a4e
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -34,8 +34,8 @@ options=(!strip)
 sha256sums=('SKIP'
             'a78a818da59420e7aab11d34aeb10d6d3fc334618b7d49e923f94da4067ba589'
             '29e3aa43312b3b33908bda0009d08ca8642c1fcb2cd5cf3e9e5bb06685bdbd45'
-            'f2394636d71522c7761f051e189050b4798f403a6bcd93e77ee772b5d13c723e'
-            '88375a68f39a15c1867203384d945042a8e3e50cebcbd0899013d8520b23a8a5'
+            '61302428d0dd3f29e0fd451e9ca3d8e94e7d1df8c7d61e462df546ecd2ea8cbf'
+            '8b7f2c8910f11428ffe69bc5ec61e582e55dbd2b470605f9188ed2a45c27903a'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
             'a1a4c6ab38c8daa18e83a15deaa2de6d31e5b51a8adc4cfbb8a7b25df7310341'
@@ -57,7 +57,7 @@ source=(
 pkgver(){
 	if [  ${CARCH} != "aarch64"  ];then
 		export ARCH=arm64
-		export CrOSS_COMPILE=aarch64-linux-gnu-
+		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
 	cd ${srcdir}/RPi4
 	FIRMWAREVER=$(git rev-parse --short HEAD)
@@ -98,14 +98,14 @@ prepare(){
 	# Add pkgrel to extraversion
 	if [ ${USE_GENERIC_KERNEL} == True ];then
 		make defconfig
-		patch -p0 < ${srcdir}/generic-kernel-config-patch-for-raspberrypi-4b.patch
+		patch -p3 < ${srcdir}/generic-kernel-config-patch-for-raspberrypi-4b.patch
 		# Have merged bcm2711_defconfig in raspberrypi's repo as much as I can
 	else
 		make bcm2711_defconfig
-		patch -p0 < ${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch
+		patch -p3 < ${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch
 		# Have enabled ACPI subsystem based on bcm2711_defconfig	
 	fi
-	yes "" | make prepare
+	yes "" | make oldconfig
 	cd ${srcdir}/RPi4
 	if [ ${GIT_HUB} != "https://github.com/" ];then
 		for dir in . edk2 edk2-platforms edk2/CryptoPkg/Library/OpensslLib/openssl edk2/BaseTools/Source/C/BrotliCompress/brotli edk2/MdeModulePkg/Library/BrotliCustomDecompressLib/brotli

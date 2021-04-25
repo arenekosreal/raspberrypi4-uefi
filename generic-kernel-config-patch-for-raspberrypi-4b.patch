@@ -1,5 +1,5 @@
---- config-generic.default	2021-03-27 13:51:42.595448729 +0800
-+++ config-generic.target	2021-03-27 13:51:17.711961074 +0800
+--- configs/origin/generic/.config	2021-03-27 13:51:42.595448729 +0800
++++ configs/target/generic/.config	2021-03-27 13:51:17.711961074 +0800
 @@ -21,9 +21,8 @@
  # General setup
  #
