@@ -32,7 +32,7 @@ if [ ${CARCH} != "aarch64" ];then
 fi
 options=(!strip)
 sha256sums=('SKIP'
-            'a78a818da59420e7aab11d34aeb10d6d3fc334618b7d49e923f94da4067ba589'
+            'a7569f99eb13cc05a9170fe29a44a6939ab00ae6d78188d18fe5c73faabb1bb4'
             '29e3aa43312b3b33908bda0009d08ca8642c1fcb2cd5cf3e9e5bb06685bdbd45'
             '61302428d0dd3f29e0fd451e9ca3d8e94e7d1df8c7d61e462df546ecd2ea8cbf'
             '8b7f2c8910f11428ffe69bc5ec61e582e55dbd2b470605f9188ed2a45c27903a'
@@ -215,8 +215,8 @@ package_raspberrypi4-uefi-kernel-git(){
 	echo ${kernver} | install -Dm644 /dev/stdin ${pkgdir}/usr/lib/modules/extramodules-${basekernel}-rpi4-uefi/version
 	rm ${pkgdir}/usr/lib/modules/${kernver}/{source,build}
 	echo "root=LABEL=ROOT_MNJRO rw rootwait console=ttyAMA0,115200 console=tty1 selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N dwc_otg.lpm_enable=0 kgdboc=ttyAMA0,115200 usbhid.mousepoll=8 snd-bcm2835.enable_compat_alsa=0 audit=0" > ${pkgdir}/boot/cmdline.txt
-	mkdir -p ${pkgdir}/usr/bin
-	cat>${pkgdir}/usr/bin/modify_grub_cmdline<<EOF
+	mkdir -p ${pkgdir}/usr/share/libalpm/scripts/
+	cat>${pkgdir}/usr/share/libalpm/scripts/modify_grub_cmdline<<EOF
 #!/usr/bin/sh
 if [ -f /boot/cmdline.txt.pacsave ];then
 	CMDFILE=/boot/cmdline.txt.pacsave
@@ -227,7 +227,7 @@ CMDLINE="\`sed 's/^root=.\+ rw //' \${CMDFILE}\`"
 sed -i 's/^GRUB_CMDLINE_LINUX=""$/GRUB_CMDLINE_LINUX="\${CMDLINE}"/' /etc/default/grub
 echo "Finished modifying grub cmdline"
 EOF
-	chmod +x ${pkgdir}/usr/bin/modify_grub_cmdline
+	chmod +x ${pkgdir}/usr/share/libalpm/scripts/modify_grub_cmdline
 	mkdir -p ${pkgdir}/usr/share/libalpm/hooks/
 	cp ${srcdir}/97-modify-grub-kernel-cmdline.hook ${pkgdir}/usr/share/libalpm/hooks/
 	cp ${srcdir}/99-update-grub.hook ${pkgdir}/usr/share/libalpm/hooks/
