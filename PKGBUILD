@@ -19,21 +19,21 @@ GIT_RAW=https://raw.fastgit.org/
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git")
 pkgver=5.12.3_8f357c96e_uefi_0bc0a4e
-pkgrel=1
+pkgrel=3
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
 arch=("aarch64")
 licence=("custom:LICENCE.EDK2" "custom:LICENCE.broadcom" "GPL")
 depends=("grub" "dracut" "raspberrypi-bootloader")
 makedepends=("git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "inetutils")
-optdepends=("dracut-hook: Auto generate new initcpio and delete old initcpio when using dracut")
 if [ ${CARCH} != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
 fi
 options=(!strip)
 sha256sums=('SKIP'
             'a7569f99eb13cc05a9170fe29a44a6939ab00ae6d78188d18fe5c73faabb1bb4'
-            '29e3aa43312b3b33908bda0009d08ca8642c1fcb2cd5cf3e9e5bb06685bdbd45'
+            '65f4314cf1998ff42afdde001407f4f0fd91cdca4e3735010ab704fa893cfdb5'
+            '5a8e3d63a8154a9d741b1c4c9a754ea7adeb8e7c8495e63b9030124ec1611913'
             '61302428d0dd3f29e0fd451e9ca3d8e94e7d1df8c7d61e462df546ecd2ea8cbf'
             '8b7f2c8910f11428ffe69bc5ec61e582e55dbd2b470605f9188ed2a45c27903a'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
@@ -44,7 +44,8 @@ sha256sums=('SKIP'
 source=(
 	"git+${GIT_HUB}pftf/RPi4"
 	97-modify-grub-kernel-cmdline.hook
-	99-update-grub.hook
+	98-dracut-update-initramfs.hook
+	dracut-update-initramfs
 	generic-kernel-config-patch-for-raspberrypi-4b.patch
 	raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch
 	LICENCE.EDK2::${GIT_RAW}tianocore/edk2/master/License.txt
@@ -154,7 +155,7 @@ build(){
 
 package_raspberrypi4-uefi-firmware-git(){
 	backup=("boot/config.txt")
-	pkgdesc="UEFI firmware for Raspberry Pi boot files for ${_pkgdesc}"
+	pkgdesc="UEFI firmware for ${_pkgdesc}"
 	local file
 	mkdir -p ${pkgdir}/boot/overlays
 	cp ${srcdir}/RPi4/Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd ${pkgdir}/boot/
@@ -228,9 +229,11 @@ sed -i 's/^GRUB_CMDLINE_LINUX=""$/GRUB_CMDLINE_LINUX="\${CMDLINE}"/' /etc/defaul
 echo "Finished modifying grub cmdline"
 EOF
 	chmod +x ${pkgdir}/usr/share/libalpm/scripts/modify_grub_cmdline
+	cp ${srcdir}/dracut-update-initramfs ${pkgdir}/usr/share/libalpm/scripts/
+	chmod +x ${pkgdir}/usr/share/libalpm/scripts/dracut-update-initramfs
 	mkdir -p ${pkgdir}/usr/share/libalpm/hooks/
 	cp ${srcdir}/97-modify-grub-kernel-cmdline.hook ${pkgdir}/usr/share/libalpm/hooks/
-	cp ${srcdir}/99-update-grub.hook ${pkgdir}/usr/share/libalpm/hooks/
+	cp ${srcdir}/98-dracut-update-initramfs.hook ${pkgdir}/usr/share/libalpm/hooks/
 }
 package_raspberrypi4-uefi-kernel-headers-git(){
 	if [ ${CARCH} != "aarch64" ];then

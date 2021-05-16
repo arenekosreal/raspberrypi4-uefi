@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+kernels=()
+for file in /usr/lib/modules/*/extramodules/version
+do
+	kernels+=($(cat ${file}))
+done
+
+for kernel in ${kernels}
+do
+	echo "Creating initramfs image for ${kernel}..."
+	dracut /boot/initramfs-${kernel}.img ${kernel} -f
+	dracut /boot/initramfs-${kernel}-fallback.img ${kernel} -f
+done
+
+echo "Updating GRUB config..."
+/usr/bin/grub-mkconfig -o /boot/grub/grub.cfg
+
