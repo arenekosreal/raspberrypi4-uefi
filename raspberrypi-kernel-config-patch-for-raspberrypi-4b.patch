@@ -1,5 +1,5 @@
---- configs/origin/rpi/.config	2021-04-25 10:28:30.124363569 +0800
-+++ configs/target/rpi/.config	2021-04-25 10:28:11.532411886 +0800
+--- configs/origin/rpi/.config	2021-06-04 11:59:35.473950238 +0800
++++ configs/target/rpi/.config	2021-06-04 11:56:42.505070975 +0800
 @@ -21,9 +21,8 @@
  # General setup
  #
@@ -893,7 +893,7 @@
  CONFIG_POWER_SUPPLY=y
  # CONFIG_POWER_SUPPLY_DEBUG is not set
  CONFIG_POWER_SUPPLY_HWMON=y
-@@ -3820,6 +4424,12 @@
+@@ -3821,6 +4425,12 @@
  # CONFIG_SENSORS_W83L786NG is not set
  # CONFIG_SENSORS_W83627HF is not set
  # CONFIG_SENSORS_W83627EHF is not set
@@ -906,7 +906,7 @@
  CONFIG_THERMAL=y
  # CONFIG_THERMAL_NETLINK is not set
  # CONFIG_THERMAL_STATISTICS is not set
-@@ -3834,9 +4444,36 @@
+@@ -3835,9 +4445,36 @@
  CONFIG_THERMAL_GOV_STEP_WISE=y
  # CONFIG_THERMAL_GOV_BANG_BANG is not set
  # CONFIG_THERMAL_GOV_USER_SPACE is not set
@@ -943,7 +943,7 @@
  
  #
  # Broadcom thermal drivers
-@@ -3862,19 +4522,72 @@
+@@ -3863,19 +4523,72 @@
  # Watchdog Device Drivers
  #
  # CONFIG_SOFT_WATCHDOG is not set
@@ -1016,7 +1016,7 @@
  
  #
  # PCI-based Watchdog Cards
-@@ -3903,10 +4618,12 @@
+@@ -3904,10 +4619,12 @@
  CONFIG_BCMA_BLOCKIO=y
  CONFIG_BCMA_HOST_PCI_POSSIBLE=y
  CONFIG_BCMA_HOST_PCI=y
@@ -1032,7 +1032,7 @@
  # CONFIG_BCMA_DEBUG is not set
  
  #
-@@ -3986,6 +4714,7 @@
+@@ -3987,6 +4715,7 @@
  CONFIG_STMPE_SPI=y
  # end of STMicroelectronics STMPE Interface Drivers
  
@@ -1040,7 +1040,7 @@
  CONFIG_MFD_SYSCON=y
  # CONFIG_MFD_TI_AM335X_TSCADC is not set
  # CONFIG_MFD_LP3943 is not set
-@@ -4079,10 +4823,21 @@
+@@ -4080,10 +4824,21 @@
  # CONFIG_REGULATOR_PV88080 is not set
  # CONFIG_REGULATOR_PV88090 is not set
  # CONFIG_REGULATOR_PWM is not set
@@ -1063,7 +1063,7 @@
  # CONFIG_REGULATOR_SY8106A is not set
  # CONFIG_REGULATOR_SY8824X is not set
  # CONFIG_REGULATOR_SY8827N is not set
-@@ -4170,9 +4947,11 @@
+@@ -4171,9 +4948,11 @@
  # CONFIG_VIDEO_FIXED_MINOR_RANGES is not set
  CONFIG_VIDEO_TUNER=m
  CONFIG_V4L2_MEM2MEM_DEV=m
@@ -1075,7 +1075,7 @@
  # end of Video4Linux options
  
  #
-@@ -4405,11 +5185,37 @@
+@@ -4406,11 +5186,37 @@
  CONFIG_VIDEO_V4L2_TPG=m
  CONFIG_V4L_PLATFORM_DRIVERS=y
  # CONFIG_VIDEO_CAFE_CCIC is not set
@@ -1113,7 +1113,7 @@
  # CONFIG_V4L_MEM2MEM_DRIVERS is not set
  # CONFIG_DVB_PLATFORM_DRIVERS is not set
  # CONFIG_SDR_PLATFORM_DRIVERS is not set
-@@ -4890,8 +5699,10 @@
+@@ -4891,8 +5700,10 @@
  # CONFIG_DRM_RADEON is not set
  # CONFIG_DRM_AMDGPU is not set
  # CONFIG_DRM_NOUVEAU is not set
@@ -1125,7 +1125,7 @@
  CONFIG_DRM_UDL=m
  # CONFIG_DRM_AST is not set
  # CONFIG_DRM_MGAG200 is not set
-@@ -5021,11 +5836,15 @@
+@@ -5022,11 +5837,15 @@
  CONFIG_TINYDRM_ST7586=m
  CONFIG_TINYDRM_ST7735R=m
  # CONFIG_DRM_PL111 is not set
@@ -1142,7 +1142,7 @@
  
  #
  # Frame buffer Devices
-@@ -5054,13 +5873,20 @@
+@@ -5055,13 +5874,20 @@
  # CONFIG_FB_CIRRUS is not set
  # CONFIG_FB_PM2 is not set
  # CONFIG_FB_ARMCLCD is not set
@@ -1164,7 +1164,7 @@
  # CONFIG_FB_NVIDIA is not set
  # CONFIG_FB_RIVA is not set
  # CONFIG_FB_I740 is not set
-@@ -5149,7 +5987,7 @@
+@@ -5150,7 +5988,7 @@
  CONFIG_SND_JACK=y
  CONFIG_SND_JACK_INPUT_DEV=y
  CONFIG_SND_OSSEMUL=y
@@ -1173,7 +1173,7 @@
  CONFIG_SND_PCM_OSS=m
  CONFIG_SND_PCM_OSS_PLUGINS=y
  CONFIG_SND_PCM_TIMER=y
-@@ -5244,10 +6083,34 @@
+@@ -5245,10 +6084,34 @@
  #
  # HD-Audio
  #
@@ -1209,7 +1209,7 @@
  CONFIG_SND_SPI=y
  CONFIG_SND_USB=y
  CONFIG_SND_USB_AUDIO=m
-@@ -5329,9 +6197,58 @@
+@@ -5330,9 +6198,58 @@
  # end of SoC Audio for Freescale CPUs
  
  # CONFIG_SND_I2S_HI6210_I2S is not set
@@ -1268,7 +1268,7 @@
  
  #
  # STMicroelectronics STM32 SOC audio support
-@@ -5656,17 +6617,32 @@
+@@ -5657,17 +6618,32 @@
  #
  # I2C HID support
  #
@@ -1305,7 +1305,7 @@
  CONFIG_USB_ARCH_HAS_HCD=y
  CONFIG_USB=y
  CONFIG_USB_PCI=y
-@@ -5678,10 +6654,11 @@
+@@ -5679,10 +6655,11 @@
  CONFIG_USB_DEFAULT_PERSIST=y
  # CONFIG_USB_FEW_INIT_RETRIES is not set
  # CONFIG_USB_DYNAMIC_MINORS is not set
@@ -1319,7 +1319,7 @@
  CONFIG_USB_AUTOSUSPEND_DELAY=2
  CONFIG_USB_MON=m
  
-@@ -5694,12 +6671,44 @@
+@@ -5695,12 +6672,44 @@
  CONFIG_USB_XHCI_PCI=y
  # CONFIG_USB_XHCI_PCI_RENESAS is not set
  CONFIG_USB_XHCI_PLATFORM=y
@@ -1366,7 +1366,7 @@
  # CONFIG_USB_UHCI_HCD is not set
  # CONFIG_USB_U132_HCD is not set
  # CONFIG_USB_SL811_HCD is not set
-@@ -5858,6 +6870,7 @@
+@@ -5859,6 +6871,7 @@
  # CONFIG_USB_HSIC_USB4604 is not set
  # CONFIG_USB_LINK_LAYER_TEST is not set
  # CONFIG_USB_CHAOSKEY is not set
@@ -1374,7 +1374,7 @@
  CONFIG_USB_ATM=m
  CONFIG_USB_SPEEDTOUCH=m
  CONFIG_USB_CXACRU=m
-@@ -5972,7 +6993,32 @@
+@@ -5973,7 +6994,32 @@
  # CONFIG_USB_RAW_GADGET is not set
  # end of USB Gadget precomposed configurations
  
@@ -1408,7 +1408,7 @@
  CONFIG_USB_ROLE_SWITCH=m
  CONFIG_MMC=y
  CONFIG_PWRSEQ_EMMC=y
-@@ -5980,7 +7026,7 @@
+@@ -5981,7 +7027,7 @@
  CONFIG_PWRSEQ_SIMPLE=y
  CONFIG_MMC_BLOCK=y
  CONFIG_MMC_BLOCK_MINORS=32
@@ -1417,7 +1417,7 @@
  # CONFIG_MMC_TEST is not set
  
  #
-@@ -5994,7 +7040,9 @@
+@@ -5995,7 +7041,9 @@
  # CONFIG_MMC_ARMMMCI is not set
  CONFIG_MMC_SDHCI=y
  CONFIG_MMC_SDHCI_IO_ACCESSORS=y
@@ -1428,7 +1428,7 @@
  CONFIG_MMC_SDHCI_PLTFM=y
  # CONFIG_MMC_SDHCI_OF_ARASAN is not set
  # CONFIG_MMC_SDHCI_OF_ASPEED is not set
-@@ -6009,23 +7081,41 @@
+@@ -6010,23 +7082,41 @@
  # CONFIG_MMC_CB710 is not set
  # CONFIG_MMC_VIA_SDMMC is not set
  # CONFIG_MMC_DW is not set
@@ -1477,7 +1477,7 @@
  
  #
  # LED drivers
-@@ -6056,6 +7154,8 @@
+@@ -6057,6 +7155,8 @@
  # CONFIG_LEDS_REGULATOR is not set
  # CONFIG_LEDS_BD2802 is not set
  # CONFIG_LEDS_LT3593 is not set
@@ -1486,7 +1486,7 @@
  # CONFIG_LEDS_TCA6507 is not set
  # CONFIG_LEDS_TLC591XX is not set
  # CONFIG_LEDS_LM355x is not set
-@@ -6068,9 +7170,11 @@
+@@ -6069,9 +7171,11 @@
  # CONFIG_LEDS_BLINKM is not set
  # CONFIG_LEDS_SYSCON is not set
  # CONFIG_LEDS_MLXREG is not set
@@ -1499,7 +1499,7 @@
  
  #
  # Flash and Torch LED drivers
-@@ -6101,13 +7206,14 @@
+@@ -6102,13 +7207,14 @@
  CONFIG_LEDS_TRIGGER_NETDEV=m
  # CONFIG_LEDS_TRIGGER_PATTERN is not set
  # CONFIG_LEDS_TRIGGER_AUDIO is not set
@@ -1516,7 +1516,7 @@
  CONFIG_ACCESSIBILITY=y
  # CONFIG_A11Y_BRAILLE_CONSOLE is not set
  
-@@ -6115,7 +7221,9 @@
+@@ -6116,7 +7222,9 @@
  # Speakup console speech
  #
  CONFIG_SPEAKUP=m
@@ -1526,7 +1526,7 @@
  # CONFIG_SPEAKUP_SYNTH_APOLLO is not set
  # CONFIG_SPEAKUP_SYNTH_AUDPTR is not set
  # CONFIG_SPEAKUP_SYNTH_BNS is not set
-@@ -6128,8 +7239,24 @@
+@@ -6129,8 +7240,24 @@
  # CONFIG_SPEAKUP_SYNTH_DUMMY is not set
  # end of Speakup console speech
  
@@ -1552,7 +1552,7 @@
  CONFIG_RTC_LIB=y
  CONFIG_RTC_CLASS=y
  CONFIG_RTC_HCTOSYS=y
-@@ -6232,6 +7363,8 @@
+@@ -6233,6 +7364,8 @@
  # CONFIG_RTC_DRV_BQ4802 is not set
  # CONFIG_RTC_DRV_RP5C01 is not set
  # CONFIG_RTC_DRV_V3020 is not set
@@ -1561,7 +1561,7 @@
  # CONFIG_RTC_DRV_ZYNQMP is not set
  
  #
-@@ -6255,6 +7423,7 @@
+@@ -6256,6 +7424,7 @@
  #
  CONFIG_DMA_ENGINE=y
  CONFIG_DMA_VIRTUAL_CHANNELS=y
@@ -1569,7 +1569,7 @@
  CONFIG_DMA_OF=y
  # CONFIG_ALTERA_MSGDMA is not set
  # CONFIG_AMBA_PL08X is not set
-@@ -6279,6 +7478,15 @@
+@@ -6280,6 +7479,15 @@
  # CONFIG_DW_EDMA is not set
  # CONFIG_DW_EDMA_PCIE is not set
  # CONFIG_SF_PDMA is not set
@@ -1585,7 +1585,7 @@
  
  #
  # DMA Clients
-@@ -6322,7 +7530,7 @@
+@@ -6323,7 +7531,7 @@
  # CONFIG_UIO_PRUSS is not set
  # CONFIG_UIO_MF624 is not set
  # CONFIG_VFIO is not set
@@ -1594,7 +1594,7 @@
  CONFIG_VIRTIO_MENU=y
  # CONFIG_VIRTIO_PCI is not set
  # CONFIG_VIRTIO_MMIO is not set
-@@ -6483,9 +7700,18 @@
+@@ -6484,9 +7701,18 @@
  CONFIG_WIMAX_I2400M_USB=m
  CONFIG_WIMAX_I2400M_DEBUG_LEVEL=8
  # CONFIG_WFX is not set
@@ -1613,7 +1613,7 @@
  CONFIG_HAVE_CLK=y
  CONFIG_CLKDEV_LOOKUP=y
  CONFIG_HAVE_CLK_PREPARE=y
-@@ -6501,14 +7741,121 @@
+@@ -6502,14 +7742,121 @@
  # CONFIG_COMMON_CLK_CDCE706 is not set
  # CONFIG_COMMON_CLK_CDCE925 is not set
  # CONFIG_COMMON_CLK_CS2000_CP is not set
@@ -1735,7 +1735,7 @@
  # CONFIG_XILINX_VCU is not set
  # CONFIG_HWSPINLOCK is not set
  
-@@ -6516,8 +7863,38 @@
+@@ -6517,8 +7864,38 @@
  # Clock Source drivers
  #
  CONFIG_TIMER_OF=y
@@ -1774,7 +1774,7 @@
  CONFIG_ARM_ARCH_TIMER=y
  CONFIG_ARM_ARCH_TIMER_EVTSTREAM=y
  CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND=y
-@@ -6531,12 +7936,55 @@
+@@ -6532,12 +7937,55 @@
  CONFIG_MAILBOX=y
  # CONFIG_ARM_MHU is not set
  # CONFIG_ARM_MHU_V2 is not set
@@ -1831,7 +1831,7 @@
  
  #
  # Remoteproc drivers
-@@ -6567,13 +8035,17 @@
+@@ -6568,13 +8036,17 @@
  #
  CONFIG_BCM2835_POWER=y
  CONFIG_RASPBERRYPI_POWER=y
@@ -1849,7 +1849,7 @@
  # end of NXP/Freescale QorIQ SoC drivers
  
  #
-@@ -6588,11 +8069,37 @@
+@@ -6589,11 +8070,37 @@
  # end of Enable LiteX SoC Builder specific drivers
  
  #
@@ -1887,7 +1887,7 @@
  
  #
  # Xilinx SoC drivers
-@@ -6600,7 +8107,26 @@
+@@ -6601,7 +8108,26 @@
  # end of Xilinx SoC drivers
  # end of SOC (System On Chip) specific Drivers
  
@@ -1915,7 +1915,7 @@
  CONFIG_EXTCON=y
  
  #
-@@ -6610,13 +8136,33 @@
+@@ -6611,13 +8137,33 @@
  CONFIG_EXTCON_ARIZONA=m
  # CONFIG_EXTCON_FSA9480 is not set
  # CONFIG_EXTCON_GPIO is not set
