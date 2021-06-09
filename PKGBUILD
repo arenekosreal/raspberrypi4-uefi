@@ -17,7 +17,7 @@ GIT_RAW=https://raw.fastgit.org/
 #GIT_RAW=https://raw.sevencdn.com/
 
 pkgbase=raspberrypi4-uefi-boot-git
-pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git")
+pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git" "raspberrypi4-uefi-kernel-api-headers-git")
 pkgver=5.12.9.047866e71_uefi_v1.27.5796406
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
@@ -33,7 +33,7 @@ options=(!strip)
 sha256sums=('SKIP'
             'a7569f99eb13cc05a9170fe29a44a6939ab00ae6d78188d18fe5c73faabb1bb4'
             '05d53257bdbd169feb7dbc260d30816e7fa77fcef2aa7238125b2e86f1123ba0'
-            '0d8254dcd7a914f769f9daf17f13d275982e3f0c03e6fd9ae95ed9adb83c4e19'
+            'e71fb73f6aa79231f02f6791cae6115d34589800e57eb9294dbfac56fb9ec513'
             '61302428d0dd3f29e0fd451e9ca3d8e94e7d1df8c7d61e462df546ecd2ea8cbf'
             '0c19e81939b3f1b8632056cd04a3c75da188ee879706c7ae0c541ebe47861d79'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
@@ -188,7 +188,7 @@ package_raspberrypi4-uefi-kernel-git(){
 	pkgdesc="The Linux Kernel and modules for ${_pkgdesc}"
 	depends=("coreutils" "linux-firmware" "kmod" "dracut" "firmware-raspberrypi" "raspberrypi4-uefi-firmware-git")
 	optdepends=("crda: to set the correct wireless channels of your country")
-	provides=("kernel26" "linux")
+	provides=("kernel26" "linux=$(echo ${pkgver} | cut -d "_" -f 1 | cut -d "." -f 1-3)")
 	conflicts=("kernel26" "linux" "uboot-raspberrypi")
 	backup=("boot/cmdline.txt")
 	replaces=("linux-raspberrypi-latest")
@@ -242,7 +242,7 @@ package_raspberrypi4-uefi-kernel-headers-git(){
 	fi
 	cd ${srcdir}/linux
 	pkgdesc="Header files and scripts for building modules for linux kernel"
-	provides=("linux-headers")
+	provides=("linux-headers=$(echo ${pkgver} | cut -d "_" -f 1 | cut -d "." -f 1-3)")
 	conflicts=("linux-headers")
 	replaces=("linux-raspberrypi-latest-headers")
 	#make headers_install INSTALL_HDR_PATH=${pkgdir}/usr
@@ -291,5 +291,18 @@ package_raspberrypi4-uefi-kernel-headers-git(){
     	/usr/bin/strip ${_strip} "${_binary}"
   	done < <(find "${pkgdir}/usr/lib/modules/${kernver}/build/scripts" -type f -perm -u+w -print0 2>/dev/null)
 	
+}
+package_raspberrypi4-uefi-kernel-api-headers-git(){
+	if [ ${CARCH} != "aarch64" ];then
+		export ARCH=arm64
+		export CROSS_COMPILE=aarch64-linux-gnu-
+	fi
+	cd ${srcdir}/linux
+	pkgdesc="Kernel headers sanitized for use in userspace"
+	provides=("linux-api-headers=$(echo ${pkgver} | cut -d "_" -f 1 | cut -d "." -f 1-3)")
+	conflicts=("linux-api-headers")
+	make INSTALL_HDR_PATH="$pkgdir/usr" headers_install
+	# use headers from libdrm
+	rm -r "${pkgdir}/usr/include/drm"
 }
 
