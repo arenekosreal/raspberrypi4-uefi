@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-echo "Removing old initramfses..."
-rm /boot/initramfs-*.img
+if [[ -f /boot/initramfs-*.img ]];then
+	echo "Removing old initramfses..."
+	rm /boot/initramfs-*.img
+fi
 kernels=()
 for file in /usr/lib/modules/*/extramodules/version
 do
