@@ -130,7 +130,7 @@ export GCC5_AARCH64_PREFIX=""
 export BUILD_FLAGS="-D SECURE_BOOT_ENABLE=TRUE -D INCLUDE_TFTP_COMMAND=TRUE -D NETWORK_ISCSI_ENABLE=TRUE"
 source edk2/edksetup.sh
 # EDK2's 'build' command doesn't play nice with spaces in environmnent variables, so we can't move the PCDs there...
-build -a AARCH64 -t GCC5 -p edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc -b RELEASE --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor=L"https://github.com/pftf/RPi4" --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"UEFI Firmware ${FIRMVER}" \${BUILD_FLAGS}
+build -a AARCH64 -t GCC5 -p edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc -b RELEASE --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor=L"https://github.com/pftf/RPi4" --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"UEFI Firmware ${FIRMVER}" \${BUILD_FLAGS} || sudo -E build -a AARCH64 -t GCC5 -p edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc -b RELEASE --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor=L"https://github.com/pftf/RPi4" --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"UEFI Firmware ${FIRMVER}" \${BUILD_FLAGS}
 
 EOF
 	chmod +x build_firmware.sh	
@@ -142,7 +142,7 @@ build(){
 	# Build UEFI Firware
 	cd ${srcdir}/RPi4
 	make -C edk2/BaseTools
-	bash build_firmware.sh || sudo bash build_firmware.sh
+	bash build_firmware.sh
 	# It may be failed to build on chroot environment with non-root user, use sudo to build it instead if failed.
 	# Build Kernel
 	if [ ${CARCH} != "aarch64" ];then
