@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [[ -f "/boot/initramfs-*.img" ]];then
+if  ls /boot/initramfs-*.img 1> /dev/null 2>&1 ;then
 	echo "Removing old initramfses..."
 	rm /boot/initramfs-*.img
 fi
