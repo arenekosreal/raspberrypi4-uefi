@@ -1,6 +1,6 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
-KBRANCH=5.12
+KBRANCH=5.13
 # Only need if you are using raspberrypi kernel
 USE_GENERIC_KERNEL=False
 # Weather using generic kernel or raspberrypi kernel
@@ -18,7 +18,7 @@ GIT_RAW=https://raw.fastgit.org/
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git" "raspberrypi4-uefi-kernel-api-headers-git")
-pkgver=5.12.10.490c31351_uefi_v1.28.bb21fa6
+pkgver=5.13.0.8f44027b0_uefi_v1.28.bb21fa6
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -35,10 +35,10 @@ sha256sums=('SKIP'
             '05d53257bdbd169feb7dbc260d30816e7fa77fcef2aa7238125b2e86f1123ba0'
             '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
             '61302428d0dd3f29e0fd451e9ca3d8e94e7d1df8c7d61e462df546ecd2ea8cbf'
-            'bff9ab4a32ca1a2f00086ae8cc448a364e7858670204b48d4fd13bc5e5ee3545'
+            'b779a20443c5baf2332beed52de84b400687ae550cdb27a19d6ed85cef7b32e2'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
-            '495f4863f584894a5b26cce27b041ea4c6a5ea70ec7329f6f8a0fc1847d51720'
+            '9cb16a156a26312729839bc28fb3be9a381069d4e2ee018a2cf0951d16ef9ad1'
             '8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
             'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02')
 source=(
