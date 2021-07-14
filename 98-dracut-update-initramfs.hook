@@ -2,7 +2,7 @@
 Type = Path
 Operation = Install
 Operation = Upgrade
-Target = usr/lib/modules/*/extramodules/version
+Target = usr/lib/modules/*
 Target = usr/lib/dracut/*
 Target = usr/lib/systemd/systemd
 
