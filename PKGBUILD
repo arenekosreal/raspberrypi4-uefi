@@ -26,7 +26,7 @@ arch=("aarch64")
 licence=("custom:LICENCE.EDK2" "custom:LICENCE.broadcom" "GPL")
 depends=("grub" "dracut" "raspberrypi-bootloader")
 makedepends=("git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "inetutils")
-if [ ${CARCH} != "aarch64" ];then
+if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
 fi
 options=(!strip)
@@ -56,7 +56,7 @@ source=(
 )
 
 pkgver(){
-	if [  ${CARCH} != "aarch64"  ];then
+	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
 		export ARCH=arm64
 		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
@@ -91,7 +91,7 @@ prepare(){
     	fi
 	# Move this to source once it supports --depth=1 option
 	cd ${srcdir}/linux
-	if [ ${CARCH} != "aarch64" ];then
+	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
 		export ARCH=arm64
 		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
@@ -126,7 +126,7 @@ prepare(){
 #!/usr/bin/env bash
 export WORKSPACE=\$PWD
 export PACKAGES_PATH=\$WORKSPACE/edk2:\$WORKSPACE/edk2-platforms:\$WORKSPACE/edk2-non-osi
-export GCC5_AARCH64_PREFIX=""
+export GCC5_AARCH64_PREFIX=${CROSS_COMPILE}
 export BUILD_FLAGS="-D SECURE_BOOT_ENABLE=TRUE -D INCLUDE_TFTP_COMMAND=TRUE -D NETWORK_ISCSI_ENABLE=TRUE"
 source edk2/edksetup.sh
 # EDK2's 'build' command doesn't play nice with spaces in environmnent variables, so we can't move the PCDs there...
@@ -145,7 +145,7 @@ build(){
 	bash build_firmware.sh || sudo bash build_firmware.sh
 	# It may be failed to build on chroot environment with non-root user, use sudo to build it instead if failed.
 	# Build Kernel
-	if [ ${CARCH} != "aarch64" ];then
+	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
 		export ARCH=arm64
 		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
@@ -192,7 +192,7 @@ package_raspberrypi4-uefi-kernel-git(){
 	conflicts=("kernel26" "linux" "uboot-raspberrypi")
 	backup=("boot/cmdline.txt")
 	replaces=("linux-raspberrypi-latest")
-    	if [ ${CARCH} != "aarch64" ];then
+    	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
         	export ARCH=arm64
         	export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
@@ -236,7 +236,7 @@ EOF
 	cp ${srcdir}/98-dracut-update-initramfs.hook ${pkgdir}/usr/share/libalpm/hooks/
 }
 package_raspberrypi4-uefi-kernel-headers-git(){
-	if [ ${CARCH} != "aarch64" ];then
+	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
         	export ARCH=arm64
         	export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
@@ -293,7 +293,7 @@ package_raspberrypi4-uefi-kernel-headers-git(){
 	
 }
 package_raspberrypi4-uefi-kernel-api-headers-git(){
-	if [ ${CARCH} != "aarch64" ];then
+	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
 		export ARCH=arm64
 		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
