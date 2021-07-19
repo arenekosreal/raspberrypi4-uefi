@@ -2,8 +2,8 @@ FROM archlinux/archlinux:base-devel
 RUN pacman-key --init &&\
     pacman-key --populate archlinux &&\
     sed '1iServer = https://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch' -i /etc/pacman.d/mirrorlist &&\
-    pacman -Sy &&\
-    pacman -S git acpica python rsync bc xmlto docbook-xsl kmod inetutils --noconfirm --needed &&\
+    pacman -Syu --noconfirm --ignore=gcc --ignore=gcc-libs &&\
+    pacman -S glibc git acpica python rsync bc xmlto docbook-xsl kmod inetutils aarch64-linux-gnu-gcc --noconfirm --needed &&\
     rm -f /var/cache/pacman/pkg/* /var/lib/pacman/sync/* /etc/pacman.d/mirrorlist.pacnew &&\
     rm -rf /etc/pacman.d/gnupg &&\
     useradd -m builder && \
