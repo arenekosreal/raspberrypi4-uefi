@@ -1,4 +1,9 @@
 .git*
 *.yml
-LICENCE
+LICENCE*
 *.md
+src
+pkg
+*.zst
+*.dtb*
+
