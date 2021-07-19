@@ -1,3 +1,5 @@
-#!/usr/bin/env bash
-sudo chown -R builder:builder /home/builder/build_files
-makepkg -fdC
+#! /usr/bin/env bash
+if [ -f PKGBUILD];then
+    git clone https://github.com/zhanghua000/raspberrypi-uefi-boot .
+fi
+CARCH=aarch64 makepkg -fdC 
