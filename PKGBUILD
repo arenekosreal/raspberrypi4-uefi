@@ -150,7 +150,7 @@ build(){
 		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
 	cd ${srcdir}/linux
-	make -j$(nproc)
+	make
 }
 
 package_raspberrypi4-uefi-firmware-git(){
