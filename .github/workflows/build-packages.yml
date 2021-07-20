@@ -11,10 +11,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2 
-      - name: Setup QEMU to build aarch64 Package on x86_64 platform
-        uses: docker/setup-qemu-action@v1.0.1
       - name: Build Package use Image Built before
-        run: sudo docker run --rm -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinuxarm-ci-arm64:latest
+        run: sudo docker run --rm -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinux-ci:latest
       - name: Push to GitHub Releases
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -23,26 +21,28 @@ jobs:
           FIRMWARESHA: $(sha256sum raspberrypi4-uefi-firmware-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst | cut -d " " -f 1)
           KERNELSHA: $(sha256sum raspberrypi4-uefi-kernel-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst | cut -d " " -f 1)
           KERNELHEADERSHA: $(sha256sum raspberrypi4-uefi-kernel-headers-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst | cut -d " " -f 1)
+          KERNELAPIHEADERSSHA: $(sha256sum raspberrypi4-uefi-kernel-api-headers-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst | cut -d " " -f 1)
         uses: softprops/action-gh-release@v0.1.5
         with: 
           files: |
             raspberrypi4-uefi-firmware-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst
             raspberrypi4-uefi-kernel-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst
             raspberrypi4-uefi-kernel-headers-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst
+            raspberrypi4-uefi-kernel-api-headers-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst
           name: Raspberry Pi 4 UEFI Boot Packages for Arch Based Linux Distribution
           body: |
             CI Build for commit ${{ github.sha }}
             
             sha256sums:
+            ```
+            raspberrypi4-uefi-firmware-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst ${FIRMWARESHA}
             
-            raspberrypi4-uefi-firmware-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst
-            ${FIRMWARESHA}
+            raspberrypi4-uefi-kernel-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst ${KERNELSHA}
             
-            raspberrypi4-uefi-kernel-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst
-            ${KERNELSHA}
+            raspberrypi4-uefi-kernel-headers-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst ${KERNELHEADERSHA}
             
-            raspberrypi4-uefi-kernel-headers-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst
-            ${KERNELHEADERSHA}
+            raspberrypi4-uefi-kernel-api-headers-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst ${KERNELAPIHEADERSSHA}
+            ```
           draft: false
           prerelease: false
           tag_name: ${TAG}
