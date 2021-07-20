@@ -4,8 +4,7 @@ RUN pacman-key --init &&\
     sed '1iServer = https://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch' -i /etc/pacman.d/mirrorlist &&\
     pacman -Syu --noconfirm &&\
     pacman -S glibc git acpica python rsync bc xmlto docbook-xsl kmod inetutils aarch64-linux-gnu-gcc --noconfirm --needed &&\
-    rm -f /var/cache/pacman/pkg/* /var/lib/pacman/sync/* /etc/pacman.d/mirrorlist.pacnew &&\
-    rm -rf /etc/pacman.d/gnupg &&\
+    rm -rf /var/cache/pacman/pkg/* /var/lib/pacman/sync/* /etc/pacman.d/mirrorlist.pacnew /etc/pacman.d/gnupg &&\
     useradd -m builder && \
     echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&\
     mkdir -p /home/builder/build_files &&\
@@ -22,5 +21,6 @@ RUN git clone https://aur.archlinux.org/downgrade.git &&\
     makepkg -si --noconfirm &&\
     cd .. &&\
     rm -rf downgrade &&\
-    yes 1 | sudo downgrade --ala-only 'gcc==10.2.0-6' 'gcc-libs==10.2.0-6' -- --noconfirm
+    yes 1 | sudo downgrade --ala-only 'gcc==10.2.0-6' 'gcc-libs==10.2.0-6' -- --noconfirm &&\
+    sudo rm -rf /var/cache/pacman/pkg/* /var/lib/pacman/sync/* /etc/pacman.d/mirrorlist.pacnew /etc/pacman.d/gnupg
 ENTRYPOINT [ "/usr/bin/bash", "/home/builder/start-build.sh" ]
