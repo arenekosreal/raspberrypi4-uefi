@@ -26,10 +26,11 @@ arch=("aarch64")
 licence=("custom:LICENCE.EDK2" "custom:LICENCE.broadcom" "GPL")
 depends=("grub" "dracut" "raspberrypi-bootloader")
 makedepends=("git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "inetutils")
+options=(!strip)
 if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
+    options+=(!ccache)
 fi
-options=(!strip)
 sha256sums=('SKIP'
             'a7569f99eb13cc05a9170fe29a44a6939ab00ae6d78188d18fe5c73faabb1bb4'
             '9838444876805a3e96d93b7c93d7a9c7e21403c3b517b31f93a72e9b620d166a'
@@ -141,14 +142,15 @@ EOF
 build(){
 	# Build UEFI Firware
 	cd ${srcdir}/RPi4
-	make -C edk2/BaseTools
-	bash build_firmware.sh || sudo bash build_firmware.sh
-	# It may be failed to build on chroot environment with non-root user, use sudo to build it instead if failed.
-	# Build Kernel
+	CHOST= CARCH= CPPFLAGS= CFLAGS= CXXFLAGS= LDFLAGS= make -C edk2/BaseTools
+	# This tool needs to be compiled natively.
 	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
 		export ARCH=arm64
 		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
+	bash build_firmware.sh || sudo bash build_firmware.sh
+	# It may be failed to build on chroot environment with non-root user, use sudo to build it instead if failed.
+	# Build Kernel
 	cd ${srcdir}/linux
 	make
 }
@@ -159,17 +161,7 @@ package_raspberrypi4-uefi-firmware-git(){
 	local file
 	mkdir -p ${pkgdir}/boot/overlays
 	cp ${srcdir}/RPi4/Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd ${pkgdir}/boot/
-	cat>${pkgdir}/boot/config.txt<<EOF
-arm_64bit=1
-enable_uart=1
-uart_2ndstage=1
-enable_gic=1
-armstub=RPI_EFI.fd
-disable_commandline_tags=2
-device_tree_address=0x1f0000
-device_tree_end=0x200000
-dtoverlay=miniuart-bt
-EOF
+	cp ${srcdir}/RPi4/config.txt ${pkgdir}/boot/config.txt
 	if [ ${USE_GENERIC_KERNEL} == True ];then
 		cp ${srcdir}/bcm2711-rpi-4-b.dtb ${pkgdir}/boot
 	
