@@ -33,7 +33,7 @@ if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
 fi
 sha256sums=('SKIP'
             'a7569f99eb13cc05a9170fe29a44a6939ab00ae6d78188d18fe5c73faabb1bb4'
-            '9838444876805a3e96d93b7c93d7a9c7e21403c3b517b31f93a72e9b620d166a'
+            '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
             '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
             '61302428d0dd3f29e0fd451e9ca3d8e94e7d1df8c7d61e462df546ecd2ea8cbf'
             '74d5b0488a2c85d11076e7cea2fe5d0264793cc19057191afb2edbc2bd53e8f5'
