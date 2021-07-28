@@ -2,8 +2,16 @@ name: Auto Build Arch Packages
 on:
   push:
     branches: [ main ]
+    paths:
+      - !Dockerfile
+      - !.dockerignore
+      - !start-build.sh
   pull_request:
     branches: [ main ]
+    paths:
+      - !Dockerfile
+      - !.dockerignore
+      - !start-build.sh
 jobs:
   build:
     name: Build and Upload Packages for PKGBUILD in this repository
@@ -12,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2 
       - name: Build Package use Image Built before
-        run: sudo docker run --rm -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinux-ci:latest
+        run: sudo docker run --rm --env CI=${{ env.CI }} -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinux-ci:latest
       - name: Push to GitHub Releases
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
