@@ -7,6 +7,7 @@ on:
       - '**.patch'
       - 'dracut-update-initramfs'
       - '**.hook'
+      - '.github/workflow/build-packages.yml'
   pull_request:
     branches: [ main ]
     paths:
@@ -14,6 +15,7 @@ on:
       - '**.patch'
       - 'dracut-update-initramfs'
       - '**.hook'
+      - '.github/workflow/build-packages.yml'
 jobs:
   build:
     name: Build and Upload Packages for PKGBUILD in this repository
