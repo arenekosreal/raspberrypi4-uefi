@@ -3,17 +3,17 @@ on:
   push:
     branches: [ main ]
     paths:
-      - PKGBUILD
-      - *.patch
-      - dracut-update-initramfs
-      - *.hook
+      - 'PKGBUILD'
+      - '**.patch'
+      - 'dracut-update-initramfs'
+      - '**.hook'
   pull_request:
     branches: [ main ]
     paths:
-      - PKGBUILD
-      - *.patch
-      - dracut-update-initramfs
-      - *.hook
+      - 'PKGBUILD'
+      - '**.patch'
+      - 'dracut-update-initramfs'
+      - '**.hook'
 jobs:
   build:
     name: Build and Upload Packages for PKGBUILD in this repository
