@@ -3,15 +3,17 @@ on:
   push:
     branches: [ main ]
     paths:
-      - !Dockerfile
-      - !.dockerignore
-      - !start-build.sh
+      - PKGBUILD
+      - *.patch
+      - dracut-update-initramfs
+      - *.hook
   pull_request:
     branches: [ main ]
     paths:
-      - !Dockerfile
-      - !.dockerignore
-      - !start-build.sh
+      - PKGBUILD
+      - *.patch
+      - dracut-update-initramfs
+      - *.hook
 jobs:
   build:
     name: Build and Upload Packages for PKGBUILD in this repository
