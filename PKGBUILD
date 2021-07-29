@@ -123,7 +123,7 @@ prepare(){
 		git submodule update --init --recursive
 	fi
 	cd ${srcdir}/RPi4
-	FIRMVER=git-$(git rev-parse --short HEAD)
+	FIRMVER=$(git describe --tags).$(git rev-parse --short HEAD)
 	cat>build_firmware.sh<<EOF
 #!/usr/bin/env bash
 export WORKSPACE=\$PWD
