@@ -89,6 +89,7 @@ prepare(){
 		if [ -f .config ];then
 			mv .config .config.old
 		fi
+		git pull
     	fi
 	# Move this to source once it supports --depth=1 option
 	cd ${srcdir}/linux
