@@ -29,9 +29,9 @@ jobs:
         run: sudo docker run --rm --privileged=true --env CI=true -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinux-ci:latest
       - name: Generare Release info
         run: |
-          echo 'TAG=$(cat PKGBUILD | sed "/pkgver=.\+/p" -n | sed "s/pkgver=//")' >> $GITHUB_ENV
-          echo 'PKGREL=$(cat PKGBUILD | sed "/pkgrel=.\+/p" -n | sed "s/pkgrel=//")' >> $GITHUB_ENV
-          echo 'SHA256SUMS=$(sha256sums *.pkg.tar.zst)' >> $GITHUB_ENV
+          echo TAG=$(cat PKGBUILD | sed "/pkgver=.\+/p" -n | sed "s/pkgver=//") >> $GITHUB_ENV
+          echo PKGREL=$(cat PKGBUILD | sed "/pkgrel=.\+/p" -n | sed "s/pkgrel=//") >> $GITHUB_ENV
+          echo SHA256SUMS=$(sha256sums *.pkg.tar.zst) >> $GITHUB_ENV
       - name: Push to GitHub Releases
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
