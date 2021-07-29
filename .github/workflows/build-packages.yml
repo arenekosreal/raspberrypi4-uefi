@@ -22,7 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2 
+        uses: actions/checkout@v2
+      - name: Disable Mirror
+        run: sed -i "11,17d" PKGBUILD
       - name: Build Package use Image Built before
         run: sudo docker run --rm --privileged=true --env CI=true -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinux-ci:latest
       - name: Push to GitHub Releases
