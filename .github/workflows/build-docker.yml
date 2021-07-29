@@ -6,12 +6,16 @@ on:
       - Dockerfile
       - .dockerignore
       - start-build.sh
+      - makepkg-aarch64.conf
+      - .github/workflow/build-docker.yml
   pull_request:
     branches: [ main ]
     paths:
       - Dockerfile
       - .dockerignore
       - start-build.sh
+      - makepkg-aarch64.conf
+      - .github/workflow/build-docker.yml
 jobs:
   build:
     name: Build Docker Image for Building Arch Packages
