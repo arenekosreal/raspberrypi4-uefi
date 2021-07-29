@@ -64,7 +64,6 @@ pkgver(){
 	cd ${srcdir}/RPi4
 	FIRMWAREVER=$(git describe --tags).$(git rev-parse --short HEAD)
 	cd ${srcdir}/linux
-	#KERNELVER=$(git rev-parse --short HEAD)
 	KERNELVER=$(make kernelversion | sed "s/-.*//").$(git log --format=%h -1)
 	echo ${KERNELVER}_uefi_${FIRMWAREVER}
 }
