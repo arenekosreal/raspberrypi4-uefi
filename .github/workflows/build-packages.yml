@@ -32,7 +32,7 @@ jobs:
           echo TAG=$(cat PKGBUILD | sed "/pkgver=.\+/p" -n | sed "s/pkgver=//") >> $GITHUB_ENV
           echo PKGREL=$(cat PKGBUILD | sed "/pkgrel=.\+/p" -n | sed "s/pkgrel=//") >> $GITHUB_ENV
           echo SHA256SUMS<<EOF >> $GITHUB_ENV
-          sha256sums *.pkg.tar.zst >> $GITHUB_ENV$
+          sha256sums *.pkg.tar.zst >> $GITHUB_ENV
           echo EOF >> $GITHUB_ENV
       - name: Push to GitHub Releases
         env: 
@@ -40,18 +40,18 @@ jobs:
         uses: softprops/action-gh-release@v0.1.5
         with: 
           files: |
-            raspberrypi4-uefi-firmware-git-{{ env.TAG }}-{{ env.PKGREL }}-aarch64.pkg.tar.zst
-            raspberrypi4-uefi-kernel-git-{{ env.TAG }}-{{ env.PKGREL }}-aarch64.pkg.tar.zst
-            raspberrypi4-uefi-kernel-headers-git-{{ env.TAG }}-{{ env.PKGREL }}-aarch64.pkg.tar.zst
-            raspberrypi4-uefi-kernel-api-headers-git-{{ env.TAG }}-{{ env.PKGREL }}-aarch64.pkg.tar.zst
+            raspberrypi4-uefi-firmware-git-${{ env.TAG }}-${{ env.PKGREL }}-aarch64.pkg.tar.zst
+            raspberrypi4-uefi-kernel-git-${{ env.TAG }}-${{ env.PKGREL }}-aarch64.pkg.tar.zst
+            raspberrypi4-uefi-kernel-headers-git-${{ env.TAG }}-${{ env.PKGREL }}-aarch64.pkg.tar.zst
+            raspberrypi4-uefi-kernel-api-headers-git-${{ env.TAG }}-${{ env.PKGREL }}-aarch64.pkg.tar.zst
           name: Raspberry Pi 4 UEFI Boot Packages for Arch Based Linux Distribution
           body: |
             CI Build for commit ${{ github.sha }}
             
             "sha256sums:"
             ```
-            {{ env.SHA256SUMS }}
+            ${{ env.SHA256SUMS }}
             ```
           draft: false
           prerelease: false
-          tag_name: {{ env.TAG }}-CI
+          tag_name: ${{ env.TAG }}-CI
