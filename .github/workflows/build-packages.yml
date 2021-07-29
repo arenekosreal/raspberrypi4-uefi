@@ -27,36 +27,29 @@ jobs:
         run: sed -i "11,17d" PKGBUILD
       - name: Build Package use Image Built before
         run: sudo docker run --rm --privileged=true --env CI=true -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinux-ci:latest
+      - name: Generare Release info
+        run: |
+          echo 'TAG=$(cat PKGBUILD | sed "/pkgver=.\+/p" -n | sed "s/pkgver=//")' >> $GITHUB_ENV
+          echo 'PKGREL=$(cat PKGBUILD | sed "/pkgrel=.\+/p" -n | sed "s/pkgrel=//")' >> $GITHUB_ENV
+          echo 'SHA256SUMS=$(sha256sums *.pkg.tar.zst)' >> $GITHUB_ENV
       - name: Push to GitHub Releases
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: $(cat PKGBUILD | sed "/pkgver=.\+/p" -n | sed "s/pkgver=//")
-          PKGREL: $(cat PKGBUILD | sed "/pkgrel=.\+/p" -n | sed "s/pkgrel=//")
-          FIRMWARESHA: $(sha256sum raspberrypi4-uefi-firmware-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst | cut -d " " -f 1)
-          KERNELSHA: $(sha256sum raspberrypi4-uefi-kernel-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst | cut -d " " -f 1)
-          KERNELHEADERSHA: $(sha256sum raspberrypi4-uefi-kernel-headers-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst | cut -d " " -f 1)
-          KERNELAPIHEADERSSHA: $(sha256sum raspberrypi4-uefi-kernel-api-headers-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst | cut -d " " -f 1)
         uses: softprops/action-gh-release@v0.1.5
         with: 
           files: |
-            raspberrypi4-uefi-firmware-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst
-            raspberrypi4-uefi-kernel-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst
-            raspberrypi4-uefi-kernel-headers-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst
-            raspberrypi4-uefi-kernel-api-headers-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst
+            raspberrypi4-uefi-firmware-git-{{ env.TAG }}-{{ env.PKGREL }}-aarch64.pkg.tar.zst
+            raspberrypi4-uefi-kernel-git-{{ env.TAG }}-{{ env.PKGREL }}-aarch64.pkg.tar.zst
+            raspberrypi4-uefi-kernel-headers-git-{{ env.TAG }}-{{ env.PKGREL }}-aarch64.pkg.tar.zst
+            raspberrypi4-uefi-kernel-api-headers-git-{{ env.TAG }}-{{ env.PKGREL }}-aarch64.pkg.tar.zst
           name: Raspberry Pi 4 UEFI Boot Packages for Arch Based Linux Distribution
           body: |
             CI Build for commit ${{ github.sha }}
             
-            sha256sums:
+            sha256sums::
             ```
-            raspberrypi4-uefi-firmware-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst ${FIRMWARESHA}
-            
-            raspberrypi4-uefi-kernel-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst ${KERNELSHA}
-            
-            raspberrypi4-uefi-kernel-headers-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst ${KERNELHEADERSHA}
-            
-            raspberrypi4-uefi-kernel-api-headers-git-${TAG}-${PKGREL}-aarch64.pkg.tar.zst ${KERNELAPIHEADERSSHA}
+            {{ env.SHA256SUMS }}
             ```
           draft: false
           prerelease: false
-          tag_name: ${TAG}-CI
+          tag_name: {{ env.TAG }}-CI
