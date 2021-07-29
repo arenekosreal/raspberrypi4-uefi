@@ -24,7 +24,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2 
       - name: Build Package use Image Built before
-        run: sudo docker run --rm --env CI=${{ env.CI }} -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinux-ci:latest
+        run: sudo docker run --rm --privileged=true --env CI=true -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinux-ci:latest
       - name: Push to GitHub Releases
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
