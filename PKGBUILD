@@ -160,8 +160,8 @@ package_raspberrypi4-uefi-firmware-git(){
 	pkgdesc="UEFI firmware for ${_pkgdesc}"
 	local file
 	mkdir -p ${pkgdir}/boot/overlays
-	cp ${srcdir}/RPi4/Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd ${pkgdir}/boot/
-	cp ${srcdir}/RPi4/config.txt ${pkgdir}/boot/config.txt
+	install -Dm644 ${srcdir}/RPi4/Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd ${pkgdir}/boot/
+	install -Dm644 ${srcdir}/RPi4/config.txt ${pkgdir}/boot/config.txt
 	if [ ${USE_GENERIC_KERNEL} == True ];then
 		cp ${srcdir}/bcm2711-rpi-4-b.dtb ${pkgdir}/boot
 	
@@ -293,7 +293,7 @@ package_raspberrypi4-uefi-kernel-api-headers-git(){
 	pkgdesc="Kernel headers sanitized for use in userspace"
 	provides=("linux-api-headers=$(echo ${pkgver} | cut -d "_" -f 1 | cut -d "." -f 1-3)")
 	conflicts=("linux-api-headers")
-	make INSTALL_HDR_PATH="$pkgdir/usr" headers_install
+	make INSTALL_HDR_PATH="${pkgdir}/usr" headers_install
 	# use headers from libdrm
 	rm -r "${pkgdir}/usr/include/drm"
 }
