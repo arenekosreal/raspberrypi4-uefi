@@ -32,7 +32,7 @@ jobs:
           echo TAG=$(cat PKGBUILD | sed "/pkgver=.\+/p" -n | sed "s/pkgver=//") >> $GITHUB_ENV
           echo PKGREL=$(cat PKGBUILD | sed "/pkgrel=.\+/p" -n | sed "s/pkgrel=//") >> $GITHUB_ENV
           echo 'SUMS<<EOF' >> $GITHUB_ENV
-          sha256sums *.pkg.tar.zst >> $GITHUB_ENV
+          sha256sum *.pkg.tar.zst >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
       - name: Push to GitHub Releases
         env: 
