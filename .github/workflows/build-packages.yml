@@ -51,7 +51,7 @@ jobs:
           body: |
             CI Build for commit ${{ github.sha }}
             
-            "sha256sums:"
+            sha256sums:
             ```
             ${{ env.SUMS }}
             ```
