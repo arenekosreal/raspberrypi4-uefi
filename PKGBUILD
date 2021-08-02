@@ -171,7 +171,8 @@ package_raspberrypi4-uefi-firmware-git(){
 		done
 	fi
 	# Raspberry Pi Kernel have provided these files
-	cp -r ${srcdir}/RPi4/firmware ${pkgdir}/boot
+	mkdir -p ${pkgdir}/boot/firmware
+	cp -r ${srcdir}/RPi4/firmware/* ${pkgdir}/boot/firmware
     	install -Dm644 ${srcdir}/LICENCE.EDK2 "${pkgdir}"/usr/share/licenses/${pkgname}/LICENCE.EDK2
     	install -Dm644 ${srcdir}/LICENCE.broadcom "${pkgdir}"/usr/share/licenses/${pkgname}/LICENCE.broadcom
 	
