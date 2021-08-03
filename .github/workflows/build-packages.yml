@@ -16,6 +16,7 @@ on:
       - 'dracut-update-initramfs'
       - '**.hook'
       - '.github/workflow/build-packages.yml'
+  workflow_dispatch:
 jobs:
   build:
     name: Build and Upload Packages for PKGBUILD in this repository
