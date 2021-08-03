@@ -18,7 +18,7 @@ GIT_RAW=https://raw.fastgit.org/
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git" "raspberrypi4-uefi-kernel-api-headers-git")
-pkgver=5.14.0.eb3468f9a_uefi_v1.28.bb21fa6
+pkgver=5.14.0.70065e55c_uefi_v1.28.bb21fa6
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
