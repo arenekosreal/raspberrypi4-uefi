@@ -16,6 +16,7 @@ on:
       - start-build.sh
       - makepkg-aarch64.conf
       - .github/workflow/build-docker.yml
+  workflow_dispatch:
 jobs:
   build:
     name: Build Docker Image for Building Arch Packages
