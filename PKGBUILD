@@ -200,10 +200,8 @@ package_raspberrypi4-uefi-kernel-git(){
 	make modules_install INSTALL_MOD_PATH=${pkgdir}/usr
 	make dtbs_install INSTALL_DTBS_PATH=${pkgdir}/boot/dtbs
 	if [ ${USE_GENERIC_KERNEL} == False ];then
-		cp arch/arm64/boot/dts/broadcom/bcm271*-rpi-*.dtb ${pkgdir}/boot
-		mkdir ${pkgdir}/boot/overlays
-		cp arch/arm64/boot/dts/overlays/*.dtbo* ${pkgdir}/boot/overlays/
-		cp arch/arm64/boot/dts/overlays/README ${pkgdir}/boot/overlays/
+		cp ${pkgdir}/boot/dts/broadcom/bcm271*-rpi-*.dtb ${pkgdir}/boot
+		cp -a ${pkgdir}/boot/dts/overlays ${pkgdir}/boot/
 	fi
 	cp .config ${pkgdir}/boot/config-${kernver}
 	ln -s "../extramodules-${basekernel}-rpi4-uefi" "${pkgdir}/usr/lib/modules/${kernver}/extramodules"
