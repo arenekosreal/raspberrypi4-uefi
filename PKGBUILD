@@ -10,8 +10,8 @@ GIT_RAW=https://raw.githubusercontent.com/
 
 # Uncomment these to use mirrorsite
 # Mirrorsite 1
-GIT_HUB=https://hub.fastgit.org/
-GIT_RAW=https://raw.fastgit.org/
+#GIT_HUB=https://hub.fastgit.org/
+#GIT_RAW=https://raw.fastgit.org/
 # Mirrorsite 2
 #GIT_HUB=https://github.com.cnpmjs.org/
 #GIT_RAW=https://raw.sevencdn.com/
@@ -25,7 +25,7 @@ url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
 arch=("aarch64")
 licence=("custom:LICENCE.EDK2" "custom:LICENCE.broadcom" "GPL")
 depends=("grub" "dracut" "raspberrypi-bootloader")
-makedepends=("git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "inetutils")
+makedepends=("git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "inetutils" "openssl")
 options=(!strip)
 if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
@@ -41,7 +41,11 @@ sha256sums=('SKIP'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
             '3c469dc20d4ca8acdabba0af3dafcd4c211633626ecf5267f6dfa498e0821285'
             '8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
-            'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02')
+            'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02'
+            'a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
+            'e8e95f0733a55e8bad7be0a1413ee23c51fcea64b3c8fa6a786935fddcc71961'
+            '48e99b991f57fc52f76149599bff0a58c47154229b9f8d603ac40d3500248507'
+            'f42c187f8b01b497f81fb0459164b27d16ca2af0b95c7331a82c1a27a731a885')
 source=(
 	"git+${GIT_HUB}pftf/RPi4"
 	97-modify-grub-kernel-cmdline.hook
@@ -54,6 +58,10 @@ source=(
 	${GIT_RAW}raspberrypi/firmware/master/boot/bcm2711-rpi-4-b.dtb
 	${GIT_RAW}raspberrypi/firmware/master/boot/overlays/miniuart-bt.dtbo
 	${GIT_RAW}raspberrypi/firmware/master/boot/overlays/disable-bt.dtbo
+	ms_kek.cer::https://go.microsoft.com/fwlink/?LinkId=321185
+	ms_db1.cer::https://go.microsoft.com/fwlink/?linkid=321192
+	ms_db2.cer::https://go.microsoft.com/fwlink/?linkid=321194
+	arm64_dbx.bin::https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin
 )
 
 pkgver(){
@@ -88,7 +96,6 @@ prepare(){
 		if [ -f .config ];then
 			mv .config .config.old
 		fi
-		git pull
     	fi
 	# Move this to source once it supports --depth=1 option
 	cd ${srcdir}/linux
@@ -122,6 +129,9 @@ prepare(){
 		git submodule update --init --recursive
 	fi
 	cd ${srcdir}/RPi4
+	mkdir -p keys
+	cp ${srcdir}/{ms_kek.cer,ms_db1.cer,ms_db2.cer,arm64_dbx.bin} keys/
+	openssl req -new -x509 -newkey rsa:2048 -subj "/CN=Raspberry Pi Platform Key/" -keyout /dev/null -outform DER -out keys/pk.cer -days 7300 -nodes -sha256
 	FIRMVER=$(git describe --tags).$(git rev-parse --short HEAD)
 	cat>build_firmware.sh<<EOF
 #!/usr/bin/env bash
@@ -129,9 +139,10 @@ export WORKSPACE=\$PWD
 export PACKAGES_PATH=\$WORKSPACE/edk2:\$WORKSPACE/edk2-platforms:\$WORKSPACE/edk2-non-osi
 export GCC5_AARCH64_PREFIX=${CROSS_COMPILE}
 export BUILD_FLAGS="-D SECURE_BOOT_ENABLE=TRUE -D INCLUDE_TFTP_COMMAND=TRUE -D NETWORK_ISCSI_ENABLE=TRUE"
+export DEFAULT_KEYS="-D DEFAULT_KEYS=TRUE -D PK_DEFAULT_FILE=\$WORKSPACE/keys/pk.cer -D KEK_DEFAULT_FILE1=\$WORKSPACE/keys/ms_kek.cer -D DB_DEFAULT_FILE1=\$WORKSPACE/keys/ms_db1.cer -D DB_DEFAULT_FILE2=\$WORKSPACE/keys/ms_db2.cer -D DBX_DEFAULT_FILE1=\$WORKSPACE/keys/arm64_dbx.bin"
 source edk2/edksetup.sh
 # EDK2's 'build' command doesn't play nice with spaces in environmnent variables, so we can't move the PCDs there...
-build -a AARCH64 -t GCC5 -p edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc -b RELEASE --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor=L"https://github.com/pftf/RPi4" --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"UEFI Firmware ${FIRMVER}" \${BUILD_FLAGS}
+build -a AARCH64 -t GCC5 -p edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc -b RELEASE --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor=L"https://github.com/pftf/RPi4" --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"UEFI Firmware ${FIRMVER}" \${BUILD_FLAGS} \${DEFAULT_KEYS}
 
 EOF
 	chmod +x build_firmware.sh	

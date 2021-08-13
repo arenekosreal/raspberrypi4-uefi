@@ -42,7 +42,7 @@ jobs:
         with: 
           draft: false
           prerelease: false
-          tag_name: ${{ env.TAG }}-CI
+          tag_name: ${{ env.TAG }}-CI-${{ github.sha }}
           files: |
             raspberrypi4-uefi-firmware-git-${{ env.TAG }}-${{ env.PKGREL }}-aarch64.pkg.tar.zst
             raspberrypi4-uefi-kernel-git-${{ env.TAG }}-${{ env.PKGREL }}-aarch64.pkg.tar.zst
