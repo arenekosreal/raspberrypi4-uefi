@@ -36,7 +36,7 @@ sha256sums=('SKIP'
             '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
             '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
             '61302428d0dd3f29e0fd451e9ca3d8e94e7d1df8c7d61e462df546ecd2ea8cbf'
-            '0018d575f5cd667b1aa1f1320faefef02199838f3dd028b07c25612344097955'
+            '495ea82c8470d655960a9128fef1b64348d7a6ca72438cb3da53b2ac581e06cc'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
             '3c469dc20d4ca8acdabba0af3dafcd4c211633626ecf5267f6dfa498e0821285'
@@ -201,7 +201,9 @@ package_raspberrypi4-uefi-kernel-git(){
 	make dtbs_install INSTALL_DTBS_PATH=${pkgdir}/boot/dtbs
 	if [ ${USE_GENERIC_KERNEL} == False ];then
 		cp ${pkgdir}/boot/dtbs/broadcom/bcm271*-rpi-*.dtb ${pkgdir}/boot
-		cp -a ${pkgdir}/boot/dts/overlays ${pkgdir}/boot/
+		mkdir -p ${pkgdir}/boot/overlays
+		cp ${pkgdir}/boot/dtbs/overlays/*.dtb* ${pkgdir}/boot/overlays/
+		cp ${srcdir}/linux/arch/arm64/boot/dts/overlays/README ${pkgdir}/boot/overlays/
 	fi
 	cp .config ${pkgdir}/boot/config-${kernver}
 	ln -s "../extramodules-${basekernel}-rpi4-uefi" "${pkgdir}/usr/lib/modules/${kernver}/extramodules"
