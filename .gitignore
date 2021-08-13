@@ -7,4 +7,5 @@ LICENCE.*
 RPi4
 *.elf
 configs
-
+ms_*.cer
+arm64_dbx.bin
