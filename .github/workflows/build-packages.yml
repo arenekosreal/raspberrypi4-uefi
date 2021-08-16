@@ -35,6 +35,7 @@ jobs:
           echo 'SUMS<<EOF' >> $GITHUB_ENV
           sha256sum *.pkg.tar.zst >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
+          echo SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-8) >> $GITHUB_ENV
       - name: Push to GitHub Releases
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -42,7 +43,7 @@ jobs:
         with: 
           draft: false
           prerelease: false
-          tag_name: ${{ env.TAG }}-CI-${{ github.sha }}
+          tag_name: ${{ env.TAG }}-CI-${{ env.SHORT_SHA }}
           files: |
             raspberrypi4-uefi-firmware-git-${{ env.TAG }}-${{ env.PKGREL }}-aarch64.pkg.tar.zst
             raspberrypi4-uefi-kernel-git-${{ env.TAG }}-${{ env.PKGREL }}-aarch64.pkg.tar.zst
