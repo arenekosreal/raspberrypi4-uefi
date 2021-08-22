@@ -18,7 +18,7 @@ GIT_RAW=https://raw.githubusercontent.com/
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git" "raspberrypi4-uefi-kernel-api-headers-git")
-pkgver=5.14.0.e2c2fbcda_uefi_v1.29.c30429f
+pkgver=5.14.0.f4fe899e8_uefi_v1.29.c30429f
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -36,10 +36,10 @@ sha256sums=('SKIP'
             '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
             '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
             '61302428d0dd3f29e0fd451e9ca3d8e94e7d1df8c7d61e462df546ecd2ea8cbf'
-            '495ea82c8470d655960a9128fef1b64348d7a6ca72438cb3da53b2ac581e06cc'
+            '820a2baad0026862ae3fb4a7651a7c9b5a87369e5c0b1204bc05b05ee91b8248'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
-            '3c469dc20d4ca8acdabba0af3dafcd4c211633626ecf5267f6dfa498e0821285'
+            'a1a8c8893378133fb37c76ab1ccf9c9c1890c1a0b4525bce3c42815716a67844'
             '8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
             'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02'
             'a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
