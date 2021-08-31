@@ -229,9 +229,13 @@ if [ -f /boot/cmdline.txt.pacsave ];then
 else
 	CMDFILE=/boot/cmdline.txt
 fi
-CMDLINE="\`sed 's/^root=.\+ rw //' \${CMDFILE}\`"
-sed -i 's/^GRUB_CMDLINE_LINUX=""$/GRUB_CMDLINE_LINUX="\${CMDLINE}"/' /etc/default/grub
-echo "Finished modifying grub cmdline"
+CMDLINE="\$(sed 's/^root=.\+ rw //' \${CMDFILE})"
+if [[ \${CMDLINE} != "" ]]
+	sed -i "s/^GRUB_CMDLINE_LINUX=\"\"$/GRUB_CMDLINE_LINUX=\"\${CMDLINE}\"/" /etc/default/grub
+	echo "Finished modifying grub cmdline"
+else
+	echo "No need to modify grub cmdline because \${CMDFILE} is empty"
+fi
 EOF
 	chmod +x ${pkgdir}/usr/share/libalpm/scripts/modify_grub_cmdline
 	cp ${srcdir}/dracut-update-initramfs ${pkgdir}/usr/share/libalpm/scripts/
