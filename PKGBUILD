@@ -230,7 +230,7 @@ else
 	CMDFILE=/boot/cmdline.txt
 fi
 CMDLINE="\$(sed 's/^root=.\+ rw //' \${CMDFILE})"
-if [[ \${CMDLINE} != "" ]]
+if [[ \${CMDLINE} != "" ]];then
 	sed -i "s/^GRUB_CMDLINE_LINUX=\"\"$/GRUB_CMDLINE_LINUX=\"\${CMDLINE}\"/" /etc/default/grub
 	echo "Finished modifying grub cmdline"
 else
