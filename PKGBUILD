@@ -18,7 +18,7 @@ GIT_RAW=https://raw.githubusercontent.com/
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git" "raspberrypi4-uefi-kernel-api-headers-git")
-pkgver=5.14.0.435df7a08_uefi_v1.29.c30429f
+pkgver=5.14.0.73cfbe7ed_uefi_v1.30.1.1425893
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -70,10 +70,10 @@ pkgver(){
 		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
 	cd ${srcdir}/RPi4
-	FIRMWAREVER=$(git describe --tags).$(git rev-parse --short HEAD)
+	FIRMWAREVER=$(git describe --tags)
 	cd ${srcdir}/linux
 	KERNELVER=$(make kernelversion | sed "s/-.*//").$(git log --format=%h -1)
-	echo ${KERNELVER}_uefi_${FIRMWAREVER}
+	echo ${KERNELVER}_uefi_${FIRMWAREVER} | sed "s/-/./g;s/g//g"
 }
 
 prepare(){
