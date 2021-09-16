@@ -39,9 +39,6 @@ sha256sums=('SKIP'
             '872a74e5c73665d36d21b04f099db1fc97af01b959303d9072965b25a096c4c0'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
-            'a1a8c8893378133fb37c76ab1ccf9c9c1890c1a0b4525bce3c42815716a67844'
-            '8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
-            'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02'
             'a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
             'e8e95f0733a55e8bad7be0a1413ee23c51fcea64b3c8fa6a786935fddcc71961'
             '48e99b991f57fc52f76149599bff0a58c47154229b9f8d603ac40d3500248507'
@@ -55,14 +52,24 @@ source=(
 	raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch
 	LICENCE.EDK2::${GIT_RAW}tianocore/edk2/master/License.txt
 	LICENCE.broadcom::${GIT_RAW}raspberrypi/firmware/master/boot/LICENCE.broadcom
-	${GIT_RAW}raspberrypi/firmware/master/boot/bcm2711-rpi-4-b.dtb
-	${GIT_RAW}raspberrypi/firmware/master/boot/overlays/miniuart-bt.dtbo
-	${GIT_RAW}raspberrypi/firmware/master/boot/overlays/disable-bt.dtbo
 	ms_kek.cer::https://go.microsoft.com/fwlink/?LinkId=321185
 	ms_db1.cer::https://go.microsoft.com/fwlink/?linkid=321192
 	ms_db2.cer::https://go.microsoft.com/fwlink/?linkid=321194
 	arm64_dbx.bin::https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin
 )
+
+if [ ${USE_GENERIC_KERNEL} == True ];then
+    source+=(
+    ${GIT_RAW}raspberrypi/firmware/master/boot/bcm2711-rpi-4-b.dtb
+	${GIT_RAW}raspberrypi/firmware/master/boot/overlays/miniuart-bt.dtbo
+	${GIT_RAW}raspberrypi/firmware/master/boot/overlays/disable-bt.dtbo
+    )
+    sha256sums+=(
+    'a1a8c8893378133fb37c76ab1ccf9c9c1890c1a0b4525bce3c42815716a67844'
+    '8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
+    'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02'
+    )
+fi
 
 pkgver(){
 	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
