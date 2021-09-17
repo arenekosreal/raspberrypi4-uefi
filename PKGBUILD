@@ -1,6 +1,6 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
-KBRANCH=5.14
+KBRANCH=5.15
 # Only need if you are using raspberrypi kernel
 USE_GENERIC_KERNEL=False
 # Weather using generic kernel or raspberrypi kernel
@@ -13,12 +13,12 @@ GIT_RAW=https://raw.githubusercontent.com/
 #GIT_HUB=https://mirror.ghproxy.com/https://github.com/
 #GIT_RAW=https://mirror.ghproxy.com/https://raw.githubusercontent.com/
 # Mirrorsite 2
-GIT_HUB=https://github.com.cnpmjs.org/
-GIT_RAW=https://raw.sevencdn.com/
+#GIT_HUB=https://github.com.cnpmjs.org/
+#GIT_RAW=https://raw.sevencdn.com/
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git" "raspberrypi4-uefi-kernel-api-headers-git")
-pkgver=5.14.4.7f6f58a0e_uefi_v1.31
+pkgver=5.15.0.69a3931fb_uefi_v1.31
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -35,8 +35,8 @@ sha256sums=('SKIP'
             'a7569f99eb13cc05a9170fe29a44a6939ab00ae6d78188d18fe5c73faabb1bb4'
             '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
             '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
-            '61302428d0dd3f29e0fd451e9ca3d8e94e7d1df8c7d61e462df546ecd2ea8cbf'
-            '0ba6ee0ca6e5fb09eda562b4e3a0109d87df03eafc78ce4e8463580574f5d3f1'
+            'b0f4953d47cf1d106675099b2902c65a25d88c8b54aea73df09091569480b7bf'
+            'fd81b7f53223f159a5e3fe541d7611d4cbc4bdb1f40363b0640ea3352a1cc63c'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
             'a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
@@ -60,14 +60,14 @@ source=(
 
 if [ ${USE_GENERIC_KERNEL} == True ];then
     source+=(
-    ${GIT_RAW}raspberrypi/firmware/master/boot/bcm2711-rpi-4-b.dtb
+    	${GIT_RAW}raspberrypi/firmware/master/boot/bcm2711-rpi-4-b.dtb
 	${GIT_RAW}raspberrypi/firmware/master/boot/overlays/miniuart-bt.dtbo
 	${GIT_RAW}raspberrypi/firmware/master/boot/overlays/disable-bt.dtbo
     )
     sha256sums+=(
-    'a1a8c8893378133fb37c76ab1ccf9c9c1890c1a0b4525bce3c42815716a67844'
-    '8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
-    'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02'
+    	'a1a8c8893378133fb37c76ab1ccf9c9c1890c1a0b4525bce3c42815716a67844'
+    	'8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
+    	'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02'
     )
 fi
 
@@ -114,11 +114,14 @@ prepare(){
 	# Add pkgrel to extraversion
 	if [ ${USE_GENERIC_KERNEL} == True ];then
 		make defconfig
-		patch -p3 < ${srcdir}/generic-kernel-config-patch-for-raspberrypi-4b.patch
+		sed -i "/^#/d;/^$/d" .config
+		# Remove lines start with #
+		patch -i "${srcdir}/generic-kernel-config-patch-for-raspberrypi-4b.patch"
 		# Have merged bcm2711_defconfig in raspberrypi's repo as much as I can
 	else
 		make bcm2711_defconfig
-		patch -p3 < ${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch
+		sed -i "/^#/d;/^$/d" .config
+		patch  -i "${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch"
 		# Have enabled ACPI subsystem based on bcm2711_defconfig	
 	fi
 	yes "" | make oldconfig
