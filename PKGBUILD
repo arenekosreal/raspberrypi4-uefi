@@ -10,15 +10,15 @@ GIT_RAW=https://raw.githubusercontent.com/
 
 # Uncomment these to use mirrorsite
 # Mirrorsite 1
-#GIT_HUB=https://hub.fastgit.org/
-#GIT_RAW=https://raw.fastgit.org/
+#GIT_HUB=https://mirror.ghproxy.com/https://github.com/
+#GIT_RAW=https://mirror.ghproxy.com/https://raw.githubusercontent.com/
 # Mirrorsite 2
-#GIT_HUB=https://github.com.cnpmjs.org/
-#GIT_RAW=https://raw.sevencdn.com/
+GIT_HUB=https://github.com.cnpmjs.org/
+GIT_RAW=https://raw.sevencdn.com/
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git" "raspberrypi4-uefi-kernel-api-headers-git")
-pkgver=5.14.2.5a5f42168_uefi_v1.31
+pkgver=5.14.4.7f6f58a0e_uefi_v1.31
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -36,7 +36,7 @@ sha256sums=('SKIP'
             '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
             '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
             '61302428d0dd3f29e0fd451e9ca3d8e94e7d1df8c7d61e462df546ecd2ea8cbf'
-            '872a74e5c73665d36d21b04f099db1fc97af01b959303d9072965b25a096c4c0'
+            '0ba6ee0ca6e5fb09eda562b4e3a0109d87df03eafc78ce4e8463580574f5d3f1'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
             'a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
