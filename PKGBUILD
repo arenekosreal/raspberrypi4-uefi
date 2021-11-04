@@ -10,15 +10,15 @@ GIT_RAW=https://raw.githubusercontent.com/
 
 # Uncomment these to use mirrorsite
 # Mirrorsite 1
-#GIT_HUB=https://mirror.ghproxy.com/https://github.com/
-#GIT_RAW=https://mirror.ghproxy.com/https://raw.githubusercontent.com/
+#GIT_HUB=https://gitclone.com/github.com/
+#GIT_RAW=https://raw.fastgit.org/
 # Mirrorsite 2
-#GIT_HUB=https://github.com.cnpmjs.org/
-#GIT_RAW=https://raw.sevencdn.com/
+#GIT_HUB=https://hub.fastgit.org/
+#GIT_RAW=https://raw.fastgit.org/
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git" "raspberrypi4-uefi-kernel-api-headers-git")
-pkgver=5.15.0.0d73ac3b2_uefi_v1.32.2.656133b
+pkgver=5.15.0.2a6b02b92_uefi_v1.32.2.656133b
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -84,26 +84,25 @@ pkgver(){
 }
 
 prepare(){
-    	local file
-	local dir
-    	echo "Use ${GIT_HUB} as mirrorsite."
-    	if [ ! -d ${srcdir}/linux ];then
+    echo "Use ${GIT_HUB} as mirrorsite."
+	if [ -d ${srcdir}/linux/.git ];then
+        cd ${srcdir}/linux
+        git reset --hard HEAD
+		if [ -f .config ];then
+			mv .config .config.old
+		fi
+	else
+		rm -rf ${srcdir}/linux
 		mkdir ${srcdir}/linux
 		cd ${srcdir}/linux
 		git init -q
 		if [ ${USE_GENERIC_KERNEL} == True ];then
-			git fetch --depth=1 ${GIT_HUB}torvalds/linux.git master:makepkg
+			git fetch --depth=1 ${GIT_HUB}/torvalds/linux.git master:makepkg
 		else
-        		git fetch --depth=1 ${GIT_HUB}raspberrypi/linux.git rpi-${KBRANCH}.y:makepkg
+			git fetch --depth=1 ${GIT_HUB}/raspberrypi/linux.git rpi-${KBRANCH}.y:makepkg
 		fi
-		git checkout makepkg
-    	else
-        	cd ${srcdir}/linux
-        	git reset --hard HEAD
-		if [ -f .config ];then
-			mv .config .config.old
-		fi
-    	fi
+		git checkout makepkg || rm -rf ${srcdir}/linux
+	fi
 	# Move this to source once it supports --depth=1 option
 	cd ${srcdir}/linux
 	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
