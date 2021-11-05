@@ -17,6 +17,8 @@ on:
       - '**.hook'
       - '.github/workflow/build-packages.yml'
   workflow_dispatch:
+  schedule: 
+    - cron: '33 3 3,10,17,24,31 * *'
 jobs:
   build:
     name: Build and Upload Packages for PKGBUILD in this repository
@@ -24,6 +26,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Show event name
+        run: echo ${{ github.event_name }}
       - name: Disable Mirror
         run: sed -i "11,17d" PKGBUILD
       - name: Build Package use Image Built before
@@ -57,3 +61,6 @@ jobs:
             ```
             ${{ env.SUMS }}
             ```
+      - name: Commit if version string changed when running CI at schedule
+        uses: stefanzweifel/git-auto-commit-action@v4
+        if: ${{ github.event_name == 'schedule' }}
