@@ -19,13 +19,13 @@ GIT_RAW=https://raw.githubusercontent.com/
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git" "raspberrypi4-uefi-kernel-api-headers-git")
 pkgver=5.15.0.2a6b02b92_uefi_v1.32.2.656133b
-pkgrel=1
+pkgrel=2
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
 arch=("aarch64")
 licence=("custom:LICENCE.EDK2" "custom:LICENCE.broadcom" "GPL")
 depends=("grub" "dracut" "raspberrypi-bootloader")
-makedepends=("git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "inetutils" "openssl")
+makedepends=("git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "inetutils" "openssl" "gcc10")
 options=(!strip)
 if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
@@ -158,12 +158,19 @@ EOF
 	patch --binary -d edk2 -p1 -i ../0001-MdeModulePkg-UefiBootManagerLib-Signal-ReadyToBoot-o.patch
 	patch --binary -d edk2-platforms -p1 -i ../0002-Check-for-Boot-Discovery-Policy-change.patch
 	# apply patch in repo as repo does this in CI service
+	mkdir -p ${srcdir}/gcc10
+	cd ${srcdir}/gcc10
+	for item in c++ c89 c99 cc cpp g++ gcc gcc-ar gcc-nm gcc-ranlib
+	do
+        	ln -sf /usr/bin/${item}-10 ${item}
+    	done
+	# We use gcc 10 to create BrotliCompress to avoid compile failure. Simply downgrade gcc to 10 will broke whole Arch Distribution.
 }
 
 build(){
 	# Build UEFI Firware
 	cd ${srcdir}/RPi4
-	CHOST= CARCH= CPPFLAGS= CFLAGS= CXXFLAGS= LDFLAGS= make -C edk2/BaseTools
+	CHOST= CARCH= CPPFLAGS= CFLAGS= CXXFLAGS= LDFLAGS= PATH="${srcdir}/gcc10":${PATH} make -C edk2/BaseTools
 	# This tool needs to be compiled natively.
 	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
 		export ARCH=arm64
