@@ -29,7 +29,7 @@ jobs:
       - name: Show event name
         run: echo ${{ github.event_name }}
       - name: Disable Mirror
-        run: sed -i "11,17s/^/#/" PKGBUILD
+        run: sed -i '11,17s/^/#/' PKGBUILD
       - name: Build Package use Image Built before
         run: sudo docker run --rm --privileged=true --env CI=true -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinux-ci:latest
       - name: Generare Release info
@@ -62,8 +62,8 @@ jobs:
             ${{ env.SUMS }}
             ```
       - name: Recover Mirror before commit
-        run: sed -i “11,17s/^#//” PKGBUILD
-        if: ${{ github.event_name }} == "schedule" 
+        if: ${{ github.event_name == 'schedule' }} 
+        run: sed -i '11,17s/^#//' PKGBUILD
       - name: Commit if version string changed when running CI at schedule
+        if: ${{ github.event_name == 'schedule' }}
         uses: stefanzweifel/git-auto-commit-action@v4
-        if: ${{ github.event_name }} == 'schedule'
