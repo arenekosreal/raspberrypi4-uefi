@@ -25,7 +25,7 @@ url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
 arch=("aarch64")
 licence=("custom:LICENCE.EDK2" "custom:LICENCE.broadcom" "GPL")
 depends=("grub" "dracut" "raspberrypi-bootloader")
-makedepends=("git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "inetutils" "openssl" "gcc10")
+makedepends=("git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "cpio" "perl" "libelf" "pahole" "tar" "xz" "xmlto" "python-sphinx" "python-sphinx_rtd_theme" "graphviz" "imagemagick" "inetutils" "openssl" "gcc10")
 options=(!strip)
 if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
@@ -36,7 +36,7 @@ sha256sums=('SKIP'
             '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
             '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
             'b0f4953d47cf1d106675099b2902c65a25d88c8b54aea73df09091569480b7bf'
-            '9651622bfea11ebeaefa5bd7c57cfb62b74ef4c8731d034b027d074059d5ab2c'
+            'c0f24b19922c85857d777f8016032acb47c1ad99d45c04bef3b8305392b4e9fb'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
             'a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
