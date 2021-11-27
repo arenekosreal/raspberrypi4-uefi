@@ -4,6 +4,8 @@ KBRANCH=5.15
 # Only need if you are using raspberrypi kernel
 USE_GENERIC_KERNEL=False
 # Weather using generic kernel or raspberrypi kernel
+LLVM=0
+# Weather useing LLVM or GCC
 
 GIT_HUB=https://github.com/
 GIT_RAW=https://raw.githubusercontent.com/
@@ -23,13 +25,19 @@ pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
 arch=("aarch64")
-licence=("custom:LICENCE.EDK2" "custom:LICENCE.broadcom" "GPL")
+license=("custom:LICENCE.EDK2" "custom:LICENCE.broadcom" "GPL")
 depends=("grub" "dracut" "raspberrypi-bootloader")
 makedepends=("git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "cpio" "perl" "libelf" "pahole" "tar" "xz" "xmlto" "python-sphinx" "python-sphinx_rtd_theme" "graphviz" "imagemagick" "inetutils" "openssl" "gcc10")
 options=(!strip)
 if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
     options+=(!ccache)
+fi
+if [ ${LLVM} -eq 1 -a $(uname -m) == "aarch64" ];then
+    makedepends+=("clang" "lld" "llvm")
+    export LLVM=1
+else
+    export LLVM=0
 fi
 sha256sums=('SKIP'
             'a7569f99eb13cc05a9170fe29a44a6939ab00ae6d78188d18fe5c73faabb1bb4'
