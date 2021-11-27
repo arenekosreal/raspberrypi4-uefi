@@ -37,7 +37,7 @@ if [ ${LLVM} -eq 1 -a $(uname -m) == "aarch64" ];then
     makedepends+=("clang" "lld" "llvm")
     export LLVM=1
 else
-    export LLVM=0
+    unset LLVM
 fi
 sha256sums=('SKIP'
             'a7569f99eb13cc05a9170fe29a44a6939ab00ae6d78188d18fe5c73faabb1bb4'
