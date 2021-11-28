@@ -1,6 +1,6 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
-KBRANCH=5.15
+KBRANCH=5.16
 # Only need if you are using raspberrypi kernel
 USE_GENERIC_KERNEL=False
 # Weather using generic kernel or raspberrypi kernel
@@ -15,12 +15,12 @@ GIT_RAW=https://raw.githubusercontent.com/
 #GIT_HUB=https://gitclone.com/github.com/
 #GIT_RAW=https://raw.fastgit.org/
 # Mirrorsite 2
-#GIT_HUB=https://hub.fastgit.org/
-#GIT_RAW=https://raw.fastgit.org/
+GIT_HUB=https://hub.fastgit.org/
+GIT_RAW=https://raw.fastgit.org/
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git" "raspberrypi4-uefi-kernel-api-headers-git")
-pkgver=5.15.5.056ed50ec_uefi_v1.32.2.656133b
+pkgver=5.16.0.1f1bfbcf4_uefi_v1.32.2.656133b
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -44,7 +44,7 @@ sha256sums=('SKIP'
             '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
             '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
             'b0f4953d47cf1d106675099b2902c65a25d88c8b54aea73df09091569480b7bf'
-            '6a2b6cb4750d563375b4159263fd3ebcb91e7d4dd8fca2f32d2000e9d52994f9'
+            '64485835f0c3eddc791d12279fe04ee2a3e32f10016deb997455009f5d915cec'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
             'a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
@@ -132,6 +132,7 @@ prepare(){
 		# Have enabled ACPI subsystem based on bcm2711_defconfig	
 	fi
 	yes "" | make oldconfig
+    sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/" .config
 	cd ${srcdir}/RPi4
 	if [ ${GIT_HUB} != "https://github.com/" ];then
 		for dir in . edk2 edk2-platforms edk2/CryptoPkg/Library/OpensslLib/openssl edk2/BaseTools/Source/C/BrotliCompress/brotli edk2/MdeModulePkg/Library/BrotliCustomDecompressLib/brotli
@@ -160,7 +161,6 @@ export DEFAULT_KEYS="-D DEFAULT_KEYS=TRUE -D PK_DEFAULT_FILE=\$WORKSPACE/keys/pk
 source edk2/edksetup.sh
 # EDK2's 'build' command doesn't play nice with spaces in environmnent variables, so we can't move the PCDs there...
 build -a AARCH64 -t GCC5 -p edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc -b RELEASE --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor=L"https://github.com/pftf/RPi4" --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"UEFI Firmware ${FIRMVER}" \${BUILD_FLAGS} \${DEFAULT_KEYS}
-
 EOF
 	chmod +x build_firmware.sh	
 	patch --binary -d edk2 -p1 -i ../0001-MdeModulePkg-UefiBootManagerLib-Signal-ReadyToBoot-o.patch
@@ -339,4 +339,3 @@ package_raspberrypi4-uefi-kernel-api-headers-git(){
 	# use headers from libdrm
 	rm -r "${pkgdir}/usr/include/drm"
 }
-
