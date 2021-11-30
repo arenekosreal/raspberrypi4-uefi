@@ -15,8 +15,8 @@ GIT_RAW=https://raw.githubusercontent.com/
 #GIT_HUB=https://gitclone.com/github.com/
 #GIT_RAW=https://raw.fastgit.org/
 # Mirrorsite 2
-GIT_HUB=https://hub.fastgit.org/
-GIT_RAW=https://raw.fastgit.org/
+#GIT_HUB=https://hub.fastgit.org/
+#GIT_RAW=https://raw.fastgit.org/
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git" "raspberrypi4-uefi-kernel-api-headers-git")
