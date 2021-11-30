@@ -15,12 +15,12 @@ GIT_RAW=https://raw.githubusercontent.com/
 #GIT_HUB=https://gitclone.com/github.com/
 #GIT_RAW=https://raw.fastgit.org/
 # Mirrorsite 2
-#GIT_HUB=https://hub.fastgit.org/
-#GIT_RAW=https://raw.fastgit.org/
+GIT_HUB=https://hub.fastgit.org/
+GIT_RAW=https://raw.fastgit.org/
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git" "raspberrypi4-uefi-kernel-api-headers-git")
-pkgver=5.16.0.1f1bfbcf4_uefi_v1.32.2.656133b
+pkgver=5.16.0.e3805dc86_uefi_v1.32.2.656133b
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
