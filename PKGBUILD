@@ -33,11 +33,8 @@ if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
     options+=(!ccache)
 fi
-if [ ${LLVM} -eq 1 -a $(uname -m) == "aarch64" ];then
+if [ ${LLVM} -eq 1 ];then
     makedepends+=("clang" "lld" "llvm")
-    export LLVM=1
-else
-    unset LLVM
 fi
 sha256sums=('SKIP'
             'a7569f99eb13cc05a9170fe29a44a6939ab00ae6d78188d18fe5c73faabb1bb4'
@@ -131,6 +128,12 @@ prepare(){
 		patch  -i "${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch"
 		# Have enabled ACPI subsystem based on bcm2711_defconfig	
 	fi
+	if [ ${LLVM} -eq 1 ];then
+		export LLVM=1
+		unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
+	else
+		unset LLVM
+	fi
 	yes "" | make oldconfig
     sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
 	cd ${srcdir}/RPi4
@@ -188,6 +191,13 @@ build(){
 	# It may be failed to build on chroot environment with non-root user, use sudo to build it instead if failed.
 	# Build Kernel
 	cd ${srcdir}/linux
+	if [ ${LLVM} -eq 1]
+	then
+		export LLVM=1
+		unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
+	else
+		unset LLVM
+	fi
 	make
 }
 
