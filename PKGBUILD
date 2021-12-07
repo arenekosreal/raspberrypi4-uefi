@@ -20,7 +20,7 @@ GIT_RAW=https://raw.githubusercontent.com/
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git" "raspberrypi4-uefi-kernel-api-headers-git")
-pkgver=5.16.0.a6231af42_uefi_v1.32.2.656133b
+pkgver=5.16.0.bcb52df6d_uefi_v1.32.2.656133b
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -191,7 +191,7 @@ build(){
 	# It may be failed to build on chroot environment with non-root user, use sudo to build it instead if failed.
 	# Build Kernel
 	cd ${srcdir}/linux
-	if [ ${LLVM} -eq 1]
+	if [ ${LLVM} -eq 1 ]
 	then
 		export LLVM=1
 		unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
