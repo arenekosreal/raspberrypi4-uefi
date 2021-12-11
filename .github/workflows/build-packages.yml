@@ -63,7 +63,9 @@ jobs:
             ```
       - name: Recover Mirror before commit
         if: ${{ github.event_name == 'schedule' }} 
-        run: sudo sed -i '13,19s/^#//' PKGBUILD
+        run: |
+          sudo chown -R runner:docker .
+          sed -i '13,19s/^#//' PKGBUILD
       - name: Commit if version string changed when running CI at schedule
         if: ${{ github.event_name == 'schedule' }}
         uses: stefanzweifel/git-auto-commit-action@v4
