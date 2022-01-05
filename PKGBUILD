@@ -2,8 +2,8 @@
 
 KBRANCH=5.16
 # Only need if you are using raspberrypi kernel
-USE_GENERIC_KERNEL=False
-# Weather using generic kernel or raspberrypi kernel
+USE_GENERIC_KERNEL=0
+# Weather using generic kernel or raspberrypi kernel,1 to enable, 0 to disable.
 LLVM=0
 # Weather useing LLVM or GCC
 
@@ -20,7 +20,7 @@ GIT_RAW=https://raw.githubusercontent.com/
 
 pkgbase=raspberrypi4-uefi-boot-git
 pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git" "raspberrypi4-uefi-kernel-api-headers-git")
-pkgver=5.16.0.4c17e17eb_uefi_v1.32.2.656133b
+pkgver=5.16.0.c9e6606c7_uefi_v1.32.2.656133b
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -33,14 +33,14 @@ if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
     options+=(!ccache)
 fi
-if [ ${LLVM} -eq 1 ];then
+if [[ ${LLVM} -eq 1 ]];then
     makedepends+=("clang" "lld" "llvm")
 fi
 sha256sums=('SKIP'
             'a7569f99eb13cc05a9170fe29a44a6939ab00ae6d78188d18fe5c73faabb1bb4'
             '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
             '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
-            'b0f4953d47cf1d106675099b2902c65a25d88c8b54aea73df09091569480b7bf'
+            '86a3bd6f685b533d820ce9aaf23362d707e151e510c3269d799ff1e2db3f3745'
             'c0d8c0e70431bd9a8e6d97ceebe187ad3afaca127f40f5f13c73ce31d042ccaa'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
@@ -63,17 +63,16 @@ source=(
 	arm64_dbx.bin::https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin
 )
 
-if [ ${USE_GENERIC_KERNEL} == True ];then
+if [ ${USE_GENERIC_KERNEL} -eq 1 ];then
     source+=(
-    	${GIT_RAW}raspberrypi/firmware/master/boot/bcm2711-rpi-4-b.dtb
+    ${GIT_RAW}raspberrypi/firmware/master/boot/bcm2711-rpi-4-b.dtb
 	${GIT_RAW}raspberrypi/firmware/master/boot/overlays/miniuart-bt.dtbo
 	${GIT_RAW}raspberrypi/firmware/master/boot/overlays/disable-bt.dtbo
     )
     sha256sums+=(
-    	'a1a8c8893378133fb37c76ab1ccf9c9c1890c1a0b4525bce3c42815716a67844'
-    	'8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
-    	'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02'
-    )
+		    '4d8038f41e143be91fde6b5394f83a281743bbb0c87480718a743081ca522d52'
+            '8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
+            'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02')
 fi
 
 pkgver(){
@@ -89,10 +88,12 @@ pkgver(){
 }
 
 prepare(){
-    echo "Use ${GIT_HUB} as mirrorsite."
+	echo "Use ${GIT_HUB} as mirrorsite."
 	if [ -d ${srcdir}/linux/.git ];then
-        cd ${srcdir}/linux
-        git reset --hard HEAD
+		cd ${srcdir}/linux
+		git reset --hard HEAD && git pull || \
+			if [ ${USE_GENERIC_KERNEL} -eq 1 ]; then git fetch --depth=1 origin master:makepkg; \
+			else git fetch --depth=1 origin rpi-${KBRANCH}.y:makepkg; fi && git checkout makepkg
 		if [ -f .config ];then
 			mv .config .config.old
 		fi
@@ -101,10 +102,12 @@ prepare(){
 		mkdir ${srcdir}/linux
 		cd ${srcdir}/linux
 		git init -q
-		if [ ${USE_GENERIC_KERNEL} == True ];then
-			git fetch --depth=1 ${GIT_HUB}/torvalds/linux.git master:makepkg
+		if [ ${USE_GENERIC_KERNEL} -eq 1 ];then
+			git remote add origin ${GIT_HUB}/torvalds/linux.git
+			git fetch --depth=1 origin master:makepkg
 		else
-			git fetch --depth=1 ${GIT_HUB}/raspberrypi/linux.git rpi-${KBRANCH}.y:makepkg
+			git remote add origin ${GIT_HUB}/raspberrypi/linux.git
+			git fetch --depth=1 origin rpi-${KBRANCH}.y:makepkg
 		fi
 		git checkout makepkg || rm -rf ${srcdir}/linux
 	fi
@@ -116,7 +119,7 @@ prepare(){
 	fi
 	sed -ri "s|^(EXTRAVERSION =)(.*)|\1 \2-${pkgrel}|" Makefile
 	# Add pkgrel to extraversion
-	if [ ${USE_GENERIC_KERNEL} == True ];then
+	if [ ${USE_GENERIC_KERNEL} -eq 1 ];then
 		make defconfig
 		sed -i "/^#/d;/^$/d" .config
 		# Remove lines start with #
@@ -128,7 +131,7 @@ prepare(){
 		patch  -i "${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch"
 		# Have enabled ACPI subsystem based on bcm2711_defconfig	
 	fi
-	if [ ${LLVM} -eq 1 ];then
+	if [[ ${LLVM} -eq 1 ]];then
 		export LLVM=1
 		unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
 	else
@@ -191,7 +194,7 @@ build(){
 	# It may be failed to build on chroot environment with non-root user, use sudo to build it instead if failed.
 	# Build Kernel
 	cd ${srcdir}/linux
-	if [ ${LLVM} -eq 1 ]
+	if [[ ${LLVM} -eq 1 ]] 
 	then
 		export LLVM=1
 		unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
@@ -208,7 +211,7 @@ package_raspberrypi4-uefi-firmware-git(){
 	mkdir -p ${pkgdir}/boot/overlays
 	install -Dm644 ${srcdir}/RPi4/Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd ${pkgdir}/boot/
 	install -Dm644 ${srcdir}/RPi4/config.txt ${pkgdir}/boot/config.txt
-	if [ ${USE_GENERIC_KERNEL} == True ];then
+	if [ ${USE_GENERIC_KERNEL} -eq 1 ];then
 		cp ${srcdir}/bcm2711-rpi-4-b.dtb ${pkgdir}/boot
 	
 		for file in miniuart-bt.dtbo disable-bt.dtbo
@@ -245,7 +248,7 @@ package_raspberrypi4-uefi-kernel-git(){
 	make zinstall INSTALL_PATH=${pkgdir}/boot
 	make modules_install INSTALL_MOD_PATH=${pkgdir}/usr
 	make dtbs_install INSTALL_DTBS_PATH=${pkgdir}/boot/dtbs
-	if [ ${USE_GENERIC_KERNEL} == False ];then
+	if [ ${USE_GENERIC_KERNEL} -eq 0 ];then
 		cp ${pkgdir}/boot/dtbs/broadcom/bcm271*-rpi-*.dtb ${pkgdir}/boot
 		mkdir -p ${pkgdir}/boot/overlays
 		cp ${pkgdir}/boot/dtbs/overlays/*.dtb* ${pkgdir}/boot/overlays/
