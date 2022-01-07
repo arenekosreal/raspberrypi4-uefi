@@ -91,7 +91,7 @@ prepare(){
 	echo "Use ${GIT_HUB} as mirrorsite."
 	if [ -d ${srcdir}/linux/.git ];then
 		cd ${srcdir}/linux
-		git reset --hard HEAD && git pull || \
+		git reset --hard HEAD || git pull || \
 			if [ ${USE_GENERIC_KERNEL} -eq 1 ]; then git fetch --depth=1 origin master:makepkg; \
 			else git fetch --depth=1 origin rpi-${KBRANCH}.y:makepkg; fi && git checkout makepkg
 		if [ -f .config ];then
