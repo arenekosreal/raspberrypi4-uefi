@@ -2,7 +2,7 @@
 
 KBRANCH=5.16
 # Only need if you are using raspberrypi kernel
-USE_GENERIC_KERNEL=0
+USE_GENERIC_KERNEL=${USE_GENERIC_KERNEL:-0}
 # Weather using generic kernel or raspberrypi kernel,1 to enable, 0 to disable.
 LLVM=0
 # Weather useing LLVM or GCC
@@ -88,7 +88,7 @@ pkgver(){
 }
 
 prepare(){
-	echo "Use ${GIT_HUB} as mirrorsite."
+	echo "Use ${GIT_HUB} as mirrorsite. And USE_GENERIC_KERNEL=${USE_GENERIC_KERNEL}"
 	if [ -d ${srcdir}/linux/.git ];then
 		cd ${srcdir}/linux
 		git reset --hard HEAD || git pull || \
