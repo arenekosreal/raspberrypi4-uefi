@@ -109,7 +109,7 @@ prepare(){
 			git remote add origin ${GIT_HUB}/raspberrypi/linux.git
 			git fetch --depth=1 origin rpi-${KBRANCH}.y:makepkg
 		fi
-		git checkout makepkg || rm -rf ${srcdir}/linux
+		git checkout makepkg
 	fi
 	# Move this to source once it supports --depth=1 option
 	cd ${srcdir}/linux
@@ -123,12 +123,12 @@ prepare(){
 		make defconfig
 		sed -i "/^#/d;/^$/d" .config
 		# Remove lines start with #
-		patch -i "${srcdir}/generic-kernel-config-patch-for-raspberrypi-4b.patch"
+		patch -i "${srcdir}/generic-kernel-config-patch-for-raspberrypi-4b.patch" || cat .config.rej
 		# Have merged bcm2711_defconfig in raspberrypi's repo as much as I can
 	else
 		make bcm2711_defconfig
 		sed -i "/^#/d;/^$/d" .config
-		patch  -i "${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch"
+		patch  -i "${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch" || cat .config.rej
 		# Have enabled ACPI subsystem based on bcm2711_defconfig	
 	fi
 	if [[ ${LLVM} -eq 1 ]];then

@@ -8,6 +8,11 @@ on:
       - 'dracut-update-initramfs'
       - '**.hook'
       - '.github/workflow/build-packages.yml'
+      - Dockerfile
+      - .dockerignore
+      - start-build.sh
+      - makepkg-aarch64.conf
+      - .github/workflow/build-docker.yml
   pull_request:
     branches: [ main ]
     paths:
@@ -16,13 +21,38 @@ on:
       - 'dracut-update-initramfs'
       - '**.hook'
       - '.github/workflow/build-packages.yml'
+      - Dockerfile
+      - .dockerignore
+      - start-build.sh
+      - makepkg-aarch64.conf
+      - .github/workflow/build-docker.yml
   workflow_dispatch:
   schedule: 
     - cron: '33 3 3,10,17,24,31 * *'
 jobs:
-  build:
+  docker-build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1.8.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          logout: true
+      - name: Build and Push Docker Image to Docker Hub
+        uses: docker/build-push-action@v2.2.2
+        with:
+          context: .
+          file: ./Dockerfile
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/archlinux-ci:latest
+          push: true
+  package-build:
     name: Build and Upload Packages for PKGBUILD in this repository
     runs-on: ubuntu-latest
+    needs: docker-build
     strategy: 
       matrix: 
         generic: [1,0]
