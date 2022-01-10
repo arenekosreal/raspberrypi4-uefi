@@ -1,7 +1,6 @@
 # Files for Booting Raspberry Pi in UEFI mode
 
 ![LICENCE.WTFPL](https://img.shields.io/github/license/zhanghua000/raspberrypi-uefi-boot?logoColor=9cf&style=flat-square "WTFPL LICENCE")
-![Build Docker Image and Push to Docker Hub](https://github.com/zhanghua000/raspberrypi-uefi-boot/actions/workflows/build-docker.yml/badge.svg)
 ![Auto Build Arch Packages](https://github.com/zhanghua000/raspberrypi-uefi-boot/workflows/Auto%20Build%20Arch%20Packages/badge.svg)
 
 ## What is this?
