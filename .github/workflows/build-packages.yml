@@ -53,9 +53,6 @@ jobs:
     name: Build and Upload Packages for PKGBUILD in this repository
     runs-on: ubuntu-latest
     needs: docker-build
-    strategy: 
-      matrix: 
-        generic: [1,0]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -64,7 +61,7 @@ jobs:
       - name: Disable Mirror
         run: sed -i '13,19s/^/#/' PKGBUILD
       - name: Build Package use Image Built before
-        run: sudo docker run --rm --privileged=true --env CI=true --env USE_GENERIC_KERNEL=${{ matrix.generic }} -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinux-ci:latest
+        run: sudo docker run --rm --privileged=true --env CI=true -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinux-ci:latest
       - name: Generare Release info
         run: |
           echo TAG=$(cat PKGBUILD | sed "/pkgver=.\+/p" -n | sed "s/pkgver=//") >> $GITHUB_ENV
@@ -80,12 +77,8 @@ jobs:
         with: 
           draft: false
           prerelease: false
-          tag_name: ${{ env.TAG }}-CI-${{ env.SHORT_SHA }}-${{ matrix.generic }}
-          files: |
-            raspberrypi4-uefi-firmware-git-${{ env.TAG }}-${{ env.PKGREL }}-aarch64.pkg.tar.zst
-            raspberrypi4-uefi-kernel-git-${{ env.TAG }}-${{ env.PKGREL }}-aarch64.pkg.tar.zst
-            raspberrypi4-uefi-kernel-headers-git-${{ env.TAG }}-${{ env.PKGREL }}-aarch64.pkg.tar.zst
-            raspberrypi4-uefi-kernel-api-headers-git-${{ env.TAG }}-${{ env.PKGREL }}-aarch64.pkg.tar.zst
+          tag_name: ${{ env.TAG }}-CI-${{ env.SHORT_SHA }}
+          files: "*.pkg.tar.zst"
           name: Raspberry Pi 4 UEFI Boot Packages for Arch Based Linux Distribution
           body: |
             CI Build for commit ${{ github.sha }}

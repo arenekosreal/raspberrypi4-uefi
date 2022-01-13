@@ -2,8 +2,6 @@
 
 KBRANCH=5.16
 # Only need if you are using raspberrypi kernel
-USE_GENERIC_KERNEL=${USE_GENERIC_KERNEL:-0}
-# Weather using generic kernel or raspberrypi kernel,1 to enable, 0 to disable.
 LLVM=0
 # Weather useing LLVM or GCC
 
@@ -19,8 +17,12 @@ GIT_RAW=https://raw.githubusercontent.com/
 #GIT_RAW=https://raw.fastgit.org/
 
 pkgbase=raspberrypi4-uefi-boot-git
-pkgname=("raspberrypi4-uefi-firmware-git" "raspberrypi4-uefi-kernel-git" "raspberrypi4-uefi-kernel-headers-git" "raspberrypi4-uefi-kernel-api-headers-git")
-pkgver=5.16.0.fe8152b38_uefi_v1.32.2.656133b
+pkgname=(
+	"raspberrypi4-uefi-firmware-git" 
+	"raspberrypi4-uefi-kernel-raspberrypi-git" "raspberrypi4-uefi-kernel-headers-raspberrypi-git" "raspberrypi4-uefi-kernel-api-headers-raspberrypi-git" 
+	"raspberrypi4-uefi-kernel-generic-git" "raspberrypi4-uefi-kernel-headers-generic-git" "raspberrypi4-uefi-kernel-api-headers-generic-git"
+)
+pkgver=eneric+5.16.0.455e73a07+rpi+5.16.0.f154f857a+uefi+v1.32.2.656133b
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -40,8 +42,8 @@ sha256sums=('SKIP'
             'a7569f99eb13cc05a9170fe29a44a6939ab00ae6d78188d18fe5c73faabb1bb4'
             '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
             '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
-            '2e01baef43e7d8a5c85b2ce8e027af4b3e24adf9b56776a067b2133726dd4551'
-            'c0d8c0e70431bd9a8e6d97ceebe187ad3afaca127f40f5f13c73ce31d042ccaa'
+            '7a889a935219c01acbf467a02d4d513f0dda2e89eadc560d0695ab56bd6ba561'
+            'cb3c5f425a0d8f7d813ecd2dbe60f6e087eb2f915687cd4f5618255c560b28fb'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
             'a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
@@ -63,18 +65,6 @@ source=(
 	arm64_dbx.bin::https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin
 )
 
-if [ ${USE_GENERIC_KERNEL} -eq 1 ];then
-    source+=(
-    ${GIT_RAW}raspberrypi/firmware/master/boot/bcm2711-rpi-4-b.dtb
-	${GIT_RAW}raspberrypi/firmware/master/boot/overlays/miniuart-bt.dtbo
-	${GIT_RAW}raspberrypi/firmware/master/boot/overlays/disable-bt.dtbo
-    )
-    sha256sums+=(
-		    '4d8038f41e143be91fde6b5394f83a281743bbb0c87480718a743081ca522d52'
-            '8b98a8eddcda4e767695d29c71958e73efff8496399cfe07ab0ef66237f293bb'
-            'ea69d22dedc607fee75eec57d8a4cc0f0eab93cd75393e61a64c49fbac912d02')
-fi
-
 pkgver(){
 	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
 		export ARCH=arm64
@@ -82,63 +72,77 @@ pkgver(){
 	fi
 	cd ${srcdir}/RPi4
 	FIRMWAREVER=$(git describe --tags)
-	cd ${srcdir}/linux
-	KERNELVER=$(make kernelversion | sed "s/-.*//").$(git log --format=%h -1)
-	echo ${KERNELVER}_uefi_${FIRMWAREVER} | sed "s/-/./g;s/g//g"
+	cd ${srcdir}/linux-raspberrypi
+	KERNELVER_RPI=$(make kernelversion | sed "s/-.*//").$(git rev-parse --short HEAD)
+	cd ${srcdir}/linux-generic
+	KERNELVER_GENERIC=$(make kernelversion | sed "s/-.*//").$(git rev-parse --short HEAD)
+	echo generic+${KERNELVER_GENERIC}+rpi+${KERNELVER_RPI}+uefi+${FIRMWAREVER} | sed "s/-/./g;s/g//g"
 }
 
 prepare(){
-	echo "Use ${GIT_HUB} as mirrorsite. And USE_GENERIC_KERNEL=${USE_GENERIC_KERNEL}"
-	if [ -d ${srcdir}/linux/.git ];then
-		cd ${srcdir}/linux
-		git reset --hard HEAD || git pull || \
-			if [ ${USE_GENERIC_KERNEL} -eq 1 ]; then git fetch --depth=1 origin master:makepkg; \
-			else git fetch --depth=1 origin rpi-${KBRANCH}.y:makepkg; fi && git checkout makepkg
-		if [ -f .config ];then
-			mv .config .config.old
-		fi
-	else
-		rm -rf ${srcdir}/linux
-		mkdir ${srcdir}/linux
-		cd ${srcdir}/linux
-		git init -q
-		if [ ${USE_GENERIC_KERNEL} -eq 1 ];then
-			git remote add origin ${GIT_HUB}/torvalds/linux.git
-			git fetch --depth=1 origin master:makepkg
+	echo "Use ${GIT_HUB} as mirrorsite."
+	for _type in raspberrypi generic
+	do
+		echo "Preparing ${_type} Kernel"
+		if [[ ${_type} == "generic" ]]
+		then
+			_branch=master
+			_repo=${GIT_HUB}/torvalds/linux.git
 		else
-			git remote add origin ${GIT_HUB}/raspberrypi/linux.git
-			git fetch --depth=1 origin rpi-${KBRANCH}.y:makepkg
+			_branch=rpi-${KBRANCH}.y
+			_repo=${GIT_HUB}/raspberrypi/linux.git
 		fi
-		git checkout makepkg
-	fi
-	# Move this to source once it supports --depth=1 option
-	cd ${srcdir}/linux
-	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
-		export ARCH=arm64
-		export CROSS_COMPILE=aarch64-linux-gnu-
-	fi
-	sed -ri "s|^(EXTRAVERSION =)(.*)|\1 \2-${pkgrel}|" Makefile
-	# Add pkgrel to extraversion
-	if [ ${USE_GENERIC_KERNEL} -eq 1 ];then
-		make defconfig
-		sed -i "/^#/d;/^$/d" .config
-		# Remove lines start with #
-		patch -i "${srcdir}/generic-kernel-config-patch-for-raspberrypi-4b.patch" || cat .config.rej
-		# Have merged bcm2711_defconfig in raspberrypi's repo as much as I can
-	else
-		make bcm2711_defconfig
-		sed -i "/^#/d;/^$/d" .config
-		patch  -i "${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch" || cat .config.rej
-		# Have enabled ACPI subsystem based on bcm2711_defconfig	
-	fi
-	if [[ ${LLVM} -eq 1 ]];then
-		export LLVM=1
-		unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
-	else
-		unset LLVM
-	fi
-	yes "" | make oldconfig
-    sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
+		echo "Branch: ${_branch}; Repo: ${_repo}"
+		if [ -d ${srcdir}/linux-${_type}/.git ];then
+			cd ${srcdir}/linux-${_type}
+			git reset --hard HEAD && git pull --depth=1 origin ${_branch}
+			if [ -f .config ];then
+				mv .config .config.old
+			fi
+		else
+			rm -rf ${srcdir}/linux-${_type}
+			mkdir ${srcdir}/linux-${_type}
+			cd ${srcdir}/linux-${_type}
+			git init -q
+			git remote add origin ${_repo}
+			git fetch --depth=1 origin ${_branch}
+			git checkout ${_branch}
+		fi
+		# Move this to source once it supports --depth=1 option
+		cd ${srcdir}/linux-${_type}
+		[[ -f .config.rej ]] && rm .config.rej
+		if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
+			export ARCH=arm64
+			export CROSS_COMPILE=aarch64-linux-gnu-
+		fi
+		sed -ri "s|^(EXTRAVERSION =)(.*)|\1 \2-${pkgrel}|" Makefile
+		# Add pkgrel to extraversion
+		if [[ ${_type} == "generic" ]];then
+			make defconfig
+			sed -i "/^#/d;/^$/d" .config
+			# Remove lines start with #
+			patch -i "${srcdir}/generic-kernel-config-patch-for-raspberrypi-4b.patch"
+			# Have merged bcm2711_defconfig in raspberrypi's repo as much as I can
+		else
+			make bcm2711_defconfig
+			sed -i "/^#/d;/^$/d" .config
+			patch  -i "${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch"
+			# Have enabled ACPI subsystem based on bcm2711_defconfig	
+		fi
+		if [[ -f .config.rej ]]
+		then
+			echo "Patch failed, see src/linux-${_type}/.config.rej for resaon."
+			exit 1
+		fi
+		if [[ ${LLVM} -eq 1 ]];then
+			export LLVM=1
+			unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
+		else
+			unset LLVM
+		fi
+		yes "" | make oldconfig
+		sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
+	done
 	cd ${srcdir}/RPi4
 	if [ ${GIT_HUB} != "https://github.com/" ];then
 		for dir in . edk2 edk2-platforms edk2/CryptoPkg/Library/OpensslLib/openssl edk2/BaseTools/Source/C/BrotliCompress/brotli edk2/MdeModulePkg/Library/BrotliCustomDecompressLib/brotli
@@ -148,8 +152,8 @@ prepare(){
 			sed -i "s_https://github.com/_${GIT_HUB}_g; s_https://boringssl.googlesource.com_${GIT_HUB}/google_g" .gitmodules
 			git submodule update --init
 		done
-    		# Apply modification to let submodules on github also use mirrorsite.
-    	else
+    	# Apply modification to let submodules on github also use mirrorsite.
+    else
 		git submodule update --init --recursive
 	fi
 	cd ${srcdir}/RPi4
@@ -177,7 +181,7 @@ EOF
 	for item in c++ c89 c99 cc cpp g++ gcc gcc-ar gcc-nm gcc-ranlib
 	do
         	ln -sf /usr/bin/${item}-10 ${item}
-    	done
+    done
 	# We use gcc 10 to create BrotliCompress to avoid compile failure. Simply downgrade gcc to 10 will broke whole Arch Distribution.
 }
 
@@ -193,41 +197,33 @@ build(){
 	bash build_firmware.sh || sudo bash build_firmware.sh
 	# It may be failed to build on chroot environment with non-root user, use sudo to build it instead if failed.
 	# Build Kernel
-	cd ${srcdir}/linux
-	if [[ ${LLVM} -eq 1 ]] 
-	then
-		export LLVM=1
-		unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
-	else
-		unset LLVM
-	fi
-	make
+	for _type in raspberrypi generic
+	do
+		cd ${srcdir}/linux-${_type}
+		if [[ ${LLVM} -eq 1 ]] 
+		then
+			export LLVM=1
+			unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
+		else
+			unset LLVM
+		fi
+		make
+	done
 }
 
 package_raspberrypi4-uefi-firmware-git(){
 	backup=("boot/config.txt")
 	pkgdesc="UEFI firmware for ${_pkgdesc}"
-	local file
-	mkdir -p ${pkgdir}/boot/overlays
+	mkdir -p ${pkgdir}/boot/{overlays,firmware}
 	install -Dm644 ${srcdir}/RPi4/Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd ${pkgdir}/boot/
 	install -Dm644 ${srcdir}/RPi4/config.txt ${pkgdir}/boot/config.txt
-	if [ ${USE_GENERIC_KERNEL} -eq 1 ];then
-		cp ${srcdir}/bcm2711-rpi-4-b.dtb ${pkgdir}/boot
-	
-		for file in miniuart-bt.dtbo disable-bt.dtbo
-		do
-			cp ${srcdir}/${file} ${pkgdir}/boot/overlays/
-		done
-	fi
-	# Raspberry Pi Kernel have provided these files
-	mkdir -p ${pkgdir}/boot/firmware
-	cp -r ${srcdir}/RPi4/firmware/* ${pkgdir}/boot/firmware
-    	install -Dm644 ${srcdir}/LICENCE.EDK2 "${pkgdir}"/usr/share/licenses/${pkgname}/LICENCE.EDK2
-    	install -Dm644 ${srcdir}/LICENCE.broadcom "${pkgdir}"/usr/share/licenses/${pkgname}/LICENCE.broadcom
+	cp -r ${srcdir}/RPi4/firmware/* ${pkgdir}/boot/firmware/
+    install -Dm644 ${srcdir}/LICENCE.EDK2 "${pkgdir}"/usr/share/licenses/${pkgname}/LICENCE.EDK2
+    install -Dm644 ${srcdir}/LICENCE.broadcom "${pkgdir}"/usr/share/licenses/${pkgname}/LICENCE.broadcom
 	
 }
 
-package_raspberrypi4-uefi-kernel-git(){
+_raspberrypi4-uefi-kernel-git(){
 	pkgdesc="The Linux Kernel and modules for ${_pkgdesc}"
 	depends=("coreutils" "linux-firmware" "kmod" "dracut" "firmware-raspberrypi" "raspberrypi4-uefi-firmware-git")
 	optdepends=("crda: to set the correct wireless channels of your country")
@@ -235,25 +231,22 @@ package_raspberrypi4-uefi-kernel-git(){
 	conflicts=("kernel26" "linux" "uboot-raspberrypi")
 	backup=("boot/cmdline.txt")
 	replaces=("linux-raspberrypi-latest")
-    	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
-        	export ARCH=arm64
-        	export CROSS_COMPILE=aarch64-linux-gnu-
+	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
+		export ARCH=arm64
+		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
-    	local file
-	mkdir -p ${pkgdir}/boot
-	cd ${srcdir}/linux
+	cd ${srcdir}/linux-$1
+	mkdir -p ${pkgdir}/boot/overlays
 	kernver=$(make kernelrelease)
 	basekernel=${kernver%%-*}
 	basekernel=${basekernel%.*}
 	make zinstall INSTALL_PATH=${pkgdir}/boot
 	make modules_install INSTALL_MOD_PATH=${pkgdir}/usr
 	make dtbs_install INSTALL_DTBS_PATH=${pkgdir}/boot/dtbs
-	if [ ${USE_GENERIC_KERNEL} -eq 0 ];then
-		cp ${pkgdir}/boot/dtbs/broadcom/bcm271*-rpi-*.dtb ${pkgdir}/boot
-		mkdir -p ${pkgdir}/boot/overlays
-		cp ${pkgdir}/boot/dtbs/overlays/*.dtb* ${pkgdir}/boot/overlays/
-		cp ${srcdir}/linux/arch/arm64/boot/dts/overlays/README ${pkgdir}/boot/overlays/
-	fi
+	cp ${pkgdir}/boot/dtbs/broadcom/bcm271*-rpi-*.dtb ${pkgdir}/boot
+	rm -rf ${pkgdir}/boot/dtbs
+	cp ${srcdir}/linux-raspberrypi/arch/arm64/boot/dts/overlays/{README,*.dtb*} ${pkgdir}/boot/overlays
+	# Generic kernel lacks these files, we get them from raspberrypi kernel.
 	cp .config ${pkgdir}/boot/config-${kernver}
 	ln -s "../extramodules-${basekernel}-rpi4-uefi" "${pkgdir}/usr/lib/modules/${kernver}/extramodules"
 	echo ${kernver} | install -Dm644 /dev/stdin ${pkgdir}/usr/lib/modules/extramodules-${basekernel}-rpi4-uefi/version
@@ -282,12 +275,12 @@ EOF
 	cp ${srcdir}/97-modify-grub-kernel-cmdline.hook ${pkgdir}/usr/share/libalpm/hooks/
 	cp ${srcdir}/98-dracut-update-initramfs.hook ${pkgdir}/usr/share/libalpm/hooks/
 }
-package_raspberrypi4-uefi-kernel-headers-git(){
+_raspberrypi4-uefi-kernel-headers-git(){
 	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
         	export ARCH=arm64
         	export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
-	cd ${srcdir}/linux
+	cd ${srcdir}/linux-$1
 	pkgdesc="Header files and scripts for building modules for linux kernel"
 	provides=("linux-headers=$(echo ${pkgver} | cut -d "_" -f 1 | cut -d "." -f 1-3)")
 	conflicts=("linux-headers")
@@ -339,16 +332,34 @@ package_raspberrypi4-uefi-kernel-headers-git(){
   	done < <(find "${pkgdir}/usr/lib/modules/${kernver}/build/scripts" -type f -perm -u+w -print0 2>/dev/null)
 	
 }
-package_raspberrypi4-uefi-kernel-api-headers-git(){
+_raspberrypi4-uefi-kernel-api-headers-git(){
 	if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
 		export ARCH=arm64
 		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
-	cd ${srcdir}/linux
+	cd ${srcdir}/linux-$1
 	pkgdesc="Kernel headers sanitized for use in userspace"
 	provides=("linux-api-headers=$(echo ${pkgver} | cut -d "_" -f 1 | cut -d "." -f 1-3)")
 	conflicts=("linux-api-headers")
 	make INSTALL_HDR_PATH="${pkgdir}/usr" headers_install
 	# use headers from libdrm
 	rm -r "${pkgdir}/usr/include/drm"
+}
+package_raspberrypi4-uefi-kernel-raspberrypi-git(){
+	_raspberrypi4-uefi-kernel-git raspberrypi
+}
+package_raspberrypi4-uefi-kernel-generic-git(){
+	_raspberrypi4-uefi-kernel-git generic
+}
+package_raspberrypi4-uefi-kernel-headers-raspberrypi-git(){
+	_raspberrypi4-uefi-kernel-headers-git raspberrypi
+}
+package_raspberrypi4-uefi-kernel-headers-generic-git(){
+	_raspberrypi4-uefi-kernel-headers-git generic
+}
+package_raspberrypi4-uefi-kernel-api-headers-raspberrypi-git(){
+	_raspberrypi4-uefi-kernel-api-headers-git raspberrypi
+}
+package_raspberrypi4-uefi-kernel-api-headers-generic-git(){
+	_raspberrypi4-uefi-kernel-api-headers-git generic
 }
