@@ -22,7 +22,7 @@ pkgname=(
 	"raspberrypi4-uefi-kernel-raspberrypi-git" "raspberrypi4-uefi-kernel-headers-raspberrypi-git" "raspberrypi4-uefi-kernel-api-headers-raspberrypi-git" 
 	"raspberrypi4-uefi-kernel-generic-git" "raspberrypi4-uefi-kernel-headers-generic-git" "raspberrypi4-uefi-kernel-api-headers-generic-git"
 )
-pkgver=eneric+5.16.0.455e73a07+rpi+5.16.0.f154f857a+uefi+v1.32.2.656133b
+pkgver=generic+5.16.0.455e73a07+rpi+5.16.0.16a4e0c3d+uefi+1.32.2.g656133b
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -71,12 +71,12 @@ pkgver(){
 		export CROSS_COMPILE=aarch64-linux-gnu-
 	fi
 	cd ${srcdir}/RPi4
-	FIRMWAREVER=$(git describe --tags)
+	FIRMWAREVER=$(git describe --tags | sed "s/v//;s/-/./g")
 	cd ${srcdir}/linux-raspberrypi
 	KERNELVER_RPI=$(make kernelversion | sed "s/-.*//").$(git rev-parse --short HEAD)
 	cd ${srcdir}/linux-generic
 	KERNELVER_GENERIC=$(make kernelversion | sed "s/-.*//").$(git rev-parse --short HEAD)
-	echo generic+${KERNELVER_GENERIC}+rpi+${KERNELVER_RPI}+uefi+${FIRMWAREVER} | sed "s/-/./g;s/g//g"
+	echo generic+${KERNELVER_GENERIC}+rpi+${KERNELVER_RPI}+uefi+${FIRMWAREVER} | sed "s/-/./g"
 }
 
 prepare(){
