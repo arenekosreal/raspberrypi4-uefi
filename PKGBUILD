@@ -22,14 +22,17 @@ pkgname=(
 	"raspberrypi4-uefi-kernel-raspberrypi-git" "raspberrypi4-uefi-kernel-headers-raspberrypi-git" "raspberrypi4-uefi-kernel-api-headers-raspberrypi-git" 
 	"raspberrypi4-uefi-kernel-generic-git" "raspberrypi4-uefi-kernel-headers-generic-git" "raspberrypi4-uefi-kernel-api-headers-generic-git"
 )
-pkgver=generic+5.16.0.455e73a07+rpi+5.16.0.16a4e0c3d+uefi+1.32.2.g656133b
+pkgver=generic+5.16.0.fb3b0673b+rpi+5.16.0.a2aa97ccd+uefi+1.32.2.g656133b
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
 arch=("aarch64")
 license=("custom:LICENCE.EDK2" "custom:LICENCE.broadcom" "GPL")
 depends=("grub" "dracut" "raspberrypi-bootloader")
-makedepends=("git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "cpio" "perl" "libelf" "pahole" "tar" "xz" "xmlto" "python-sphinx" "python-sphinx_rtd_theme" "graphviz" "imagemagick" "inetutils" "openssl" "gcc10")
+makedepends=(
+	"git" "acpica" "python" "rsync" "bc" "xmlto" "docbook-xsl" "kmod" "cpio" "perl" "libelf" "pahole" "tar" "xz" "xmlto" "python-sphinx" 
+	"python-sphinx_rtd_theme" "graphviz" "imagemagick" "inetutils" "openssl" "gcc10"
+)
 options=(!strip)
 if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
     makedepends+=("aarch64-linux-gnu-gcc")
@@ -38,25 +41,27 @@ fi
 if [[ ${LLVM} -eq 1 ]];then
     makedepends+=("clang" "lld" "llvm")
 fi
-sha256sums=('SKIP'
-            'a7569f99eb13cc05a9170fe29a44a6939ab00ae6d78188d18fe5c73faabb1bb4'
-            '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
-            '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
-            '7a889a935219c01acbf467a02d4d513f0dda2e89eadc560d0695ab56bd6ba561'
-            'cb3c5f425a0d8f7d813ecd2dbe60f6e087eb2f915687cd4f5618255c560b28fb'
-            '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
-            'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
-            'a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
-            'e8e95f0733a55e8bad7be0a1413ee23c51fcea64b3c8fa6a786935fddcc71961'
-            '48e99b991f57fc52f76149599bff0a58c47154229b9f8d603ac40d3500248507'
-            'f42c187f8b01b497f81fb0459164b27d16ca2af0b95c7331a82c1a27a731a885')
+sha256sums=(
+	'SKIP'
+    'a7569f99eb13cc05a9170fe29a44a6939ab00ae6d78188d18fe5c73faabb1bb4'
+    '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
+    '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
+    'e1d587a29bdbaf6107df78ff4c3634779a2448bdd1647b15bf6c356ad2dedce3'
+    'ebaba545885989563d9b1b63e6f26d732c9e552744777d67ba17172ba9d319ed'
+    '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
+    'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
+    'a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
+    'e8e95f0733a55e8bad7be0a1413ee23c51fcea64b3c8fa6a786935fddcc71961'
+    '48e99b991f57fc52f76149599bff0a58c47154229b9f8d603ac40d3500248507'
+    'f42c187f8b01b497f81fb0459164b27d16ca2af0b95c7331a82c1a27a731a885'
+)
 source=(
 	"git+${GIT_HUB}pftf/RPi4"
 	97-modify-grub-kernel-cmdline.hook
 	98-dracut-update-initramfs.hook
 	dracut-update-initramfs
-	generic-kernel-config-patch-for-raspberrypi-4b.patch
-	raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch
+	config-generic
+	config-raspberrypi
 	LICENCE.EDK2::${GIT_RAW}tianocore/edk2/master/License.txt
 	LICENCE.broadcom::${GIT_RAW}raspberrypi/firmware/master/boot/LICENCE.broadcom
 	ms_kek.cer::https://go.microsoft.com/fwlink/?LinkId=321185
@@ -95,7 +100,7 @@ prepare(){
 		echo "Branch: ${_branch}; Repo: ${_repo}"
 		if [ -d ${srcdir}/linux-${_type}/.git ];then
 			cd ${srcdir}/linux-${_type}
-			git reset --hard HEAD && git pull --depth=1 origin ${_branch}
+			git reset --hard HEAD && git pull --depth=1 origin ${_branch} || git fetch --depth=1 origin ${_branch} && git checkout ${_branch}
 			if [ -f .config ];then
 				mv .config .config.old
 			fi
@@ -110,30 +115,13 @@ prepare(){
 		fi
 		# Move this to source once it supports --depth=1 option
 		cd ${srcdir}/linux-${_type}
-		[[ -f .config.rej ]] && rm .config.rej
 		if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ];then
 			export ARCH=arm64
 			export CROSS_COMPILE=aarch64-linux-gnu-
 		fi
 		sed -ri "s|^(EXTRAVERSION =)(.*)|\1 \2-${pkgrel}|" Makefile
 		# Add pkgrel to extraversion
-		if [[ ${_type} == "generic" ]];then
-			make defconfig
-			sed -i "/^#/d;/^$/d" .config
-			# Remove lines start with #
-			patch -i "${srcdir}/generic-kernel-config-patch-for-raspberrypi-4b.patch"
-			# Have merged bcm2711_defconfig in raspberrypi's repo as much as I can
-		else
-			make bcm2711_defconfig
-			sed -i "/^#/d;/^$/d" .config
-			patch  -i "${srcdir}/raspberrypi-kernel-config-patch-for-raspberrypi-4b.patch"
-			# Have enabled ACPI subsystem based on bcm2711_defconfig	
-		fi
-		if [[ -f .config.rej ]]
-		then
-			echo "Patch failed, see src/linux-${_type}/.config.rej for resaon."
-			exit 1
-		fi
+		cp ${srcdir}/config-${_type} .config
 		if [[ ${LLVM} -eq 1 ]];then
 			export LLVM=1
 			unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
