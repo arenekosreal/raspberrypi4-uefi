@@ -22,7 +22,7 @@ pkgname=(
 	"raspberrypi4-uefi-kernel-raspberrypi-git" "raspberrypi4-uefi-kernel-headers-raspberrypi-git" "raspberrypi4-uefi-kernel-api-headers-raspberrypi-git" 
 	"raspberrypi4-uefi-kernel-generic-git" "raspberrypi4-uefi-kernel-headers-generic-git" "raspberrypi4-uefi-kernel-api-headers-generic-git"
 )
-pkgver=generic+5.16.0.fb3b0673b+rpi+5.16.0.a2aa97ccd+uefi+1.32.2.g656133b
+pkgver=generic+5.16.0.79e06c4c4+rpi+5.16.0.a2aa97ccd+uefi+1.32.2.g656133b
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
