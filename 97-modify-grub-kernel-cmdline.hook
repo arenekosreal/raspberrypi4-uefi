@@ -8,4 +8,4 @@ Target = boot/cmdline.txt
 Description = Modifying grub kernel cmdline ...
 When = PostTransaction
 Exec = /usr/share/libalpm/scripts/modify_grub_cmdline
-Depends = raspberrypi4-uefi-kernel-git
+Depends = raspberrypi4-uefi-kernel
