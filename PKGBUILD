@@ -148,7 +148,7 @@ prepare(){
 	mkdir -p keys
 	cp ${srcdir}/{ms_kek.cer,ms_db1.cer,ms_db2.cer,arm64_dbx.bin} keys/
 	openssl req -new -x509 -newkey rsa:2048 -subj "/CN=Raspberry Pi Platform Key/" -keyout /dev/null -outform DER -out keys/pk.cer -days 7300 -nodes -sha256
-	FIRMVER=$(git describe --tags).$(git rev-parse --short HEAD)
+	FIRMVER=$(git describe --tags)
 	cat>build_firmware.sh<<EOF
 #!/usr/bin/env bash
 export WORKSPACE=\$PWD
@@ -215,7 +215,7 @@ _raspberrypi4-uefi-kernel-git(){
 	pkgdesc="The Linux Kernel and modules for ${_pkgdesc}"
 	depends=("coreutils" "linux-firmware" "kmod" "dracut" "firmware-raspberrypi" "raspberrypi4-uefi-firmware-git")
 	optdepends=("crda: to set the correct wireless channels of your country")
-	provides=("kernel26" "linux=$(echo ${pkgver} | cut -d "_" -f 1 | cut -d "." -f 1-3)")
+	provides=("kernel26" "linux=$(make kernelversion)" "rasppberrypi4-uefi-kernel")
 	conflicts=("kernel26" "linux" "uboot-raspberrypi")
 	backup=("boot/cmdline.txt")
 	replaces=("linux-raspberrypi-latest")
@@ -270,7 +270,7 @@ _raspberrypi4-uefi-kernel-headers-git(){
 	fi
 	cd ${srcdir}/linux-$1
 	pkgdesc="Header files and scripts for building modules for linux kernel"
-	provides=("linux-headers=$(echo ${pkgver} | cut -d "_" -f 1 | cut -d "." -f 1-3)")
+	provides=("linux-headers=$(make kernelversion)" "raspberrypi4-uefi-kernel-headers")
 	conflicts=("linux-headers")
 	replaces=("linux-raspberrypi-latest-headers")
 	#make headers_install INSTALL_HDR_PATH=${pkgdir}/usr
@@ -327,7 +327,7 @@ _raspberrypi4-uefi-kernel-api-headers-git(){
 	fi
 	cd ${srcdir}/linux-$1
 	pkgdesc="Kernel headers sanitized for use in userspace"
-	provides=("linux-api-headers=$(echo ${pkgver} | cut -d "_" -f 1 | cut -d "." -f 1-3)")
+	provides=("linux-api-headers=$(make kernelversion)" "raspberrypi4-uefi-kernel-api-headers")
 	conflicts=("linux-api-headers")
 	make INSTALL_HDR_PATH="${pkgdir}/usr" headers_install
 	# use headers from libdrm
