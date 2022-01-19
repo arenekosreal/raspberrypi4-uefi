@@ -22,7 +22,7 @@ pkgname=(
 	"raspberrypi4-uefi-kernel-raspberrypi-git" "raspberrypi4-uefi-kernel-headers-raspberrypi-git" "raspberrypi4-uefi-kernel-api-headers-raspberrypi-git" 
 	"raspberrypi4-uefi-kernel-generic-git" "raspberrypi4-uefi-kernel-headers-generic-git" "raspberrypi4-uefi-kernel-api-headers-generic-git"
 )
-pkgver=generic+5.16.0.79e06c4c4+rpi+5.16.0.a2aa97ccd+uefi+1.32.2.g656133b
+pkgver=generic+5.16.0.99613159a+rpi+5.16.1.6e206665d+uefi+1.32.2.g656133b
 pkgrel=1
 _pkgdesc="Raspberry Pi 4 UEFI boot files"
 url="https://github.com/zhanghua000/raspberrypi-uefi-boot"
@@ -213,7 +213,7 @@ _raspberrypi4-uefi-kernel-git(){
 	pkgdesc="The Linux Kernel and modules for ${_pkgdesc}"
 	depends=("coreutils" "linux-firmware" "kmod" "dracut" "firmware-raspberrypi" "raspberrypi4-uefi-firmware-git")
 	optdepends=("crda: to set the correct wireless channels of your country")
-	provides=("kernel26" "linux=$(make kernelversion)" "rasppberrypi4-uefi-kernel")
+	provides=("kernel26" "linux=$(make -s -C ${srcdir}/linux-$1 kernelversion | sed s/-${pkgrel}//)" "rasppberrypi4-uefi-kernel")
 	conflicts=("kernel26" "linux" "uboot-raspberrypi")
 	backup=("boot/cmdline.txt")
 	replaces=("linux-raspberrypi-latest")
@@ -268,7 +268,7 @@ _raspberrypi4-uefi-kernel-headers-git(){
 	fi
 	cd ${srcdir}/linux-$1
 	pkgdesc="Header files and scripts for building modules for linux kernel"
-	provides=("linux-headers=$(make kernelversion)" "raspberrypi4-uefi-kernel-headers")
+	provides=("linux-headers=$(make -s -C ${srcdir}/linux-$1 kernelversion | sed s/-${pkgrel}//)" "raspberrypi4-uefi-kernel-headers")
 	conflicts=("linux-headers")
 	replaces=("linux-raspberrypi-latest-headers")
 	#make headers_install INSTALL_HDR_PATH=${pkgdir}/usr
@@ -325,7 +325,7 @@ _raspberrypi4-uefi-kernel-api-headers-git(){
 	fi
 	cd ${srcdir}/linux-$1
 	pkgdesc="Kernel headers sanitized for use in userspace"
-	provides=("linux-api-headers=$(make kernelversion)" "raspberrypi4-uefi-kernel-api-headers")
+	provides=("linux-api-headers=$(make -s -C ${srcdir}/linux-$1 kernelversion | sed s/-${pkgrel}//)" "raspberrypi4-uefi-kernel-api-headers")
 	conflicts=("linux-api-headers")
 	make INSTALL_HDR_PATH="${pkgdir}/usr" headers_install
 	# use headers from libdrm
