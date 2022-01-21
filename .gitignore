@@ -10,3 +10,4 @@ configs
 ms_*.cer
 arm64_dbx.bin
 out
+*.deb
