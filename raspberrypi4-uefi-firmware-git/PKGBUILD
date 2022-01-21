@@ -70,8 +70,7 @@ build(){
     bash build.sh || sudo bash build.sh
 }
 package(){
-    cd ${srcdir}/RPi4
-	install -Dm644 ${srcdir}/RPi4/Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd ${pkgdir}/boot/
+	install -Dm644 ${srcdir}/RPi4/Build/RPi4/RELEASE_GCC5/FV/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
 	install -Dm644 ${srcdir}/RPi4/config.txt ${pkgdir}/boot/config.txt
     install -Dm644 ${srcdir}/LICENCE.EDK2 ${pkgdir}/usr/share/licenses/${pkgname}/LICENCE.EDK2
     install -Dm644 ${srcdir}/LICENCE.broadcom ${pkgdir}/usr/share/licenses/${pkgname}/LICENCE.broadcom
