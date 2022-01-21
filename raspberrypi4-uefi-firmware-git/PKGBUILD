@@ -33,7 +33,7 @@ sha256sums=('SKIP'
             'e8e95f0733a55e8bad7be0a1413ee23c51fcea64b3c8fa6a786935fddcc71961'
             '48e99b991f57fc52f76149599bff0a58c47154229b9f8d603ac40d3500248507'
             'f42c187f8b01b497f81fb0459164b27d16ca2af0b95c7331a82c1a27a731a885'
-            'aeb8531d77517336b4797cf9aa89a0dc384ce7bb3b26c409b48d946536448b70')
+            '7fbed681ff14083fe493a5776e012ae794da484e48320483236a382e11a2796b')
 
 pkgver(){
     cd ${srcdir}/RPi4
@@ -58,7 +58,13 @@ prepare(){
 }
 build(){
     cd ${srcdir}/RPi4
-    sed -i "s/%FIRMVER%/${pkgver}-${pkgrel}/" build.sh
+    if [[ $(uname -m) == "aarch64" ]]
+    then
+        CROSS_COMPILE=
+    else
+        CROSS_COMPILE=aarch64-linux-gnu-
+    fi
+    sed -i "s/%FIRMVER%/${pkgver}-${pkgrel}/;s/%CROSS_COMPILE%/${CROSS_COMPILE}/" build.sh
     CHOST= CARCH= CPPFLAGS= CFLAGS= CXXFLAGS= LDFLAGS= PATH="${srcdir}/gcc10":${PATH} make -C edk2/BaseTools
     bash build.sh || sudo bash build.sh
 }
