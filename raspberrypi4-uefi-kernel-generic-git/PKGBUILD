@@ -1,0 +1,221 @@
+# Maintainer: zhanghua <zhanghua.00@qq.com>
+
+LLVM=0
+# Weather useing LLVM or GCC
+
+pkgbase="raspberrypi4-uefi-kernel-generic-git"
+pkgname=("raspberrypi4-uefi-kernel-generic-git" "raspberrypi4-uefi-kernel-headers-generic-git" "raspberrypi4-uefi-kernel-api-headers-generic-git")
+pkgver=5.16.0.c2c94b3b1
+pkgrel=1
+url="https://github.com/raspberrypi/linux"
+arch=("aarch64")
+license=("GPL")
+groups=("raspberrypi4-uefi")
+makedepends=("xmlto" "docbook-xsl" "kmod" "inetutils" "bc" "git")
+options=("!strip")
+if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
+then
+    makedepends+=("aarch64-linux-gnu-gcc")
+    options+=(!ccache)
+fi
+if [[ ${LLVM} -eq 1 ]]
+then
+    makedepends+=("clang" "lld" "llvm")
+fi
+sha256sums=('b984c59d1c99d3ca4a8be45400748ddcca6476fd3993dc579886b40f23b07a6a'
+            '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
+            '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
+            '1bca1250b3adf1a6046b059ad496e43bb01ff107d980a68c3946e3b4c93a2d56'
+            'e1d587a29bdbaf6107df78ff4c3634779a2448bdd1647b15bf6c356ad2dedce3')
+source=(
+    97-modify-grub-kernel-cmdline.hook
+	98-dracut-update-initramfs.hook
+	dracut-update-initramfs
+    modify-grub-cmdline
+    config-generic
+)
+
+pkgver(){
+    if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
+    then
+        export ARCH=arm64
+        export CROSS_COMPILE=aarch64-linux-gnu-
+    fi
+    cd ${srcdir}/linux
+    echo $(make kernelversion | sed "s/-.*//").$(git rev-parse --short HEAD)
+}
+prepare(){
+    if [[ -d ${srcdir}/linux/.git ]]
+    then
+        cd ${srcdir}/linux
+        git reset --hard HEAD && git pull --depth=1 origin master || git fetch --depth=1 origin master && git checkout master
+        if [ -f .config ];then
+            mv .config .config.old
+        fi
+    else
+        rm -rf ${srcdir}/linux
+        mkdir ${srcdir}/linux
+        cd ${srcdir}/linux
+        git init -q
+        git remote add origin https://github.com/torvalds/linux.git
+        git fetch --depth=1 origin master
+        git checkout master
+    fi
+    # move to source once it supports depth=1 option
+    if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
+    then
+        export ARCH=arm64
+        export CROSS_COMPILE=aarch64-linux-gnu-
+    fi
+    sed -ri "s|^(EXTRAVERSION =)(.*)|\1 \2-${pkgrel}|" Makefile
+    # Add pkgrel to extraversion
+    cp ${srcdir}/config-generic .config
+    if [[ ${LLVM} -eq 1 ]]
+    then
+        export LLVM=1
+        unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
+    else
+        unset LLVM
+    fi
+    yes "" | make oldconfig
+    sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
+}
+build(){
+    cd ${srcdir}/linux
+    if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
+    then
+        export ARCH=arm64
+        export CROSS_COMPILE=aarch64-linux-gnu-
+    fi
+    if [[ ${LLVM} -eq 1 ]]
+    then
+        export LLVM=1
+        unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
+    else
+        unset LLVM
+    fi
+    make
+}
+package_raspberrypi4-uefi-kernel-generic-git(){
+    pkgdesc="The Linux Kernel and modules for Raspberrypi 4 UEFI RaspberryPi Kernel."
+    depends=("coreutils" "linux-firmware" "kmod" "dracut" "firmware-raspberrypi" "raspberrypi4-uefi-firmware" "raspberrypi4-overlays")
+    optdepends=("crda: to set the correct wireless channels of your country")
+    provides=("kernel26" "linux" "rasppberrypi4-uefi-kernel")
+    conflicts=("kernel26" "linux" "uboot-raspberrypi")
+    backup=("boot/cmdline.txt")
+    cd ${srcdir}/linux
+    if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
+    then
+        export ARCH=arm64
+        export CROSS_COMPILE=aarch64-linux-gnu-
+    fi
+    if [[ ${LLVM} -eq 1 ]]
+    then
+        export LLVM=1
+        unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
+    else
+        unset LLVM
+    fi
+	kernver=$(make kernelrelease)
+	basekernel=${kernver%%-*}
+	basekernel=${basekernel%.*}
+    mkdir -p ${pkgdir}/{boot,usr,boot/dtbs}
+	make zinstall INSTALL_PATH=${pkgdir}/boot
+	make modules_install INSTALL_MOD_PATH=${pkgdir}/usr
+	make dtbs_install INSTALL_DTBS_PATH=${pkgdir}/boot/dtbs
+	cp ${pkgdir}/boot/dtbs/broadcom/bcm271*-rpi-*.dtb ${pkgdir}/boot
+	rm -rf ${pkgdir}/boot/dtbs
+	cp .config ${pkgdir}/boot/config-${kernver}
+	ln -s "../extramodules-${basekernel}-rpi4-uefi" "${pkgdir}/usr/lib/modules/${kernver}/extramodules"
+	echo ${kernver} | install -Dm644 /dev/stdin ${pkgdir}/usr/lib/modules/extramodules-${basekernel}-rpi4-uefi/version
+	rm ${pkgdir}/usr/lib/modules/${kernver}/{source,build}
+	echo "root=LABEL=ROOT_MNJRO rw rootwait console=ttyAMA0,115200 console=tty1 selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N dwc_otg.lpm_enable=0 \
+    kgdboc=ttyAMA0,115200 usbhid.mousepoll=8 snd-bcm2835.enable_compat_alsa=0 audit=0" > ${pkgdir}/boot/cmdline.txt
+    install -Dm755 ${srcdir}/modify-grub-cmdline ${pkgdir}/usr/share/libalpm/scripts/modify-grub-cmdline
+    install -Dm755 ${srcdir}/dracut-update-initramfs ${pkgdir}/usr/share/libalpm/scripts/dracut-update-initramfs
+    install -Dm644 ${srcdir}/97-modify-grub-kernel-cmdline.hook ${pkgdir}/usr/share/libalpm/hooks/97-modify-grub-kernel-cmdline.hook
+    install -Dm644 ${srcdir}/98-dracut-update-initramfs.hook ${pkgdir}/usr/share/libalpm/hooks/98-dracut-update-initramfs.hook
+}
+package_raspberrypi4-uefi-kernel-headers-generic-git(){
+    pkgdesc="Header files and scripts for building modules for Raspberrypi 4 UEFI RaspberryPi Kernel."
+    provides=("linux-headers" "raspberrypi4-uefi-kernel-headers")
+    conflicts=("linux-headers")
+    cd ${srcdir}/linux
+    if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
+    then
+        export ARCH=arm64
+        export CROSS_COMPILE=aarch64-linux-gnu-
+    fi
+    if [[ ${LLVM} -eq 1 ]]
+    then
+        export LLVM=1
+        unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
+    else
+        unset LLVM
+    fi
+	kernver=$(make kernelrelease)
+	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build -m644 Makefile .config Module.symvers
+	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build/kernel -m644 kernel/Makefile
+	mkdir ${pkgdir}/usr/lib/modules/${kernver}/build/.tmp_versions
+	cp -t ${pkgdir}/usr/lib/modules/${kernver}/build -a include scripts
+	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build/arch/arm64 -m644 arch/arm64/Makefile
+	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build/arch/arm64/kernel -m644 arch/arm64/kernel/asm-offsets.s
+	cp -t ${pkgdir}/usr/lib/modules/${kernver}/build/arch/arm64 -a arch/arm64/include
+	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build/drivers/md -m644 drivers/md/*.h
+	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build/net/mac80211 -m644 net/mac80211/*.h
+	# http://bugs.archlinux.org/task/13146
+	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build/drivers/media/i2c -m644 drivers/media/i2c/msp3400-driver.h
+	# http://bugs.archlinux.org/task/20402
+	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build/drivers/media/usb/dvb-usb -m644 drivers/media/usb/dvb-usb/*.h
+	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build/drivers/media/dvb-frontends -m644 drivers/media/dvb-frontends/*.h
+	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build/drivers/media/tuners -m644 drivers/media/tuners/*.h
+
+	# add xfs and shmem for aufs building
+	mkdir -p ${pkgdir}/usr/lib/modules/${kernver}/build/{fs/xfs,mm}
+	# copy in Kconfig files
+	find . -name Kconfig\* -exec install -Dm644 {} "${pkgdir}/usr/lib/modules/${kernver}/build/{}" \;
+	# remove unneeded architectures
+	local arch
+	for arch in ${pkgdir}/usr/lib/modules/${kernver}/build/arch/*/;do
+		[[ ${arch} == */arm64/ ]] && continue
+		rm -r ${arch}
+	done
+	# remove files already in linux-docs package
+	rm -r ${pkgdir}/usr/lib/modules/${kernver}/build/Documentation
+	# remove now broken symlinks
+	find -L "${pkgdir}/usr/lib/modules/${kernver}/build" -type l -printf 'Removing %P\n' -delete
+	# Fix permissions
+	chmod -R u=rwX,go=rX "${pkgdir}/usr/lib/modules/${kernver}/build"
+	# strip scripts directory
+	local _binary _strip
+	while read -rd '' _binary; do
+    	case "$(file -bi "${_binary}")" in
+      		*application/x-sharedlib*)  _strip="${STRIP_SHARED}"   ;; # Libraries (.so)
+      		*application/x-archive*)    _strip="${STRIP_STATIC}"   ;; # Libraries (.a)
+      		*application/x-executable*) _strip="${STRIP_BINARIES}" ;; # Binaries
+      		*) continue ;;
+    	esac
+    	/usr/bin/strip ${_strip} "${_binary}"
+  	done < <(find "${pkgdir}/usr/lib/modules/${kernver}/build/scripts" -type f -perm -u+w -print0 2>/dev/null)
+}
+package_raspberrypi4-uefi-kernel-api-headers-generic-git(){
+    pkgdesc="Kernel headers sanitized for use in userspace for Raspberrypi 4 UEFI RaspberryPi Kernel."
+	provides=("linux-api-headers" "raspberrypi4-uefi-kernel-api-headers")
+	conflicts=("linux-api-headers")
+    cd ${srcdir}/linux
+    if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
+    then
+        export ARCH=arm64
+        export CROSS_COMPILE=aarch64-linux-gnu-
+    fi
+    if [[ ${LLVM} -eq 1 ]]
+    then
+        export LLVM=1
+        unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
+    else
+        unset LLVM
+    fi
+	make INSTALL_HDR_PATH="${pkgdir}/usr" headers_install
+	# use headers from libdrm
+	rm -r "${pkgdir}/usr/include/drm"
+}

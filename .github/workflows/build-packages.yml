@@ -1,31 +1,11 @@
 name: Auto Build Arch Packages
 on:
   push:
-    branches: [ main ]
-    paths:
-      - 'PKGBUILD'
-      - '**.patch'
-      - 'dracut-update-initramfs'
-      - '**.hook'
-      - '.github/workflow/build-packages.yml'
-      - Dockerfile
-      - .dockerignore
-      - start-build.sh
-      - makepkg-aarch64.conf
-      - .github/workflow/build-docker.yml
+    branches: 
+      - main
   pull_request:
-    branches: [ main ]
-    paths:
-      - 'PKGBUILD'
-      - '**.patch'
-      - 'dracut-update-initramfs'
-      - '**.hook'
-      - '.github/workflow/build-packages.yml'
-      - Dockerfile
-      - .dockerignore
-      - start-build.sh
-      - makepkg-aarch64.conf
-      - .github/workflow/build-docker.yml
+    branches: 
+      - main
   workflow_dispatch:
   schedule: 
     - cron: '33 3 3,10,17,24,31 * *'
@@ -58,14 +38,11 @@ jobs:
         uses: actions/checkout@v2
       - name: Show event name
         run: echo ${{ github.event_name }}
-      - name: Disable Mirror
-        run: sed -i '13,19s/^/#/' PKGBUILD
       - name: Build Package use Image Built before
         run: sudo docker run --rm --privileged=true --env CI=true -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinux-ci:latest
       - name: Generare Release info
         run: |
-          echo TAG=$(cat PKGBUILD | sed "/pkgver=.\+/p" -n | sed "s/pkgver=//") >> $GITHUB_ENV
-          echo PKGREL=$(cat PKGBUILD | sed "/pkgrel=.\+/p" -n | sed "s/pkgrel=//") >> $GITHUB_ENV
+          cd out
           echo 'SUMS<<EOF' >> $GITHUB_ENV
           sha256sum *.pkg.tar.zst >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
@@ -77,8 +54,8 @@ jobs:
         with: 
           draft: false
           prerelease: false
-          tag_name: ${{ env.TAG }}-CI-${{ env.SHORT_SHA }}
-          files: "*.pkg.tar.zst"
+          tag_name: ${{ env.SHORT_SHA }}-CI
+          files: "out/*.pkg.tar.zst"
           name: Raspberry Pi 4 UEFI Boot Packages for Arch Based Linux Distribution
           body: |
             CI Build for commit ${{ github.sha }}
@@ -88,13 +65,8 @@ jobs:
             ${{ env.SUMS }}
             ```
 
-            Please choose generic or raspberrypi kernel
+            Please choose generic or raspberrypi kernel, notice that /boot/overlays has been splited into a single package and is needed by both kernels.
             
-      - name: Recover Mirror before commit
-        if: ${{ github.event_name == 'schedule' }} 
-        run: |
-          sudo chown -R runner:docker .
-          sed -i '13,19s/^#//' PKGBUILD
       - name: Commit if version string changed when running CI at schedule
         if: ${{ github.event_name == 'schedule' }}
         uses: stefanzweifel/git-auto-commit-action@v4

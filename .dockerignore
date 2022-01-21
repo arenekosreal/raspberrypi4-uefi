@@ -6,4 +6,4 @@ src
 pkg
 *.zst
 *.dtb*
-
+raspberrypi4-uefi-*
