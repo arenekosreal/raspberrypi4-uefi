@@ -12,7 +12,7 @@ conflicts=("raspberrypi4-uefi-firmware")
 provides=("raspberrypi4-uefi-firmware")
 groups=("raspberrypi4-uefi")
 depends=("raspberrypi4-overlays")
-optdepends=("firmware-bcm80211: WLAN firmware")
+optdepends=("brcmfmac43455-firmware: WLAN firmware for 4B")
 makedepends=("gcc10" "git" "uuid" "acpica" "python-distutils" "openssl" "util-linux")
 if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
 then

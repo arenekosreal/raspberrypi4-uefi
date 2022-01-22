@@ -24,7 +24,7 @@ if [[ ${LLVM} -eq 1 ]]
 then
     makedepends+=("clang" "lld" "llvm")
 fi
-sha256sums=('b984c59d1c99d3ca4a8be45400748ddcca6476fd3993dc579886b40f23b07a6a'
+sha256sums=('de92ab582408d4530ffa339a54aee51f070a030251f55a745ea0989f9b67c808'
             '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
             '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
             '1bca1250b3adf1a6046b059ad496e43bb01ff107d980a68c3946e3b4c93a2d56'
@@ -110,7 +110,7 @@ package_raspberrypi4-uefi-kernel-raspberrypi-git(){
     pkgdesc="The Linux Kernel and modules for Raspberrypi 4 UEFI RaspberryPi Kernel."
     depends=("coreutils" "linux-firmware" "kmod" "dracut" "firmware-raspberrypi" "raspberrypi4-uefi-firmware" "raspberrypi4-overlays")
     optdepends=("crda: to set the correct wireless channels of your country")
-    provides=("kernel26" "linux" "rasppberrypi4-uefi-kernel")
+    provides=("kernel26" "linux=${pkgver%.*}" "rasppberrypi4-uefi-kernel=${pkgver%.*}")
     conflicts=("kernel26" "linux" "uboot-raspberrypi")
     backup=("boot/cmdline.txt")
     cd ${srcdir}/linux
@@ -148,7 +148,7 @@ package_raspberrypi4-uefi-kernel-raspberrypi-git(){
 }
 package_raspberrypi4-uefi-kernel-headers-raspberrypi-git(){
     pkgdesc="Header files and scripts for building modules for Raspberrypi 4 UEFI RaspberryPi Kernel."
-    provides=("linux-headers" "raspberrypi4-uefi-kernel-headers")
+    provides=("linux-headers=${pkgver%.*}" "raspberrypi4-uefi-kernel-headers=${pkgver%.*}")
     conflicts=("linux-headers")
     cd ${srcdir}/linux
     if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
@@ -210,7 +210,7 @@ package_raspberrypi4-uefi-kernel-headers-raspberrypi-git(){
 }
 package_raspberrypi4-uefi-kernel-api-headers-raspberrypi-git(){
     pkgdesc="Kernel headers sanitized for use in userspace for Raspberrypi 4 UEFI RaspberryPi Kernel."
-	provides=("linux-api-headers" "raspberrypi4-uefi-kernel-api-headers")
+	provides=("linux-api-headers=${pkgver%.*}" "raspberrypi4-uefi-kernel-api-headers=${pkgver%.*}")
 	conflicts=("linux-api-headers")
     cd ${srcdir}/linux
     if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]

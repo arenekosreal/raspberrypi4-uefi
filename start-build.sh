@@ -15,6 +15,7 @@ for package in $(find ${root} -type d -exec test -e '{}/PKGBUILD' \; -print)
 do
     echo "Processing ${package} folder..."
     cd ${package}
+    rm -f *.pkg.tar.zst
     makepkg -fd --config=${conf}
     cp *.pkg.tar.zst ${root}/out
 done
