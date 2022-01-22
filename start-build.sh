@@ -1,15 +1,17 @@
 #! /usr/bin/env bash
 
-root=$PWD
-mkdir -p out
 if [[ ${CI} == true ]];then
     sudo chown -R builder:builder .
+    root=/home/builder/build_files
     conf=/home/builder/makepkg-aarch64.conf
 else
+    root=$PWD
     conf=${root}/makepkg-aarch64.conf
 fi
-for package in $(find . -type f -name PKGBUILD | sed "s_./__;s_/PKGBUILD__")
+mkdir -p ${root}/out
+for package in $(find ${root} -type f -name PKGBUILD | sed "s_${root}/__;s_/PKGBUILD__")
 do
+    echo "Processing ${package} folder..."
     cd ${root}/${package}
     makepkg -fd --config=${conf}
     cp *.pkg.tar.zst ${root}/out

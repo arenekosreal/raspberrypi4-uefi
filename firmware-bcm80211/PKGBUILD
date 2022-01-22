@@ -3,13 +3,13 @@
 _rpt=4
 
 pkgname=firmware-bcm80211
-pkgver=20210315
-pkgrel=3
+pkgver=20210315.3+rpt4
+pkgrel=1
 pkgdesc="Binary firmware for Broadcom/Cypress 802.11 wireless cards"
 url=https://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git
 arch=("any")
 license=("custom")
-source=(firmware_bcm80211.deb::http://archive.raspberrypi.org/debian/pool/main/f/firmware-nonfree/firmware-brcm80211_${pkgver}-${pkgrel}+rpt${_rpt}_all.deb)
+source=(firmware_bcm80211.deb::http://archive.raspberrypi.org/debian/pool/main/f/firmware-nonfree/firmware-brcm80211_${pkgver/./-}_all.deb)
 sha256sums=('c98c7160505d4c1f22dcfbda5ae4faf7c2779ab1a364d71a674a8bb2a5faf878')
 options=("!strip")
 
