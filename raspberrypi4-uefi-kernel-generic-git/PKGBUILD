@@ -5,7 +5,7 @@ LLVM=0
 
 pkgbase="raspberrypi4-uefi-kernel-generic-git"
 pkgname=("raspberrypi4-uefi-kernel-generic-git" "raspberrypi4-uefi-kernel-headers-generic-git" "raspberrypi4-uefi-kernel-api-headers-generic-git")
-pkgver=5.16.0.c2c94b3b1
+pkgver=5.16.0.1c5228326
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -26,7 +26,7 @@ sha256sums=('b984c59d1c99d3ca4a8be45400748ddcca6476fd3993dc579886b40f23b07a6a'
             '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
             '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
             '1bca1250b3adf1a6046b059ad496e43bb01ff107d980a68c3946e3b4c93a2d56'
-            'e1d587a29bdbaf6107df78ff4c3634779a2448bdd1647b15bf6c356ad2dedce3')
+            'cf05b2e333a58f959be70b2ba332bbfae1ea0f52baa19890ef54650b70b5a585')
 source=(
     97-modify-grub-kernel-cmdline.hook
 	98-dracut-update-initramfs.hook

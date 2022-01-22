@@ -10,12 +10,15 @@ on:
   schedule: 
     - cron: '33 3 3,10,17,24,31 * *'
 jobs:
-  docker-build:
-    name: Build Docker Image
+  package-build:
+    name: Build and Upload Packages for PKGBUILD in this repository
     runs-on: ubuntu-latest
+    needs: docker-build
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Show event name
+        run: echo ${{ github.event_name }}
       - name: Login to Docker Hub
         uses: docker/login-action@v1.8.0
         with:
@@ -29,15 +32,6 @@ jobs:
           file: ./Dockerfile
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/archlinux-ci:latest
           push: true
-  package-build:
-    name: Build and Upload Packages for PKGBUILD in this repository
-    runs-on: ubuntu-latest
-    needs: docker-build
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Show event name
-        run: echo ${{ github.event_name }}
       - name: Build Package use Image Built before
         run: sudo docker run --rm --privileged=true --env CI=true -v ${{ github.workspace }}:/home/builder/build_files ${{ secrets.DOCKERHUB_USERNAME }}/archlinux-ci:latest
       - name: Generare Release info

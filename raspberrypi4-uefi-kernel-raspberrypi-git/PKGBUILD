@@ -7,7 +7,7 @@ LLVM=0
 
 pkgbase="raspberrypi4-uefi-kernel-raspberrypi-git"
 pkgname=("raspberrypi4-uefi-kernel-raspberrypi-git" "raspberrypi4-uefi-kernel-headers-raspberrypi-git" "raspberrypi4-uefi-kernel-api-headers-raspberrypi-git" "raspberrypi4-overlays-git")
-pkgver=5.16.1.6e206665d
+pkgver=5.16.1.ef7467e92
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
