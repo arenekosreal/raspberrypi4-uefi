@@ -11,7 +11,7 @@ fi
 echo "\$root is ${root}."
 mkdir -p ${root}/out
 rm -f ${root}/out/*.pkg.tar.zst
-for package in $(find . -type d -exec test -e '{}/PKGBUILD' \; -print)
+for package in $(find ${root} -type d -exec test -e '{}/PKGBUILD' \; -print)
 do
     echo "Processing ${package} folder..."
     cd ${package}
