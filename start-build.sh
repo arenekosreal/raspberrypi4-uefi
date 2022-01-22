@@ -11,10 +11,10 @@ fi
 echo "\$root is ${root}."
 mkdir -p ${root}/out
 rm -f ${root}/out/*.pkg.tar.zst
-for package in $(find ${root} -type f -name PKGBUILD | sed "s_${root}/__;s_/PKGBUILD__")
+for package in $(find . -type d -exec test -e '{}/PKGBUILD' \; -print)
 do
     echo "Processing ${package} folder..."
-    cd ${root}/${package}
+    cd ${package}
     makepkg -fd --config=${conf}
     cp *.pkg.tar.zst ${root}/out
 done
