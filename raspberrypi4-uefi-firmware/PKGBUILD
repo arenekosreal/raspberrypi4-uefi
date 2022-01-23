@@ -1,15 +1,13 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
-pkgname="raspberrypi4-uefi-firmware-git" 
+pkgname="raspberrypi4-uefi-firmware" 
 pkgver=1.32.2.g656133b
-pkgrel=2
+pkgrel=1
 backup=("boot/config.txt")
-pkgdesc="UEFI firmware for RaspberryPi 4B with latest code from edk2"
+pkgdesc="UEFI firmware for RaspberryPi 4B"
 url="https://github.com/pftf/RPi4"
 arch=("aarch64")
 license=("custom")
-conflicts=("raspberrypi4-uefi-firmware")
-provides=("raspberrypi4-uefi-firmware")
 groups=("raspberrypi4-uefi")
 depends=("raspberrypi4-overlays")
 optdepends=("brcmfmac43455-firmware: WLAN firmware for 4B")
@@ -44,11 +42,6 @@ pkgver(){
 prepare(){
     cd ${srcdir}/RPi4
     git submodule update --init --recursive
-    for dir in edk2 edk2-non-osi edk2-platforms
-    do
-        git checkout master
-        # Use latest code rather than commit in pftf's repo
-    done
     mkdir -p keys
     cp ${srcdir}/{ms_kek.cer,ms_db1.cer,ms_db2.cer,arm64_dbx.bin} keys/
     openssl req -new -x509 -newkey rsa:2048 -subj "/CN=Raspberry Pi Platform Key/" -keyout /dev/null -outform DER -out keys/pk.cer -days 7300 -nodes -sha256

@@ -58,7 +58,10 @@ jobs:
             ${{ env.SUMS }}
             ```
 
-            Please choose generic or raspberrypi kernel, notice that /boot/overlays has been splited into a single package and is needed by both kernels.
+            Notes:
+            - Please choose generic or raspberrypi kernel, they can't be installed at same time because they have different device tree files with same name.
+            - `/boot/overlays` has been splited into a single package called `raspberrypi-overlays` which is needed by both kernels because generic kernel doesn't have overlays.
+            - The difference between `raspberrypi4-uefi-firmware` and `raspberrypi4-uefi-firmware-git` is that the latter uses latest code from [tianocore](https://github.com/tianocore), **use it at your own risk**.
             
       - name: Commit if version string changed when running CI at schedule
         if: ${{ github.event_name == 'schedule' }}

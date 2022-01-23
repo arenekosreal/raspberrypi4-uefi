@@ -2,12 +2,13 @@
 
 pkgname=brcmfmac43455-firmware
 pkgver=20210315.3+rpt4
-pkgrel=1
+pkgrel=2
 pkgdesc="Binary firmware of brcmfmac43455 for Raspberry Pi 4"
 url=https://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git
 arch=("any")
 license=("custom")
-depends=("firmware-raspberrypi")
+conflicts=("firmware-raspberrypi")
+provides=("firmware-raspberrypi")
 source=(firmware_bcm80211.deb::http://archive.raspberrypi.org/debian/pool/main/f/firmware-nonfree/firmware-brcm80211_${pkgver/./-}_all.deb)
 sha256sums=('c98c7160505d4c1f22dcfbda5ae4faf7c2779ab1a364d71a674a8bb2a5faf878')
 options=("!strip")
@@ -16,7 +17,7 @@ package(){
     cd ${srcdir}
     tar xf data.tar.xz ./lib/firmware
     tar xf data.tar.xz ./usr/share/doc/firmware-brcm80211/copyright
-    for file in brcmfmac43455-sdio.bin brcmfmac43455-sdio.clm_blob brcmfmac43455-sdio.txt
+    for file in brcmfmac43455-sdio.bin brcmfmac43455-sdio.clm_blob brcmfmac43455-sdio.txt brcmfmac43455-sdio.raspberrypi,4-model-b.txt
     do
         install -Dm644 ${srcdir}/lib/firmware/brcm/${file} ${pkgdir}/usr/lib/firmware/updates/brcm/${file}
     done

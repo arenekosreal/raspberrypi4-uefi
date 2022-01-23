@@ -108,7 +108,7 @@ package_raspberrypi4-overlays-git(){
 }
 package_raspberrypi4-uefi-kernel-raspberrypi-git(){
     pkgdesc="The Linux Kernel and modules for Raspberrypi 4 UEFI RaspberryPi Kernel."
-    depends=("coreutils" "linux-firmware" "kmod" "dracut" "firmware-raspberrypi" "raspberrypi4-uefi-firmware" "raspberrypi4-overlays")
+    depends=("coreutils" "linux-firmware" "kmod" "dracut" "raspberrypi4-uefi-firmware" "raspberrypi4-overlays")
     optdepends=("crda: to set the correct wireless channels of your country")
     provides=("kernel26" "linux=${pkgver%.*}" "rasppberrypi4-uefi-kernel=${pkgver%.*}")
     conflicts=("kernel26" "linux" "uboot-raspberrypi")
