@@ -65,4 +65,4 @@ jobs:
             
       - name: Commit if version string changed when running CI at schedule
         if: ${{ github.event_name == 'schedule' }}
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: EndBug/add-and-commit@v8.0.1
