@@ -6,7 +6,7 @@ LLVM=0
 pkgbase="raspberrypi4-uefi-kernel-generic-git"
 pkgname=("raspberrypi4-uefi-kernel-generic-git" "raspberrypi4-uefi-kernel-headers-generic-git" "raspberrypi4-uefi-kernel-api-headers-generic-git")
 pkgver=5.17.0.dd81e1c7d
-pkgrel=1
+pkgrel=2
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
 license=("GPL")
@@ -25,7 +25,7 @@ fi
 sha256sums=('de92ab582408d4530ffa339a54aee51f070a030251f55a745ea0989f9b67c808'
             '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
             '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
-            '1bca1250b3adf1a6046b059ad496e43bb01ff107d980a68c3946e3b4c93a2d56'
+            '560d65aff18b30ca454e346ef4cfa7b952618a075d84fa5fd8242f406a7279f8'
             'cf05b2e333a58f959be70b2ba332bbfae1ea0f52baa19890ef54650b70b5a585')
 source=(
     97-modify-grub-kernel-cmdline.hook
@@ -102,7 +102,6 @@ package_raspberrypi4-uefi-kernel-generic-git(){
     optdepends=("crda: to set the correct wireless channels of your country")
     provides=("kernel26" "linux=${pkgver%.*}" "rasppberrypi4-uefi-kernel=${pkgver%.*}")
     conflicts=("kernel26" "linux" "uboot-raspberrypi")
-    backup=("boot/cmdline.txt")
     cd ${srcdir}/linux
     if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
     then
@@ -129,8 +128,6 @@ package_raspberrypi4-uefi-kernel-generic-git(){
 	ln -s "../extramodules-${basekernel}-rpi4-uefi" "${pkgdir}/usr/lib/modules/${kernver}/extramodules"
 	echo ${kernver} | install -Dm644 /dev/stdin ${pkgdir}/usr/lib/modules/extramodules-${basekernel}-rpi4-uefi/version
 	rm ${pkgdir}/usr/lib/modules/${kernver}/{source,build}
-	echo "root=LABEL=ROOT_MNJRO rw rootwait console=ttyAMA0,115200 console=tty1 selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N dwc_otg.lpm_enable=0 \
-    kgdboc=ttyAMA0,115200 usbhid.mousepoll=8 snd-bcm2835.enable_compat_alsa=0 audit=0" > ${pkgdir}/boot/cmdline.txt
     install -Dm755 ${srcdir}/modify-grub-cmdline ${pkgdir}/usr/share/libalpm/scripts/modify-grub-cmdline
     install -Dm755 ${srcdir}/dracut-update-initramfs ${pkgdir}/usr/share/libalpm/scripts/dracut-update-initramfs
     install -Dm644 ${srcdir}/97-modify-grub-kernel-cmdline.hook ${pkgdir}/usr/share/libalpm/hooks/97-modify-grub-kernel-cmdline.hook
