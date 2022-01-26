@@ -60,7 +60,7 @@ jobs:
 
             Notes:
             - Please choose generic or raspberrypi kernel, they can't be installed at same time because they have different device tree files with same name.
-            - `/boot/overlays` built from raspberrypi kernel has been splited into a single package called `raspberrypi4-overlays` which is needed by `raspberrypi4-uefi-firmware` because generic kernel doesn't have overlays.
+            - `/boot/overlays` built from raspberrypi kernel has been splited into a single package called `raspberrypi4-overlays-git` which is needed by `raspberrypi4-uefi-firmware` because generic kernel doesn't have overlays.
             - The difference between `raspberrypi4-uefi-firmware` and `raspberrypi4-uefi-firmware-git` is that the latter uses latest code from [tianocore](https://github.com/tianocore), **use it at your own risk**.
             
       - name: Commit if version string changed when running CI at schedule
