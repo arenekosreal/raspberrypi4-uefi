@@ -5,6 +5,7 @@ then
 	CMDLINE=$(sed 's/^root=.\+ rw //' /boot/cmdline.txt.pacsave)
 	echo Use saved parameters inside /boot/cmdline.txt.pacsave 
 elif [[ -f /boot/cmdline.txt ]]
+then
 	CMDLINE=$(sed 's/^root=.\+ rw //' /boot/cmdline.txt)
 	echo /boot/cmdline.txt found, that should NOT happen, check it to make sure no ttyAMA0-related parameters inside or your bluetooth may not work.
 else
