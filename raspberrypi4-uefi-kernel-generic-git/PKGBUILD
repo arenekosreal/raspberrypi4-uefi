@@ -5,7 +5,7 @@ LLVM=0
 
 pkgbase="raspberrypi4-uefi-kernel-generic-git"
 pkgname=("raspberrypi4-uefi-kernel-generic-git" "raspberrypi4-uefi-kernel-headers-generic-git" "raspberrypi4-uefi-kernel-api-headers-generic-git")
-pkgver=5.17.0.0280e3c58
+pkgver=5.17.0.626b2dda7
 pkgrel=2
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
@@ -22,7 +22,7 @@ if [[ ${LLVM} -eq 1 ]]
 then
     makedepends+=("clang" "lld" "llvm")
 fi
-sha256sums=('de92ab582408d4530ffa339a54aee51f070a030251f55a745ea0989f9b67c808'
+sha256sums=('8cd83c066204b274045cbf94cc82b89c94ef83bc781eb01727823e4b49941836'
             '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
             '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
             '382c9f294bf2a833a071ce8faa0df552c64aa8eb526dc10dc962f824cda3d81d'

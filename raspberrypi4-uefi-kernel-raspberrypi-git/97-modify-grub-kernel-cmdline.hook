@@ -1,9 +1,7 @@
 [Trigger]
-Type = Path
+Type = Package
 Operation = Install
-Operation = Upgrade
-Operation = Remove
-Target = boot/cmdline.txt
+Target = raspberrypi4-urfi-kernel-raspberrypi-git
 [Action]
 Description = Modifying grub kernel cmdline ...
 When = PostTransaction

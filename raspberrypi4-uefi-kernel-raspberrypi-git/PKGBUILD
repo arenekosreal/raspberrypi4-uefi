@@ -7,7 +7,7 @@ LLVM=0
 
 pkgbase="raspberrypi4-uefi-kernel-raspberrypi-git"
 pkgname=("raspberrypi4-uefi-kernel-raspberrypi-git" "raspberrypi4-uefi-kernel-headers-raspberrypi-git" "raspberrypi4-uefi-kernel-api-headers-raspberrypi-git" "raspberrypi4-overlays-git")
-pkgver=5.16.2.638d3d1b3
+pkgver=5.16.2.46f121285
 pkgrel=2
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -24,7 +24,7 @@ if [[ ${LLVM} -eq 1 ]]
 then
     makedepends+=("clang" "lld" "llvm")
 fi
-sha256sums=('de92ab582408d4530ffa339a54aee51f070a030251f55a745ea0989f9b67c808'
+sha256sums=('2db4b94c07c44de78e95edaf257c54a4a31dba578cf98a25080113ad6137430d'
             '9eac878438552601c43ca31a4987226a170a55ec86f7a0bfe2c772674742a526'
             '2829fb74f3b5692843ce7fec018a41035ac6184b494aa87447eba15b646c89f0'
             '382c9f294bf2a833a071ce8faa0df552c64aa8eb526dc10dc962f824cda3d81d'

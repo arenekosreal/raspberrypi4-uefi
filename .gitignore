@@ -12,4 +12,5 @@ arm64_dbx.bin
 out
 *.deb
 *.hcd
-
+bluez-firmware
+firmware-nonfree
