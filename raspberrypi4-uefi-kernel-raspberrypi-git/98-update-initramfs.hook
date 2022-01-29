@@ -5,10 +5,11 @@ Operation = Upgrade
 Target = usr/lib/modules/*
 Target = usr/lib/dracut/*
 Target = usr/lib/systemd/systemd
+Target = usr/lib/initcpio/*
 
 [Action]
 Depends = dracut
 Description = Updating linux initcpios...
 When = PostTransaction
-Exec = /usr/share/libalpm/scripts/dracut-update-initramfs
+Exec = /usr/share/libalpm/scripts/update-initramfs
 

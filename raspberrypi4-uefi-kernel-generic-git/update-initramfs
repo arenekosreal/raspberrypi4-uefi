@@ -13,8 +13,16 @@ done
 for kernel in ${kernels}
 do
 	echo "Creating initramfs image for ${kernel}..."
-	dracut /boot/initramfs-${kernel}.img ${kernel} -f
-	dracut /boot/initramfs-${kernel}-fallback.img ${kernel} -f
+	if [[ -f /usr/bin/dracut ]]
+	then
+		/usr/bin/dracut /boot/initramfs-${kernel}.img ${kernel} -f
+		/usr/bin/dracut /boot/initramfs-${kernel}-fallback.img ${kernel} -f
+	elif [[ -f /usr/bin/mkinitcpio ]]
+	then
+		/usr/bin/mkinitcpio -p ${kernel}
+	fi
+	echo "Executing depmod..."
+	/usr/bin/depmod ${kernel}
 done
 
 echo "Updating GRUB config..."
