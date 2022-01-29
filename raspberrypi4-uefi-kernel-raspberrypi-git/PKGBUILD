@@ -1,13 +1,13 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
-KBRANCH=5.16
+KBRANCH=5.17
 # Only need if you are using raspberrypi kernel
 LLVM=0
 # Weather useing LLVM or GCC
 
 pkgbase="raspberrypi4-uefi-kernel-raspberrypi-git"
 pkgname=("raspberrypi4-uefi-kernel-raspberrypi-git" "raspberrypi4-uefi-kernel-headers-raspberrypi-git" "raspberrypi4-uefi-kernel-api-headers-raspberrypi-git" "raspberrypi4-overlays-git")
-pkgver=5.16.3.c1ace7e05
+pkgver=5.17.0.23a8b3c8c
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -25,7 +25,7 @@ then
     makedepends+=("clang" "lld" "llvm")
 fi
 sha256sums=('2db4b94c07c44de78e95edaf257c54a4a31dba578cf98a25080113ad6137430d'
-            'a1d7975f60a650a131eb536d2bd3e724fabddb7d3d24f43d9b4ade6e63fb9b50'
+            'e3f755248af1cb966b6a1b4fb172ac68ea797bffd4a2236f96ead6da76d699e5'
             '6c8ae0877de3c8508cff8af0d24f73bbcc5816fae971ba4c03ac57227787c510'
             '382c9f294bf2a833a071ce8faa0df552c64aa8eb526dc10dc962f824cda3d81d'
             'ebaba545885989563d9b1b63e6f26d732c9e552744777d67ba17172ba9d319ed'

@@ -8,8 +8,6 @@ Target = usr/lib/systemd/systemd
 Target = usr/lib/initcpio/*
 
 [Action]
-Depends = dracut
 Description = Updating linux initcpios...
 When = PostTransaction
 Exec = /usr/share/libalpm/scripts/update-initramfs
-
