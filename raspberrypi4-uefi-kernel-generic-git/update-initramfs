@@ -1,29 +1,16 @@
 #!/usr/bin/env bash
 
-if  ls /boot/initramfs-*.img 1> /dev/null 2>&1 ;then
-	echo "Removing old initramfses..."
-	rm /boot/initramfs-*.img
+echo "Creating initramfs image for %KERNVER%..."
+if [[ -f /usr/bin/dracut ]]
+then
+	/usr/bin/dracut /boot/initramfs-%KERNVER%.img %KERNVER% -f
+	/usr/bin/dracut /boot/initramfs-%KERNVER%-fallback.img %KERNVER% -f
+elif [[ -f /usr/bin/mkinitcpio ]]
+then
+	/usr/bin/mkinitcpio -p %KERNVER%
 fi
-kernels=()
-for file in /usr/lib/modules/*/extramodules/version
-do
-	kernels+=($(cat ${file}))
-done
-
-for kernel in ${kernels}
-do
-	echo "Creating initramfs image for ${kernel}..."
-	if [[ -f /usr/bin/dracut ]]
-	then
-		/usr/bin/dracut /boot/initramfs-${kernel}.img ${kernel} -f
-		/usr/bin/dracut /boot/initramfs-${kernel}-fallback.img ${kernel} -f
-	elif [[ -f /usr/bin/mkinitcpio ]]
-	then
-		/usr/bin/mkinitcpio -p ${kernel}
-	fi
-	echo "Executing depmod..."
-	/usr/bin/depmod ${kernel}
-done
+echo "Executing depmod..."
+/usr/bin/depmod %KERNVER%
 
 echo "Updating GRUB config..."
 /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg

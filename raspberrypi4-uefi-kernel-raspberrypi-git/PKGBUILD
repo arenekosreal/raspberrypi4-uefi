@@ -8,7 +8,7 @@ LLVM=0
 pkgbase="raspberrypi4-uefi-kernel-raspberrypi-git"
 pkgname=("raspberrypi4-uefi-kernel-raspberrypi-git" "raspberrypi4-uefi-kernel-headers-raspberrypi-git" "raspberrypi4-uefi-kernel-api-headers-raspberrypi-git" "raspberrypi4-overlays-git")
 pkgver=5.17.0.23a8b3c8c
-pkgrel=1
+pkgrel=3
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
 license=("GPL")
@@ -26,14 +26,18 @@ then
 fi
 sha256sums=('2db4b94c07c44de78e95edaf257c54a4a31dba578cf98a25080113ad6137430d'
             'e3f755248af1cb966b6a1b4fb172ac68ea797bffd4a2236f96ead6da76d699e5'
-            '6c8ae0877de3c8508cff8af0d24f73bbcc5816fae971ba4c03ac57227787c510'
+            'd08145fd73ba6d334088d6b91aa65d16c4cd690476cef58e4bc6ff115929d0d5'
+            'bcb73f3ec29d7e1a266520247e3e002243dbe0b2d7d06e3e8a949216dcd5a23d'
+            '3b44c20e9bcbeeb958cbf62d3d02a8a078fde637ba7c0eaffd06154bc5563392'
             '382c9f294bf2a833a071ce8faa0df552c64aa8eb526dc10dc962f824cda3d81d'
             'ebaba545885989563d9b1b63e6f26d732c9e552744777d67ba17172ba9d319ed'
             'a01ef643ca47bee5d9ccb22bb407c61430f48a6e9d877a904b1d3606d4f69f28')
 source=(
     97-modify-grub-kernel-cmdline.hook
 	98-update-initramfs.hook
+    98-remove-initramfs.hook
 	update-initramfs
+    remove-initramfs
     modify-grub-cmdline
     config-raspberrypi
     linux.preset
@@ -142,10 +146,15 @@ package_raspberrypi4-uefi-kernel-raspberrypi-git(){
 	rm ${pkgdir}/usr/lib/modules/${kernver}/{source,build}
     install -Dm755 ${srcdir}/modify-grub-cmdline ${pkgdir}/usr/share/libalpm/scripts/modify-grub-cmdline
     install -Dm755 ${srcdir}/update-initramfs ${pkgdir}/usr/share/libalpm/scripts/update-initramfs
+    install -Dm755 ${srcdir}/remove-initramfs ${pkgdir}/usr/share/libalpm/scripts/remove-initramfs
     install -Dm644 ${srcdir}/97-modify-grub-kernel-cmdline.hook ${pkgdir}/usr/share/libalpm/hooks/97-modify-grub-kernel-cmdline.hook
     install -Dm644 ${srcdir}/98-update-initramfs.hook ${pkgdir}/usr/share/libalpm/hooks/98-update-initramfs.hook
+    install -Dm644 ${srcdir}/98-remove-initramfs.hook ${pkgdir}/usr/share/libalpm/hooks/98-remove-initramfs.hook
     install -Dm644 ${srcdir}/linux.preset ${pkgdir}/etc/mkinitcpio.d/${kernver}.preset
     sed -i "s/%KERNVER%/${kernver}/g;s/%PKGBASE%/${pkgbase}/g" ${pkgdir}/etc/mkinitcpio.d/${kernver}.preset
+    sed -i "s/%KERNVER%/${kernver}/g;s/%PKGBASE%/${pkgbase}/g" ${pkgdir}/usr/share/libalpm/hooks/98-remove-initramfs.hook
+    sed -i "s/%KERNVER%/${kernver}/g;s/%PKGBASE%/${pkgbase}/g" ${pkgdir}/usr/share/libalpm/scripts/update-initramfs
+    sed -i "s/%KERNVER%/${kernver}/g;s/%PKGBASE%/${pkgbase}/g" ${pkgdir}/usr/share/libalpm/scripts/remove-initramfs
 }
 package_raspberrypi4-uefi-kernel-headers-raspberrypi-git(){
     pkgdesc="Header files and scripts for building modules for Raspberrypi 4 UEFI RaspberryPi Kernel."

@@ -1,0 +1,9 @@
+[Trigger]
+Type=Package
+Operation=Remove
+Target=%PKGBASE%
+
+[Action]
+Description=Removing initramfs...
+When=PreTransaction
+Exec=/usr/share/libalpm/scripts/remove-initramfs
