@@ -5,7 +5,7 @@ LLVM=0
 
 pkgbase="raspberrypi4-uefi-kernel-generic-git"
 pkgname=("raspberrypi4-uefi-kernel-generic-git" "raspberrypi4-uefi-kernel-headers-generic-git" "raspberrypi4-uefi-kernel-api-headers-generic-git")
-pkgver=5.17.0.169387e2a
+pkgver=5.17.0.24f4db1f3
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
