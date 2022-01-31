@@ -1,7 +1,7 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
 pkgname=bcm43455-firmware
-pkgver=20220130
+pkgver=20220131
 pkgrel=1
 pkgdesc="Bluetooth and WLAN firmware of BCM43455 for Raspberry Pi 4B"
 url=https://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git
