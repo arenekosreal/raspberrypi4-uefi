@@ -5,10 +5,10 @@ KBRANCH=5.17
 LLVM=0
 # Weather useing LLVM or GCC
 
-pkgbase="raspberrypi4-uefi-kernel-raspberrypi-git"
-pkgname=("raspberrypi4-uefi-kernel-raspberrypi-git" "raspberrypi4-uefi-kernel-headers-raspberrypi-git" "raspberrypi4-uefi-kernel-api-headers-raspberrypi-git" "raspberrypi4-overlays-git")
-pkgver=5.17.0.23a8b3c8c
-pkgrel=3
+pkgbase="raspberrypi4-uefi-linux-raspberrypi-git"
+pkgname=("raspberrypi4-uefi-linux-raspberrypi-git" "raspberrypi4-uefi-linux-headers-raspberrypi-git" "raspberrypi4-uefi-linux-api-headers-raspberrypi-git" "raspberrypi4-overlays-git")
+pkgver=5.17.0.3eda91abe
+pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
 license=("GPL")
@@ -112,12 +112,13 @@ package_raspberrypi4-overlays-git(){
     mkdir -p ${pkgdir}/boot/overlays
     cp ${srcdir}/linux/arch/arm64/boot/dts/overlays/{README,*.dtb*} ${pkgdir}/boot/overlays
 }
-package_raspberrypi4-uefi-kernel-raspberrypi-git(){
+package_raspberrypi4-uefi-linux-raspberrypi-git(){
     pkgdesc="The Linux Kernel and modules for Raspberrypi 4 UEFI RaspberryPi Kernel."
     depends=("coreutils" "linux-firmware" "kmod" "initramfs" "raspberrypi4-uefi-firmware" "raspberrypi4-overlays")
     optdepends=("crda: to set the correct wireless channels of your country")
-    provides=("kernel26" "linux=${pkgver%.*}" "rasppberrypi4-uefi-kernel=${pkgver%.*}")
+    provides=("kernel26" "linux=${pkgver%.*}" "raspberrypi4-uefi-linux=${pkgver%.*}")
     conflicts=("kernel26" "linux" "uboot-raspberrypi")
+    replaces=("raspberrypi4-uefi-linux-raspberrypi-git")
     cd ${srcdir}/linux
     if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
     then
@@ -156,10 +157,11 @@ package_raspberrypi4-uefi-kernel-raspberrypi-git(){
     sed -i "s/%KERNVER%/${kernver}/g;s/%PKGBASE%/${pkgbase}/g" ${pkgdir}/usr/share/libalpm/scripts/update-initramfs
     sed -i "s/%KERNVER%/${kernver}/g;s/%PKGBASE%/${pkgbase}/g" ${pkgdir}/usr/share/libalpm/scripts/remove-initramfs
 }
-package_raspberrypi4-uefi-kernel-headers-raspberrypi-git(){
+package_raspberrypi4-uefi-linux-headers-raspberrypi-git(){
     pkgdesc="Header files and scripts for building modules for Raspberrypi 4 UEFI RaspberryPi Kernel."
-    provides=("linux-headers=${pkgver%.*}" "raspberrypi4-uefi-kernel-headers=${pkgver%.*}")
+    provides=("linux-headers=${pkgver%.*}" "raspberrypi4-uefi-linux-headers=${pkgver%.*}")
     conflicts=("linux-headers")
+    replaces=("raspberrypi4-uefi-linux-headers-rapberrypi-git")
     cd ${srcdir}/linux
     if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
     then
@@ -218,10 +220,11 @@ package_raspberrypi4-uefi-kernel-headers-raspberrypi-git(){
     	/usr/bin/strip ${_strip} "${_binary}"
   	done < <(find "${pkgdir}/usr/lib/modules/${kernver}/build/scripts" -type f -perm -u+w -print0 2>/dev/null)
 }
-package_raspberrypi4-uefi-kernel-api-headers-raspberrypi-git(){
+package_raspberrypi4-uefi-linux-api-headers-raspberrypi-git(){
     pkgdesc="Kernel headers sanitized for use in userspace for Raspberrypi 4 UEFI RaspberryPi Kernel."
-	provides=("linux-api-headers=${pkgver%.*}" "raspberrypi4-uefi-kernel-api-headers=${pkgver%.*}")
+	provides=("linux-api-headers=${pkgver%.*}" "raspberrypi4-uefi-linux-api-headers=${pkgver%.*}")
 	conflicts=("linux-api-headers")
+    replaces=("raspberrypi4-uefi-linux-api-headers-raspberrypi-git")
     cd ${srcdir}/linux
     if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
     then
