@@ -7,7 +7,7 @@ LLVM=0
 
 pkgbase="raspberrypi4-uefi-linux-raspberrypi-git"
 pkgname=("raspberrypi4-uefi-linux-raspberrypi-git" "raspberrypi4-uefi-linux-headers-raspberrypi-git" "raspberrypi4-uefi-linux-api-headers-raspberrypi-git" "raspberrypi4-overlays-git")
-pkgver=5.17.0.3eda91abe
+pkgver=5.17.0.b9d8cc585
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -102,7 +102,7 @@ build(){
     else
         unset LLVM
     fi
-    make
+    make -j$(nproc)
 }
 package_raspberrypi4-overlays-git(){
     pkgdesc="/boot/overlays folder, needed for UEFI firmware and kernel"

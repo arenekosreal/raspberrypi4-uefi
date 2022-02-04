@@ -5,7 +5,7 @@ LLVM=0
 
 pkgbase="raspberrypi4-uefi-linux-generic-git"
 pkgname=("raspberrypi4-uefi-linux-generic-git" "raspberrypi4-uefi-linux-headers-generic-git" "raspberrypi4-uefi-linux-api-headers-generic-git")
-pkgver=5.17.0.26291c54e
+pkgver=5.17.0.dcb85f85f
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
@@ -100,7 +100,7 @@ build(){
     else
         unset LLVM
     fi
-    make
+    make -j$(nproc)
 }
 package_raspberrypi4-uefi-linux-generic-git(){
     pkgdesc="The Linux Kernel and modules for Raspberrypi 4 UEFI RaspberryPi Kernel."
