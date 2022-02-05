@@ -20,6 +20,6 @@ do
     mv *.pkg.tar.zst ${root}/out
     for folder in $(find ${package} -maxdepth 1 -mindepth 1 -type d -print)
     do
-        rm -rf ${folder} || sudo rm -rf ${folder}
+        rm -rf ${folder}
     done
 done
