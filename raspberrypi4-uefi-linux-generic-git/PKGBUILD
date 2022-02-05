@@ -166,7 +166,7 @@ package_raspberrypi4-uefi-linux-headers-generic-git(){
 	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build/drivers/media/dvb-frontends -m644 drivers/media/dvb-frontends/*.h
 	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build/drivers/media/tuners -m644 drivers/media/tuners/*.h
     # https://bugs.archlinux.org/task/71392
-    install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build/drivers/iio/common/hid-sensors -m644 drivers/iio/common/hid-sensors/*/h
+    install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build/drivers/iio/common/hid-sensors -m644 drivers/iio/common/hid-sensors/*.h
 	# copy in Kconfig files
 	find . -name Kconfig\* -exec install -Dm644 {} "${pkgdir}/usr/lib/modules/${kernver}/build/{}" \;
 	# remove unneeded architectures
