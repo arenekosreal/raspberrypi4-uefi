@@ -6,7 +6,7 @@ LLVM=0
 pkgbase="raspberrypi4-uefi-linux-generic-git"
 pkgname=("raspberrypi4-uefi-linux-generic-git" "raspberrypi4-uefi-linux-headers-generic-git" "raspberrypi4-uefi-linux-api-headers-generic-git" "raspberrypi4-uefi-linux-docs-generic-git")
 pkgver=5.17.0.90c9e950c
-pkgrel=1
+pkgrel=2
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
 license=("GPL")
@@ -24,11 +24,11 @@ then
 fi
 sha256sums=('8cd83c066204b274045cbf94cc82b89c94ef83bc781eb01727823e4b49941836'
             'e3f755248af1cb966b6a1b4fb172ac68ea797bffd4a2236f96ead6da76d699e5'
-            'd08145fd73ba6d334088d6b91aa65d16c4cd690476cef58e4bc6ff115929d0d5'
+            '369d233ea5311e1a4b0b5f771189a35e214bc0e49d85cdd076403bb7499f928d'
             'bcb73f3ec29d7e1a266520247e3e002243dbe0b2d7d06e3e8a949216dcd5a23d'
             '3b44c20e9bcbeeb958cbf62d3d02a8a078fde637ba7c0eaffd06154bc5563392'
             '382c9f294bf2a833a071ce8faa0df552c64aa8eb526dc10dc962f824cda3d81d'
-            'cf05b2e333a58f959be70b2ba332bbfae1ea0f52baa19890ef54650b70b5a585'
+            'c7b8deaf2a66d7eb0319e4afc70f037be721286f659da45b745189f708c4b2de'
             'a01ef643ca47bee5d9ccb22bb407c61430f48a6e9d877a904b1d3606d4f69f28')
 source=(
     97-modify-grub-kernel-cmdline.hook

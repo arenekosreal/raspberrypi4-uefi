@@ -1,6 +1,7 @@
 [Trigger]
 Type=Package
 Operation=Remove
+Operation=Upgrade
 Target=%PKGBASE%
 
 [Action]
