@@ -5,8 +5,8 @@ LLVM=0
 
 pkgbase="raspberrypi4-uefi-linux-generic-git"
 pkgname=("raspberrypi4-uefi-linux-generic-git" "raspberrypi4-uefi-linux-headers-generic-git" "raspberrypi4-uefi-linux-api-headers-generic-git" "raspberrypi4-uefi-linux-docs-generic-git")
-pkgver=5.17.0.0457e5153
-pkgrel=2
+pkgver=5.17.0.90c9e950c
+pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
 license=("GPL")
@@ -190,9 +190,9 @@ package_raspberrypi4-uefi-linux-headers-generic-git(){
             *application/x-pie-executable*) _strip="${STRIP_SHARED}"   ;; # Relocatable binaries
       		*) continue ;;
     	esac
-    	/usr/bin/strip ${_strip} "${_binary}"
+    	/usr/bin/${CROSS_COMPILE}strip ${_strip} "${_binary}"
   	done < <(find "${pkgdir}/usr/lib/modules/${kernver}/build" -type f -perm -u+x ! -name vmlinux -print0)
-    strip $STRIP_STATIC "${pkgdir}/usr/lib/modules/${kernver}/build/vmlinux"
+    ${CROSS_COMPILE}strip $STRIP_STATIC "${pkgdir}/usr/lib/modules/${kernver}/build/vmlinux"
     mkdir -p ${pkgdir}/usr/src
     ln -sr ${pkgdir}/usr/lib/modules/${kernver}/build ${pkgdir}/usr/src/${pkgbase}
 }
@@ -226,9 +226,9 @@ package_raspberrypi4-uefi-linux-docs-generic-git(){
     local src dst
     while read -rd '' src; do
         dst="${src#Documentation/}"
-        dst="$builddir/Documentation/${dst#output/}"
+        dst="${pkgdir}/usr/lib/modules/${kernver}/build/Documentation/${dst#output/}"
         install -Dm644 "$src" "$dst"
     done < <(find Documentation -name '.*' -prune -o ! -type d -print0)
-    mkdir -p ${srcdir}/usr/share/doc
+    mkdir -p ${pkgdir}/usr/share/doc
     ln -sr ${pkgdir}/usr/lib/modules/${kernver}/build ${pkgdir}/usr/share/doc/${pkgbase}
 }
