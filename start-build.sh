@@ -16,10 +16,6 @@ for package in $(find ${root} -type d -exec test -e '{}/PKGBUILD' \; -print)
 do
     echo "Processing ${package} folder..."
     cd ${package}
-    makepkg -fd --config=${conf}
+    makepkg -fdc --config=${conf}
     mv *.pkg.tar.zst ${root}/out
-    for folder in $(find ${package} -maxdepth 1 -mindepth 1 -type d -print)
-    do
-        rm -rf ${folder}
-    done
 done

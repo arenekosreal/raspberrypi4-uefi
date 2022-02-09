@@ -1,11 +1,13 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
-LLVM=0
+export LLVM=0
 # Weather useing LLVM or GCC
+export LOCALVERSION=""
+# Disable annoying '+' in modules folder and kernel name
 
 pkgbase="raspberrypi4-uefi-linux-generic-git"
 pkgname=("raspberrypi4-uefi-linux-generic-git" "raspberrypi4-uefi-linux-headers-generic-git" "raspberrypi4-uefi-linux-api-headers-generic-git" "raspberrypi4-uefi-linux-docs-generic-git")
-pkgver=5.17.0.dfd42facf
+pkgver=5.17.0.e6251ab45
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
@@ -73,15 +75,13 @@ prepare(){
         export ARCH=arm64
         export CROSS_COMPILE=aarch64-linux-gnu-
     fi
-    sed -ri "s|^(EXTRAVERSION =)(.*)|\1 \2-${pkgrel}|" Makefile
-    # Add pkgrel to extraversion
     cp ${srcdir}/config-generic .config
     yes "" | make oldconfig
     sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
-    scripts/setlocalversion --save-scmversion
     echo "-$pkgrel" > localversion.10-pkgrel
     echo "" > localversion.20-pkgname
     make -s kernelrelease > version
+    scripts/setlocalversion --save-scmversion
 }
 build(){
     cd ${srcdir}/linux

@@ -1,13 +1,15 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
-KBRANCH=5.17
+export KBRANCH=5.17
 # Only need if you are using raspberrypi kernel
-LLVM=0
+export LLVM=0
 # Weather useing LLVM or GCC
+export LOCALVERSION=""
+# Disable annoying '+' in modules folder and kernel name
 
 pkgbase="raspberrypi4-uefi-linux-raspberrypi-git"
 pkgname=("raspberrypi4-uefi-linux-raspberrypi-git" "raspberrypi4-uefi-linux-headers-raspberrypi-git" "raspberrypi4-uefi-linux-api-headers-raspberrypi-git" "raspberrypi4-overlays-git" "raspberrypi4-uefi-linux-docs-raspberrypi-git")
-pkgver=5.17.0.550280572
+pkgver=5.17.0.a46ece4d9
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -30,7 +32,7 @@ sha256sums=('2db4b94c07c44de78e95edaf257c54a4a31dba578cf98a25080113ad6137430d'
             'bcb73f3ec29d7e1a266520247e3e002243dbe0b2d7d06e3e8a949216dcd5a23d'
             '3b44c20e9bcbeeb958cbf62d3d02a8a078fde637ba7c0eaffd06154bc5563392'
             '382c9f294bf2a833a071ce8faa0df552c64aa8eb526dc10dc962f824cda3d81d'
-            'ea2727ee1d06e92669cb2c1db63495bafe5e3f2aac6dc407b0f36e8dd1a34424'
+            '03affa16cc59c247869672ae3ab7f35538d9058b528ecc0f73921e3764ec50a0'
             'a01ef643ca47bee5d9ccb22bb407c61430f48a6e9d877a904b1d3606d4f69f28')
 source=(
     97-modify-grub-kernel-cmdline.hook
@@ -75,22 +77,13 @@ prepare(){
         export ARCH=arm64
         export CROSS_COMPILE=aarch64-linux-gnu-
     fi
-    sed -ri "s|^(EXTRAVERSION =)(.*)|\1 \2-${pkgrel}|" Makefile
-    # Add pkgrel to extraversion
     cp ${srcdir}/config-raspberrypi .config
-    if [[ ${LLVM} -eq 1 ]]
-    then
-        export LLVM=1
-        unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
-    else
-        unset LLVM
-    fi
     yes "" | make oldconfig
     sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
-    scripts/setlocalversion --save-scmversion
     echo "-$pkgrel" > localversion.10-pkgrel
     echo "" > localversion.20-pkgname
     make -s kernelrelease > version
+    scripts/setlocalversion --save-scmversion
 }
 build(){
     cd ${srcdir}/linux
@@ -159,13 +152,6 @@ package_raspberrypi4-uefi-linux-headers-raspberrypi-git(){
         export ARCH=arm64
         export CROSS_COMPILE=aarch64-linux-gnu-
     fi
-    if [[ ${LLVM} -eq 1 ]]
-    then
-        export LLVM=1
-        unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
-    else
-        unset LLVM
-    fi
 	kernver=$(make kernelrelease)
 	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build -m644 Makefile .config Module.symvers System.map \
         localversion.* version vmlinux
@@ -227,13 +213,6 @@ package_raspberrypi4-uefi-linux-api-headers-raspberrypi-git(){
     then
         export ARCH=arm64
         export CROSS_COMPILE=aarch64-linux-gnu-
-    fi
-    if [[ ${LLVM} -eq 1 ]]
-    then
-        export LLVM=1
-        unset CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
-    else
-        unset LLVM
     fi
 	make INSTALL_HDR_PATH="${pkgdir}/usr" headers_install
 	# use headers from libdrm
