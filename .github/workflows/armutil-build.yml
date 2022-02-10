@@ -1,0 +1,35 @@
+name: Use armutil to test native build on aarch64
+on:
+  push:
+    branches: 
+      - main
+  pull_request:
+    branches: 
+      - main
+  workflow_dispatch:
+jobs:
+  native-build:
+    name: Native build with armutil in chroot environment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install requrements
+        run: sudo apt-get install -y binfmt-support qemu-user-static wget libarchive
+      - name: Prepare armutil
+        run: |
+          git clone https://gitlab.com/mipimipi/armutils
+          cd armutils
+          sudo make install
+      - name: Create chroot environment
+        run: sudo mkarmchroot -u http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz $GITHUB_WORKSPACE/aarch64/root base-devel
+      - name: Checkout
+        use: actions/checkout@v2
+        with: 
+          path: working-dir
+      - name: Build
+        run: |
+          for dir in $(find $GITHUB_WORKSPACE/working-dir -type d -exec test -e '{}/PKGBUILD' \; -print)
+          do
+            cd ${dir}
+            sudo makearmpkg -r $GITHUB_WORKSPACE/aarch64 -- -sc
+          done
+      
