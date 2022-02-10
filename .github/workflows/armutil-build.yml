@@ -22,7 +22,7 @@ jobs:
       - name: Create chroot environment
         run: sudo mkarmchroot -u http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz $GITHUB_WORKSPACE/aarch64/root base-devel
       - name: Checkout
-        use: actions/checkout@v2
+        uses: actions/checkout@v2
         with: 
           path: working-dir
       - name: Build
