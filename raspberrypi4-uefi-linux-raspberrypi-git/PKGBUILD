@@ -1,11 +1,9 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
-export KBRANCH=5.17
+KBRANCH=5.17
 # Only need if you are using raspberrypi kernel
-export LLVM=0
+USE_LLVM=0
 # Weather useing LLVM or GCC
-export LOCALVERSION=""
-# Disable annoying '+' in modules folder and kernel name
 
 pkgbase="raspberrypi4-uefi-linux-raspberrypi-git"
 pkgname=("raspberrypi4-uefi-linux-raspberrypi-git" "raspberrypi4-uefi-linux-headers-raspberrypi-git" "raspberrypi4-uefi-linux-api-headers-raspberrypi-git" "raspberrypi4-overlays-git" "raspberrypi4-uefi-linux-docs-raspberrypi-git")
@@ -22,9 +20,10 @@ then
     makedepends+=("aarch64-linux-gnu-gcc")
     options+=(!ccache)
 fi
-if [[ ${LLVM} -eq 1 ]]
+if [[ ${USE_LLVM} -eq 1 ]]
 then
     makedepends+=("clang" "lld" "llvm")
+    export LLVM=1
 fi
 sha256sums=('2db4b94c07c44de78e95edaf257c54a4a31dba578cf98a25080113ad6137430d'
             'e3f755248af1cb966b6a1b4fb172ac68ea797bffd4a2236f96ead6da76d699e5'
@@ -44,6 +43,9 @@ source=(
     config-raspberrypi
     linux.preset
 )
+
+export LOCALVERSION=""
+# Disable annoying '+' in modules folder and kernel name
 
 pkgver(){
     if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]

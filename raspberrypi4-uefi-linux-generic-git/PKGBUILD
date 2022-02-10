@@ -1,9 +1,7 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
-export LLVM=0
+USE_LLVM=0
 # Weather useing LLVM or GCC
-export LOCALVERSION=""
-# Disable annoying '+' in modules folder and kernel name
 
 pkgbase="raspberrypi4-uefi-linux-generic-git"
 pkgname=("raspberrypi4-uefi-linux-generic-git" "raspberrypi4-uefi-linux-headers-generic-git" "raspberrypi4-uefi-linux-api-headers-generic-git" "raspberrypi4-uefi-linux-docs-generic-git")
@@ -20,9 +18,10 @@ then
     makedepends+=("aarch64-linux-gnu-gcc")
     options+=(!ccache)
 fi
-if [[ ${LLVM} -eq 1 ]]
+if [[ ${USE_LLVM} -eq 1 ]]
 then
     makedepends+=("clang" "lld" "llvm")
+    export LLVM=1
 fi
 sha256sums=('8cd83c066204b274045cbf94cc82b89c94ef83bc781eb01727823e4b49941836'
             'e3f755248af1cb966b6a1b4fb172ac68ea797bffd4a2236f96ead6da76d699e5'
@@ -42,6 +41,9 @@ source=(
     config-generic
     linux.preset
 )
+
+export LOCALVERSION=""
+# Disable annoying '+' in modules folder and kernel name
 
 pkgver(){
     if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
