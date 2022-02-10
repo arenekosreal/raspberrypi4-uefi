@@ -1,11 +1,11 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
-USE_LLVM=0
+USE_LLVM=false
 # Weather useing LLVM or GCC
 
 pkgbase="raspberrypi4-uefi-linux-generic-git"
 pkgname=("raspberrypi4-uefi-linux-generic-git" "raspberrypi4-uefi-linux-headers-generic-git" "raspberrypi4-uefi-linux-api-headers-generic-git" "raspberrypi4-uefi-linux-docs-generic-git")
-pkgver=5.17.0.e6251ab45
+pkgver=5.17.0.f4bc5bbb5
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
@@ -13,15 +13,26 @@ license=("GPL")
 groups=("raspberrypi4-uefi")
 makedepends=("libelf" "pahole" "cpio" "perl" "tar" "xz" "python-sphinx" "python-sphinx_rtd_theme" "graphviz" "imagemagick" "xmlto" "kmod" "bc" "git")
 options=("!strip")
-if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
+if [ $(uname -m) != "aarch64" ]
 then
-    makedepends+=("aarch64-linux-gnu-gcc")
     options+=(!ccache)
+    export ARCH=arm64
+    export CROSS_COMPILE=aarch64-linux-gnu-
 fi
-if [[ ${USE_LLVM} -eq 1 ]]
+if [[ ${USE_LLVM} == true ]]
 then
+    # LLVM
     makedepends+=("clang" "lld" "llvm")
     export LLVM=1
+    export _STRIPBIN=/usr/bin/llvm-strip
+elif [ $(uname -m) != "aarch64" ]
+then
+    # GCC Cross-compile
+    makedepends+=("aarch64-linux-gnu-gcc")
+    export _STRIPBIN=/usr/bin/${CROSS_COMPILE}strip
+else
+    # native compile
+    export _STRIPBIN=/usr/bin/strip
 fi
 sha256sums=('8cd83c066204b274045cbf94cc82b89c94ef83bc781eb01727823e4b49941836'
             'e3f755248af1cb966b6a1b4fb172ac68ea797bffd4a2236f96ead6da76d699e5'
@@ -46,11 +57,6 @@ export LOCALVERSION=""
 # Disable annoying '+' in modules folder and kernel name
 
 pkgver(){
-    if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
-    then
-        export ARCH=arm64
-        export CROSS_COMPILE=aarch64-linux-gnu-
-    fi
     cd ${srcdir}/linux
     echo $(make kernelversion | sed "s/-.*//").$(git rev-parse --short HEAD)
 }
@@ -72,11 +78,6 @@ prepare(){
         git checkout master
     fi
     # move to source once it supports depth=1 option
-    if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
-    then
-        export ARCH=arm64
-        export CROSS_COMPILE=aarch64-linux-gnu-
-    fi
     cp ${srcdir}/config-generic .config
     yes "" | make oldconfig
     sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
@@ -87,11 +88,6 @@ prepare(){
 }
 build(){
     cd ${srcdir}/linux
-    if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
-    then
-        export ARCH=arm64
-        export CROSS_COMPILE=aarch64-linux-gnu-
-    fi
     make -j$(nproc)
 }
 package_raspberrypi4-uefi-linux-generic-git(){
@@ -105,11 +101,6 @@ package_raspberrypi4-uefi-linux-generic-git(){
     conflicts=("kernel26" "linux" "uboot-raspberrypi" "raspberrypi4-uefi-linux")
     replaces=("raspberrypi4-uefi-kernel-generic-git")
     cd ${srcdir}/linux
-    if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
-    then
-        export ARCH=arm64
-        export CROSS_COMPILE=aarch64-linux-gnu-
-    fi
 	kernver=$(make kernelrelease)
     mkdir -p ${pkgdir}/{boot,usr,boot/dtbs}
 	make zinstall INSTALL_PATH=${pkgdir}/boot
@@ -142,11 +133,6 @@ package_raspberrypi4-uefi-linux-headers-generic-git(){
     replaces=("raspberrypi4-uefi-kernel-headers-generic-git")
     depends=("pahole")
     cd ${srcdir}/linux
-    if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
-    then
-        export ARCH=arm64
-        export CROSS_COMPILE=aarch64-linux-gnu-
-    fi
 	kernver=$(make kernelrelease)
 	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build -m644 Makefile .config Module.symvers System.map \
         localversion.* version vmlinux
@@ -192,9 +178,9 @@ package_raspberrypi4-uefi-linux-headers-generic-git(){
             *application/x-pie-executable*) _strip="${STRIP_SHARED}"   ;; # Relocatable binaries
       		*) continue ;;
     	esac
-    	/usr/bin/${CROSS_COMPILE}strip ${_strip} "${_binary}"
+    	${_STRIPBIN} ${_strip} "${_binary}"
   	done < <(find "${pkgdir}/usr/lib/modules/${kernver}/build" -type f -perm -u+x ! -name vmlinux -print0)
-    ${CROSS_COMPILE}strip $STRIP_STATIC "${pkgdir}/usr/lib/modules/${kernver}/build/vmlinux"
+    ${_STRIPBIN} ${STRIP_STATIC} "${pkgdir}/usr/lib/modules/${kernver}/build/vmlinux"
     mkdir -p ${pkgdir}/usr/src
     ln -sr ${pkgdir}/usr/lib/modules/${kernver}/build ${pkgdir}/usr/src/${pkgbase}
 }
@@ -204,11 +190,6 @@ package_raspberrypi4-uefi-linux-api-headers-generic-git(){
 	conflicts=("linux-api-headers")
     replaces=("raspberrypi4-uefi-kernel-api-headers-generic-git")
     cd ${srcdir}/linux
-    if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
-    then
-        export ARCH=arm64
-        export CROSS_COMPILE=aarch64-linux-gnu-
-    fi
 	make INSTALL_HDR_PATH="${pkgdir}/usr" headers_install
 	# use headers from libdrm
 	rm -r "${pkgdir}/usr/include/drm"
@@ -219,11 +200,6 @@ package_raspberrypi4-uefi-linux-docs-generic-git(){
     conflicts=("linux-docs")
     replaces=("raspberrypi4-uefi-kernel-docs-generic-git")
     cd ${srcdir}/linux
-    if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
-    then
-        export ARCH=arm64
-        export CROSS_COMPILE=aarch64-linux-gnu-
-    fi
     kernver=$(make kernelrelease)
     local src dst
     while read -rd '' src; do

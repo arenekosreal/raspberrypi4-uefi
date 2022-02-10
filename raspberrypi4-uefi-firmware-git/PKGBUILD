@@ -14,9 +14,10 @@ groups=("raspberrypi4-uefi")
 depends=("raspberrypi4-overlays")
 optdepends=("brcmfmac43455-firmware: WLAN firmware for 4B")
 makedepends=("gcc10" "git" "uuid" "acpica" "python-distutils" "openssl" "util-linux")
-if [ ${CARCH} != "aarch64" -o $(uname -m) != "aarch64" ]
+if [  $(uname -m) != "aarch64" ]
 then
     makedepends+=("aarch64-linux-gnu-gcc")
+    export CROSS_COMPILE=aarch64-linux-gnu-
 fi
 source=(
     git+https://github.com/pftf/RPi4
@@ -67,12 +68,6 @@ prepare(){
 }
 build(){
     cd ${srcdir}/RPi4
-    if [[ $(uname -m) == "aarch64" ]]
-    then
-        CROSS_COMPILE=
-    else
-        CROSS_COMPILE=aarch64-linux-gnu-
-    fi
     sed -i "s/%FIRMVER%/${pkgver}-${pkgrel}/;s/%CROSS_COMPILE%/${CROSS_COMPILE}/" build.sh
     CHOST= CARCH= CPPFLAGS= CFLAGS= CXXFLAGS= LDFLAGS= PATH="${srcdir}/gcc10":${PATH} make -C edk2/BaseTools
     MAKEFLAGS= bash build.sh
