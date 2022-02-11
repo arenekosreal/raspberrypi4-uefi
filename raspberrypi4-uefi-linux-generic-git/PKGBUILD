@@ -1,17 +1,19 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
+buildarch=8 # aarch64
+
 USE_LLVM=false
 # Weather useing LLVM or GCC
 
 pkgbase="raspberrypi4-uefi-linux-generic-git"
 pkgname=("raspberrypi4-uefi-linux-generic-git" "raspberrypi4-uefi-linux-headers-generic-git" "raspberrypi4-uefi-linux-api-headers-generic-git" "raspberrypi4-uefi-linux-docs-generic-git")
-pkgver=5.17.0.f4bc5bbb5
+pkgver=5.17.0.f1baf68e1
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
 license=("GPL")
 groups=("raspberrypi4-uefi")
-makedepends=("libelf" "pahole" "cpio" "perl" "tar" "xz" "python-sphinx" "python-sphinx_rtd_theme" "graphviz" "imagemagick" "xmlto" "kmod" "bc" "git")
+makedepends=("libelf" "pahole" "cpio" "perl" "tar" "xz" "python-sphinx" "python-sphinx_rtd_theme" "graphviz" "imagemagick" "xmlto" "kmod" "bc" "git" "rsync")
 options=("!strip")
 if [ $(uname -m) != "aarch64" ]
 then

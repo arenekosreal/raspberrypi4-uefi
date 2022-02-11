@@ -1,7 +1,9 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
+buildarch=1 # any
+
 pkgname=bcm43455-firmware
-pkgver=20220210
+pkgver=20220211
 pkgrel=1
 pkgdesc="Bluetooth and WLAN firmware of BCM43455 for Raspberry Pi 4B"
 url=https://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git
@@ -9,7 +11,7 @@ arch=("any")
 license=("GPL2")
 makedepends=("git")
 conflicts=("firmware-raspberrypi")
-provides=("firmware-raspberrypi" "brcmfmac43455-firmware")
+provides=("brcmfmac43455-firmware")
 source=(
     git+https://github.com/RPi-Distro/firmware-nonfree
     git+https://github.com/RPi-Distro/bluez-firmware

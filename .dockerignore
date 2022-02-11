@@ -7,3 +7,4 @@ pkg
 *.zst
 *.dtb*
 raspberrypi4-uefi-*
+start-native-build.sh
