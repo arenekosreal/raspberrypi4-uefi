@@ -19,6 +19,7 @@ If you are not using Arch Linux, you may have to understand Arch Build System an
 
 ~~UEFI firmware needs root privilege to build on my Arch Distribution. So I think it can't be treated as a valid PKGBUILD because a valid one needs no manual interaction.~~ This problem has been fixed.  
 UEFI firmware needs `gcc10` to build, which is not provided on Arch Linux ARM. This problem will only be solved when edk2 upgrade `BrotilCompress` to newer version which supports GCC 11 or Arch Linux ARM provides `gcc10` package.  
+Also, both kernels are stripped because some devices I may never use, this also results that these kernels are not suitable for everyone's use. You can change kernel config as you like, just remember one thing: DO NOT disable UEFI and ACPI related configs.  
 As for other aspects, there should be no issue to upload, I have even set `buildarch` to meet Arch Linux ARM's requirements.  
 If you think pacman or other wrapper complains about not found these packages, please add them to `IgnorePkg` in `/etc/pacman.conf`
 
