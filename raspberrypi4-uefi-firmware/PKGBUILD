@@ -4,7 +4,7 @@ buildarch=8 # aarch64
 
 pkgname="raspberrypi4-uefi-firmware" 
 pkgver=1.32.2.g656133b
-pkgrel=3
+pkgrel=4
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
 url="https://github.com/pftf/RPi4"
@@ -36,7 +36,7 @@ sha256sums=('SKIP'
             'e8e95f0733a55e8bad7be0a1413ee23c51fcea64b3c8fa6a786935fddcc71961'
             '48e99b991f57fc52f76149599bff0a58c47154229b9f8d603ac40d3500248507'
             'f42c187f8b01b497f81fb0459164b27d16ca2af0b95c7331a82c1a27a731a885'
-            '08e3ba84d75e209d0a88e8a774caca6e8c93092001bd7cffe7fdaa37e2841bc7')
+            '2e75e1ab5ec0d0cf8debda1a41e8250a84c4df9f81f555e885334bbe75ab9222')
 
 pkgver(){
     cd ${srcdir}/RPi4

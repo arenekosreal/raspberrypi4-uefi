@@ -11,4 +11,6 @@ build -a AARCH64 -t GCC5 -p edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc -b
 --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor=L"https://github.com/pftf/RPi4" \
 --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"UEFI Firmware %FIRMVER%" \
 --pcd gRaspberryPiTokenSpaceGuid.PcdRamLimitTo3GB=0 \
+--pcd gRaspberryPiTokenSpaceGuid.PcdSdIsArasan=1 \
+--pcd gRaspberryPiTokenSpaceGuid.PcdSystemTableMode=1 \
 ${BUILD_FLAGS} ${DEFAULT_KEYS} 
