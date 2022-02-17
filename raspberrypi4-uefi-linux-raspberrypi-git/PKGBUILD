@@ -9,7 +9,7 @@ USE_LLVM=false
 
 pkgbase="raspberrypi4-uefi-linux-raspberrypi-git"
 pkgname=("raspberrypi4-uefi-linux-raspberrypi-git" "raspberrypi4-uefi-linux-headers-raspberrypi-git" "raspberrypi4-uefi-linux-api-headers-raspberrypi-git" "raspberrypi4-overlays-git" "raspberrypi4-uefi-linux-docs-raspberrypi-git")
-pkgver=5.17.0.ed8b57bd5
+pkgver=5.17.0.2fcf729e6
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -44,7 +44,7 @@ sha256sums=('2db4b94c07c44de78e95edaf257c54a4a31dba578cf98a25080113ad6137430d'
             'bcb73f3ec29d7e1a266520247e3e002243dbe0b2d7d06e3e8a949216dcd5a23d'
             '3b44c20e9bcbeeb958cbf62d3d02a8a078fde637ba7c0eaffd06154bc5563392'
             '382c9f294bf2a833a071ce8faa0df552c64aa8eb526dc10dc962f824cda3d81d'
-            '03affa16cc59c247869672ae3ab7f35538d9058b528ecc0f73921e3764ec50a0'
+            '27a4f993badcc5df09f2e937f87d96b266ee7315b7038d0f366d17172a6f60f5'
             'a01ef643ca47bee5d9ccb22bb407c61430f48a6e9d877a904b1d3606d4f69f28')
 source=(
     97-modify-grub-kernel-cmdline.hook
@@ -83,7 +83,7 @@ prepare(){
     fi
     # move to source once it supports depth=1 option
     cp ${srcdir}/config-raspberrypi .config
-    yes "" | make oldconfig
+    make olddefconfig
     sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
     echo "-$pkgrel" > localversion.10-pkgrel
     echo "" > localversion.20-pkgname

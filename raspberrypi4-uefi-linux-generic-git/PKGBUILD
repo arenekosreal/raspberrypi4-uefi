@@ -7,7 +7,7 @@ USE_LLVM=false
 
 pkgbase="raspberrypi4-uefi-linux-generic-git"
 pkgname=("raspberrypi4-uefi-linux-generic-git" "raspberrypi4-uefi-linux-headers-generic-git" "raspberrypi4-uefi-linux-api-headers-generic-git" "raspberrypi4-uefi-linux-docs-generic-git")
-pkgver=5.17.0.83e396641
+pkgver=5.17.0.c5d9ae265
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
@@ -42,7 +42,7 @@ sha256sums=('8cd83c066204b274045cbf94cc82b89c94ef83bc781eb01727823e4b49941836'
             'bcb73f3ec29d7e1a266520247e3e002243dbe0b2d7d06e3e8a949216dcd5a23d'
             '3b44c20e9bcbeeb958cbf62d3d02a8a078fde637ba7c0eaffd06154bc5563392'
             '382c9f294bf2a833a071ce8faa0df552c64aa8eb526dc10dc962f824cda3d81d'
-            'c7b8deaf2a66d7eb0319e4afc70f037be721286f659da45b745189f708c4b2de'
+            'eb3d63419f46871facb88f98abdf72083f97c99d6161cb627e6c33ae7676d81b'
             'a01ef643ca47bee5d9ccb22bb407c61430f48a6e9d877a904b1d3606d4f69f28')
 source=(
     97-modify-grub-kernel-cmdline.hook
@@ -81,8 +81,7 @@ prepare(){
     fi
     # move to source once it supports depth=1 option
     cp ${srcdir}/config-generic .config
-    yes "" | make oldconfig
-    sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
+    make olddefconfig
     echo "-$pkgrel" > localversion.10-pkgrel
     echo "" > localversion.20-pkgname
     make -s kernelrelease > version
