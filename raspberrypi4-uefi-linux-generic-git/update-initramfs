@@ -9,9 +9,8 @@ elif [[ -f /usr/bin/mkinitcpio ]]
 then
 	/usr/bin/mkinitcpio -p %KERNVER%
 fi
-echo "Executing depmod..."
-/usr/bin/depmod %KERNVER%
-
-echo "Updating GRUB config..."
-/usr/bin/grub-mkconfig -o /boot/grub/grub.cfg
-
+if [[ -f /usr/bin/grub-mkconfig ]]
+then
+	echo "Updating GRUB config..."
+	/usr/bin/grub-mkconfig -o /boot/grub/grub.cfg
+fi

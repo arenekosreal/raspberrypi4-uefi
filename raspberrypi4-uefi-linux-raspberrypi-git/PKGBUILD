@@ -41,7 +41,7 @@ fi
 sha256sums=('2db4b94c07c44de78e95edaf257c54a4a31dba578cf98a25080113ad6137430d'
             'e3f755248af1cb966b6a1b4fb172ac68ea797bffd4a2236f96ead6da76d699e5'
             '369d233ea5311e1a4b0b5f771189a35e214bc0e49d85cdd076403bb7499f928d'
-            'bcb73f3ec29d7e1a266520247e3e002243dbe0b2d7d06e3e8a949216dcd5a23d'
+            '2ba5286a81358f87aa73e6a95c3c610c5f3007e7824729a64999e508d21559b0'
             '3b44c20e9bcbeeb958cbf62d3d02a8a078fde637ba7c0eaffd06154bc5563392'
             '382c9f294bf2a833a071ce8faa0df552c64aa8eb526dc10dc962f824cda3d81d'
             '27a4f993badcc5df09f2e937f87d96b266ee7315b7038d0f366d17172a6f60f5'
@@ -104,10 +104,14 @@ package_raspberrypi4-overlays-git(){
 }
 package_raspberrypi4-uefi-linux-raspberrypi-git(){
     pkgdesc="The Linux Kernel and modules for Raspberrypi 4 UEFI RaspberryPi Kernel."
-    depends=("coreutils" "linux-firmware" "kmod" "initramfs" "raspberrypi4-uefi-firmware" "raspberrypi4-overlays")
-    optdepends=("crda: to set the correct wireless channels of your country")
-    provides=("kernel26" "linux=${pkgver%.*}" "raspberrypi4-uefi-linux=${pkgver%.*}")
-    conflicts=("kernel26" "linux" "uboot-raspberrypi" "raspberrypi4-uefi-linux")
+    depends=("coreutils" "kmod" "initramfs" "raspberrypi4-overlays")
+    optdepends=(
+        "crda: to set the correct wireless channels of your country" 
+        "linux-firmware: firmware images needed for some devices"
+        "raspberrypi4-uefi-firmware: for UEFI firmware"
+    )
+    provides=("linux=${pkgver%.*}" "raspberrypi4-uefi-linux=${pkgver%.*}")
+    conflicts=("linux" "uboot-raspberrypi" "raspberrypi4-uefi-linux")
     replaces=("raspberrypi4-uefi-kernel-raspberrypi-git")
     cd ${srcdir}/linux
 	kernver=$(make kernelrelease)
