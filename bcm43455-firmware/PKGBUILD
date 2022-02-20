@@ -3,7 +3,7 @@
 buildarch=1 # any
 
 pkgname=bcm43455-firmware
-pkgver=20220212
+pkgver=20220220
 pkgrel=1
 pkgdesc="Bluetooth and WLAN firmware of BCM43455 for Raspberry Pi 4B"
 url=https://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git
