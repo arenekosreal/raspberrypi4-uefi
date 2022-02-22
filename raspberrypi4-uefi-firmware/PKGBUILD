@@ -12,7 +12,9 @@ arch=("aarch64")
 license=("custom")
 groups=("raspberrypi4-uefi")
 depends=("raspberrypi4-overlays" "raspberrypi4-uefi-linux")
-optdepends=("brcmfmac43455-firmware: WLAN firmware for 4B")
+optdepends=(
+    "firmware-raspberrypi: firmware for 4B (both are needed)"
+    "linux-firmware: firmware for 4B (both are needed)")
 makedepends=("gcc10" "git" "acpica" "openssl" "util-linux")
 if [ $(uname -m) != "aarch64" ]
 then
