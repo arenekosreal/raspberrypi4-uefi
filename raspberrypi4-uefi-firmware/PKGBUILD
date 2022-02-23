@@ -4,7 +4,7 @@ buildarch=8 # aarch64
 
 pkgname="raspberrypi4-uefi-firmware" 
 pkgver=1.32.2.g656133b
-pkgrel=4
+pkgrel=5
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
 url="https://github.com/pftf/RPi4"
@@ -13,8 +13,8 @@ license=("custom")
 groups=("raspberrypi4-uefi")
 depends=("raspberrypi4-overlays" "raspberrypi4-uefi-linux")
 optdepends=(
-    "firmware-raspberrypi: firmware for 4B (both are needed)"
-    "linux-firmware: firmware for 4B (both are needed)")
+    "firmware-raspberrypi: firmware for RaspberryPi 4B"
+    "linux-firmware: firmware for RaspberryPi 4B")
 makedepends=("gcc10" "git" "acpica" "openssl" "util-linux")
 if [ $(uname -m) != "aarch64" ]
 then
@@ -38,7 +38,7 @@ sha256sums=('SKIP'
             'e8e95f0733a55e8bad7be0a1413ee23c51fcea64b3c8fa6a786935fddcc71961'
             '48e99b991f57fc52f76149599bff0a58c47154229b9f8d603ac40d3500248507'
             'f42c187f8b01b497f81fb0459164b27d16ca2af0b95c7331a82c1a27a731a885'
-            '2e75e1ab5ec0d0cf8debda1a41e8250a84c4df9f81f555e885334bbe75ab9222')
+            '6b67085ab336ecada1fd5d6cf1cfbdfb5b2039585645da4fe7f0201317bd4cee')
 
 pkgver(){
     cd ${srcdir}/RPi4
@@ -72,4 +72,11 @@ package(){
 	install -Dm644 ${srcdir}/RPi4/config.txt ${pkgdir}/boot/config.txt
     install -Dm644 ${srcdir}/LICENCE.EDK2 ${pkgdir}/usr/share/licenses/${pkgname}/LICENCE.EDK2
     install -Dm644 ${srcdir}/LICENCE.broadcom ${pkgdir}/usr/share/licenses/${pkgname}/LICENCE.broadcom
+    # use these firmware binaries instead official one
+    for file in brcmfmac43455-sdio.bin brcmfmac43455-sdio.clm_blob brcmfmac43455-sdio.txt
+    do
+        install -Dm644 ${srcdir}/RPi4/firmware/brcm/${file} ${pkgdir}/usr/lib/firmware/updates/brcm/${file}
+    done
+    install -Dm644 ${srcdir}/RPi4/firmware/brcm/brcmfmac43455-sdio.Raspberry "${pkgdir}/usr/lib/firmware/updates/brcm/brcmfmac43455-sdio.Raspberry Pi Foundation-Raspberry Pi 4 Model B.txt"
+    install -Dm644 ${srcdir}/RPi4/firmware/LICENCE.txt ${pkgdir}/usr/share/licenses/LICENCE.cypress
 }
