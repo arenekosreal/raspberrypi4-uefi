@@ -8,8 +8,8 @@ USE_LLVM=false
 # Weather useing LLVM or GCC
 
 pkgbase="raspberrypi4-uefi-linux-raspberrypi-git"
-pkgname=("raspberrypi4-uefi-linux-raspberrypi-git" "raspberrypi4-uefi-linux-headers-raspberrypi-git" "raspberrypi4-uefi-linux-api-headers-raspberrypi-git" "raspberrypi4-overlays-git" "raspberrypi4-uefi-linux-docs-raspberrypi-git")
-pkgver=5.18.0.70388f232
+pkgname=("raspberrypi4-uefi-linux-raspberrypi-git" "raspberrypi4-uefi-linux-headers-raspberrypi-git" "raspberrypi4-uefi-linux-api-headers-raspberrypi-git" "raspberrypi4-uefi-linux-docs-raspberrypi-git")
+pkgver=5.18.0.7bd9075cb
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -93,14 +93,6 @@ prepare(){
 build(){
     cd ${srcdir}/linux
     make -j$(nproc)
-}
-package_raspberrypi4-overlays-git(){
-    pkgdesc="/boot/overlays folder, needed for UEFI firmware and kernel"
-    conflicts=("raspberrypi-devicetree" "raspberrypi4-overlays")
-    provides=("raspberrypi4-overlays")
-    cd ${srcdir}/linux
-    mkdir -p ${pkgdir}/boot/overlays
-    cp ${srcdir}/linux/arch/arm64/boot/dts/overlays/{README,*.dtb*} ${pkgdir}/boot/overlays
 }
 package_raspberrypi4-uefi-linux-raspberrypi-git(){
     pkgdesc="The Linux Kernel and modules for Raspberrypi 4 UEFI RaspberryPi Kernel."

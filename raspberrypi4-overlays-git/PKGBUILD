@@ -1,0 +1,85 @@
+# Maintainer: zhanghua <zhanghua.00@qq.com>
+
+buildarch=8 # aarch64
+
+KBRANCH=5.18
+# Only need if you are using raspberrypi kernel
+USE_LLVM=false
+# Weather useing LLVM or GCC
+
+pkgname="raspberrypi4-overlays-git"
+pkgver=5.18.0.7bd9075cb
+pkgrel=1
+url="https://github.com/raspberrypi/linux"
+arch=("any")
+license=("GPL")
+groups=("raspberrypi4-uefi")
+options=("!strip")
+makedepends=("git" "cpio" "perl" "tar" "xz" "kmod" "bc")
+conflicts=("raspberrypi-devicetree" "raspberrypi4-overlays")
+provides=("raspberrypi4-overlays")
+source=(config-raspberrypi)
+sha256sums=('815d10d8db9051845964c738edec6c6bf9e01d90ea17e68729b6dfd165271fbd')
+if [ $(uname -m) != "aarch64" ]
+then
+    options+=(!ccache)
+    export ARCH=arm64
+    export CROSS_COMPILE=aarch64-linux-gnu-
+fi
+if [[ ${USE_LLVM} == true ]]
+then
+    # LLVM
+    makedepends+=("clang" "lld" "llvm")
+    export LLVM=1
+    export _STRIPBIN=/usr/bin/llvm-strip
+elif [ $(uname -m) != "aarch64" ]
+then
+    # GCC Cross-compile
+    makedepends+=("aarch64-linux-gnu-gcc")
+    export _STRIPBIN=/usr/bin/${CROSS_COMPILE}strip
+else
+    # native compile
+    export _STRIPBIN=/usr/bin/strip
+fi
+
+export LOCALVERSION=""
+# Disable annoying '+' in modules folder and kernel name
+
+pkgver(){
+    cd ${srcdir}/linux
+    echo $(make kernelversion | sed "s/-.*//").$(git rev-parse --short HEAD)
+}
+prepare(){
+    if [[ -d ${srcdir}/linux/.git ]]
+    then
+        cd ${srcdir}/linux
+        git reset --hard HEAD && git pull --depth=1 origin rpi-${KBRANCH}.y || git fetch --depth=1 origin rpi-${KBRANCH}.y && git checkout rpi-${KBRANCH}.y
+        if [ -f .config ];then
+            mv .config .config.old
+        fi
+    else
+        rm -rf ${srcdir}/linux
+        mkdir ${srcdir}/linux
+        cd ${srcdir}/linux
+        git init -q
+        git remote add origin https://github.com/raspberrypi/linux.git
+        git fetch --depth=1 origin rpi-${KBRANCH}.y
+        git checkout rpi-${KBRANCH}.y
+    fi
+    cp ${srcdir}/config-raspberrypi .config
+    make olddefconfig
+    sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
+    echo "-$pkgrel" > localversion.10-pkgrel
+    echo "" > localversion.20-pkgname
+    make -s kernelrelease > version
+    scripts/setlocalversion --save-scmversion
+}
+build(){
+    cd ${srcdir}/linux
+    make dtbs
+}
+package(){
+    cd ${srcdir}/linux
+    mkdir -p ${pkgdir}/boot/overlays
+    cp ${srcdir}/linux/arch/arm64/boot/dts/overlays/{README,*.dtb*} ${pkgdir}/boot/overlays
+}
