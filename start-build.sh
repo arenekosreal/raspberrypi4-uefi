@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 
 set -e
+export USE_LLVM=true
 if [[ ${CI} == true ]];then
     sudo chown -R builder:builder .
     root=/home/builder/build_files
