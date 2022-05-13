@@ -2,13 +2,13 @@
 
 buildarch=8 # aarch64
 
-KBRANCH=5.18
+KBRANCH=${KBRANCH:-5.18}
 # Only need if you are using raspberrypi kernel
-USE_LLVM=false
+USE_LLVM=${USE_LLVM:-false}
 # Weather useing LLVM or GCC
 
 pkgname="raspberrypi4-overlays-git"
-pkgver=5.18.0.7bd9075cb
+pkgver=5.18.0.cea4c9fdc
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("any")
@@ -19,7 +19,7 @@ makedepends=("git" "cpio" "perl" "tar" "xz" "kmod" "bc")
 conflicts=("raspberrypi-devicetree" "raspberrypi4-overlays")
 provides=("raspberrypi4-overlays")
 source=(config-raspberrypi)
-sha256sums=('815d10d8db9051845964c738edec6c6bf9e01d90ea17e68729b6dfd165271fbd')
+sha256sums=('14fa674f455bd342e34834e97bdf94b004a57da167ee689924b498ecd8121a01')
 if [ $(uname -m) != "aarch64" ]
 then
     options+=(!ccache)
@@ -73,6 +73,7 @@ prepare(){
     echo "" > localversion.20-pkgname
     make -s kernelrelease > version
     scripts/setlocalversion --save-scmversion
+    make prepare
 }
 build(){
     cd ${srcdir}/linux

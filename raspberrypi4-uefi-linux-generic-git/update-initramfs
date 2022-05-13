@@ -9,8 +9,3 @@ elif [[ -f /usr/bin/mkinitcpio ]]
 then
 	/usr/bin/mkinitcpio -p %KERNVER%
 fi
-if [[ -f /usr/bin/grub-mkconfig ]]
-then
-	echo "Updating GRUB config..."
-	/usr/bin/grub-mkconfig -o /boot/grub/grub.cfg
-fi

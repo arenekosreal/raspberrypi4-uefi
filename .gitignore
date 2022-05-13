@@ -14,3 +14,4 @@ out
 *.hcd
 bluez-firmware
 firmware-nonfree
+edk2*

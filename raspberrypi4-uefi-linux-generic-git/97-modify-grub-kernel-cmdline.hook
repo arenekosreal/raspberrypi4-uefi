@@ -1,9 +1,0 @@
-[Trigger]
-Type = Package
-Operation = Install
-Target = raspberrypi4-urfi-kernel-generic-git
-[Action]
-Description = Modifying grub kernel cmdline ...
-When = PostTransaction
-Exec = /usr/share/libalpm/scripts/modify-grub-cmdline
-Depends = grub

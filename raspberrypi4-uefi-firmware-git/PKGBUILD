@@ -4,15 +4,17 @@ USE_LLVM=${USE_LLVM:-false}
 
 buildarch=8 # aarch64
 
-pkgname="raspberrypi4-uefi-firmware" 
-pkgver=1.33.1.g02bc9ce
+pkgname="raspberrypi4-uefi-firmware-git" 
+pkgver=20220513
 pkgrel=1
 backup=("boot/config.txt")
-pkgdesc="UEFI firmware for RaspberryPi 4B"
-url="https://github.com/pftf/RPi4"
+pkgdesc="UEFI firmware for RaspberryPi 4B (git version)"
+url="https://github.com/tianocore"
 arch=("aarch64")
 license=("custom")
 groups=("raspberrypi4-uefi")
+provides=("raspberrypi4-uefi-firmware")
+conflicts=("raspberrypi4-uefi-firmware")
 depends=("raspberrypi4-overlays" "raspberrypi4-uefi-linux" "raspberrypi-bootloader")
 optdepends=(
     "firmware-raspberrypi: firmware for RaspberryPi 4B"
@@ -31,7 +33,12 @@ else
     export _COMPILER=GCC5
 fi
 source=(
-    git+https://github.com/pftf/RPi4
+    git+https://github.com/tianocore/edk2-non-osi.git
+    git+https://github.com/tianocore/edk2-platforms.git
+    git+https://github.com/tianocore/edk2.git
+    https://github.com/pftf/RPi4/raw/master/config.txt
+    https://github.com/pftf/RPi4/raw/master/0002-Check-for-Boot-Discovery-Policy-change.patch
+    https://github.com/pftf/RPi4/raw/master/0001-MdeModulePkg-UefiBootManagerLib-Signal-ReadyToBoot-o.patch
     LICENCE.EDK2::https://raw.githubusercontent.com/tianocore/edk2/master/License.txt
 	LICENCE.broadcom::https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/LICENCE.broadcom
 	ms_kek.cer::https://go.microsoft.com/fwlink/?LinkId=321185
@@ -41,6 +48,11 @@ source=(
     build.sh
 )
 sha256sums=('SKIP'
+            'SKIP'
+            'SKIP'
+            'adfc11734f9028c3b6894d0c6c94dc9700f755781edf10e19d6b31c770f37296'
+            '302b64f055853ff5f8ec1b24ed7b2bd7b6c7f7b86114fd9d1762b74332d794dc'
+            'e6ddd8e9f391bcec23aaf12757f91939deea6ae8af04a7ed3f314e403c6697ed'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
             'a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
@@ -50,16 +62,20 @@ sha256sums=('SKIP'
             '4b71df9b8e7dd77b9534efb16a220849ef2ebe789739fc7a198b581217a29d8f')
 
 pkgver(){
-    cd ${srcdir}/RPi4
-	git describe --tags | sed "s/v//;s/-/./g"
+    cd ${srcdir}
+    date -uI | sed "s/-//g"
 }
 prepare(){
-    cd ${srcdir}/RPi4
-    git submodule update --init --recursive
+    
+    for dir in edk2 edk2-non-osi edk2-platforms
+    do
+        git -C ${srcdir}/${dir} submodule update --init --recursive
+    done
+    cd ${srcdir}
     mkdir -p keys
     cp ${srcdir}/{ms_kek.cer,ms_db1.cer,ms_db2.cer,arm64_dbx.bin} keys/
     openssl req -new -x509 -newkey rsa:2048 -subj "/CN=Raspberry Pi Platform Key/" -keyout /dev/null -outform DER -out keys/pk.cer -days 7300 -nodes -sha256
-    cp ${srcdir}/build.sh build.sh
+    cp ${srcdir}/build.sh build-runtime.sh
     patch --binary -d edk2 -p1 -i ../0001-MdeModulePkg-UefiBootManagerLib-Signal-ReadyToBoot-o.patch
 	patch --binary -d edk2-platforms -p1 -i ../0002-Check-for-Boot-Discovery-Policy-change.patch
 	mkdir -p ${srcdir}/gcc10
@@ -71,14 +87,14 @@ prepare(){
 	# We use gcc 10 to create BrotliCompress to avoid compile failure. Simply downgrade gcc to 10 will broke whole Arch Distribution.
 }
 build(){
-    cd ${srcdir}/RPi4
-    sed -i "s/%FIRMVER%/${pkgver}-${pkgrel}/g;s/%CROSS_COMPILE%/${CROSS_COMPILE}/g;s/%COMPILER%/${_COMPILER}/g" build.sh
+    cd ${srcdir}
+    sed -i "s/%FIRMVER%/${pkgver}-${pkgrel}/g;s/%CROSS_COMPILE%/${CROSS_COMPILE}/g;s/%COMPILER%/${_COMPILER}/g" build-runtime.sh
     MAKEFLAGS= PATH="${srcdir}/gcc10":${PATH} make -C edk2/BaseTools
-    bash build.sh
+    bash build-runtime.sh
 }
 package(){
-	install -Dm644 ${srcdir}/RPi4/Build/RPi4/RELEASE_${_COMPILER}/FV/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
-	install -Dm644 ${srcdir}/RPi4/config.txt ${pkgdir}/boot/config.txt
+	install -Dm644 ${srcdir}/Build/RPi4/RELEASE_${_COMPILER}/FV/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
+	install -Dm644 ${srcdir}/config.txt ${pkgdir}/boot/config.txt
     install -Dm644 ${srcdir}/LICENCE.EDK2 ${pkgdir}/usr/share/licenses/${pkgname}/LICENCE.EDK2
     install -Dm644 ${srcdir}/LICENCE.broadcom ${pkgdir}/usr/share/licenses/${pkgname}/LICENCE.broadcom
 }
