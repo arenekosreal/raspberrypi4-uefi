@@ -5,7 +5,7 @@ USE_LLVM=${USE_LLVM:-false}
 buildarch=8 # aarch64
 
 pkgname="raspberrypi4-uefi-firmware-git" 
-pkgver=20220513
+pkgver=20220523
 pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B (git version)"
@@ -36,7 +36,6 @@ source=(
     git+https://github.com/tianocore/edk2-non-osi.git
     git+https://github.com/tianocore/edk2-platforms.git
     git+https://github.com/tianocore/edk2.git
-    https://github.com/pftf/RPi4/raw/master/config.txt
     https://github.com/pftf/RPi4/raw/master/0002-Check-for-Boot-Discovery-Policy-change.patch
     https://github.com/pftf/RPi4/raw/master/0001-MdeModulePkg-UefiBootManagerLib-Signal-ReadyToBoot-o.patch
     LICENCE.EDK2::https://raw.githubusercontent.com/tianocore/edk2/master/License.txt
@@ -46,11 +45,11 @@ source=(
 	ms_db2.cer::https://go.microsoft.com/fwlink/?linkid=321194
 	arm64_dbx.bin::https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin
     build.sh
+    config.txt
 )
 sha256sums=('SKIP'
             'SKIP'
             'SKIP'
-            'adfc11734f9028c3b6894d0c6c94dc9700f755781edf10e19d6b31c770f37296'
             '302b64f055853ff5f8ec1b24ed7b2bd7b6c7f7b86114fd9d1762b74332d794dc'
             'e6ddd8e9f391bcec23aaf12757f91939deea6ae8af04a7ed3f314e403c6697ed'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
@@ -59,7 +58,8 @@ sha256sums=('SKIP'
             'e8e95f0733a55e8bad7be0a1413ee23c51fcea64b3c8fa6a786935fddcc71961'
             '48e99b991f57fc52f76149599bff0a58c47154229b9f8d603ac40d3500248507'
             'f42c187f8b01b497f81fb0459164b27d16ca2af0b95c7331a82c1a27a731a885'
-            '4b71df9b8e7dd77b9534efb16a220849ef2ebe789739fc7a198b581217a29d8f')
+            '4b71df9b8e7dd77b9534efb16a220849ef2ebe789739fc7a198b581217a29d8f'
+            'ab172ccb9764b7e7180df5e89d22a3f3c5284882713915522ffbb2f7079757e6')
 
 pkgver(){
     cd ${srcdir}

@@ -15,3 +15,4 @@ out
 bluez-firmware
 firmware-nonfree
 edk2*
+*.patch

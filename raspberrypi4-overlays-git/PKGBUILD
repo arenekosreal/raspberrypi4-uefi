@@ -8,7 +8,7 @@ USE_LLVM=${USE_LLVM:-false}
 # Weather useing LLVM or GCC
 
 pkgname="raspberrypi4-overlays-git"
-pkgver=5.18.0.cea4c9fdc
+pkgver=5.18.0.dd436e006
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("any")
