@@ -7,7 +7,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="raspberrypi4-uefi-linux-generic-git"
 pkgname=("raspberrypi4-uefi-linux-generic-git" "raspberrypi4-uefi-linux-headers-generic-git" "raspberrypi4-uefi-linux-api-headers-generic-git" "raspberrypi4-uefi-linux-docs-generic-git")
-pkgver=5.18.0.9d004b2f4
+pkgver=5.19.0.6bfb56e93
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
@@ -42,7 +42,7 @@ sha256sums=('b261aa7cb2b2d38856623dcf0f06ee0edc70257dc02a69c19e1dd978c52a1836'
             '369d233ea5311e1a4b0b5f771189a35e214bc0e49d85cdd076403bb7499f928d'
             'dd1c7c24b2634bde2dadce06f410f103388f85650f1ad97f4dd85e6ccff2cee7'
             '3b44c20e9bcbeeb958cbf62d3d02a8a078fde637ba7c0eaffd06154bc5563392'
-            'fb3975816d51d231af38d0d27be3ddff77bc431644fa0026ac35693c03ae9233'
+            '4a5a28f986f9c25ddc91134396ed1afe79b5b0e9847334b417130a9eeaaa7b6e'
             'a01ef643ca47bee5d9ccb22bb407c61430f48a6e9d877a904b1d3606d4f69f28')
 source=(
     97-warn-about-merging-kernel-commands.hook

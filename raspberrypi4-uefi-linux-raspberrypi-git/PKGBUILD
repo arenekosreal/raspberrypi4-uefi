@@ -2,14 +2,14 @@
 
 buildarch=8 # aarch64
 
-KBRANCH=${KBRANCH:-5.18}
+KBRANCH=${KBRANCH:-5.19}
 # Only need if you are using raspberrypi kernel
 USE_LLVM=${USE_LLVM:-false}
 # Weather using LLVM or GCC
 
 pkgbase="raspberrypi4-uefi-linux-raspberrypi-git"
 pkgname=("raspberrypi4-uefi-linux-raspberrypi-git" "raspberrypi4-uefi-linux-headers-raspberrypi-git" "raspberrypi4-uefi-linux-api-headers-raspberrypi-git" "raspberrypi4-uefi-linux-docs-raspberrypi-git")
-pkgver=5.18.0.bedcc6308
+pkgver=5.19.0.70a6375f2
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -43,7 +43,7 @@ sha256sums=('6553cbc5b1bad11a3abbff10d9d20b92f931392f61b1ce562c55d2a98e901a50'
             '369d233ea5311e1a4b0b5f771189a35e214bc0e49d85cdd076403bb7499f928d'
             'dd1c7c24b2634bde2dadce06f410f103388f85650f1ad97f4dd85e6ccff2cee7'
             '3b44c20e9bcbeeb958cbf62d3d02a8a078fde637ba7c0eaffd06154bc5563392'
-            '14fa674f455bd342e34834e97bdf94b004a57da167ee689924b498ecd8121a01'
+            '5f20c1ca81860fb3b8eaefd5d2cb7d5bafe4876e478114c00baca58c64ee1026'
             'a01ef643ca47bee5d9ccb22bb407c61430f48a6e9d877a904b1d3606d4f69f28')
 source=(
     97-warn-about-merging-kernel-commands.hook

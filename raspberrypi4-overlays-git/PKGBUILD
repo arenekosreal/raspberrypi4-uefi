@@ -2,13 +2,13 @@
 
 buildarch=8 # aarch64
 
-KBRANCH=${KBRANCH:-5.18}
+KBRANCH=${KBRANCH:-5.19}
 # Only need if you are using raspberrypi kernel
 USE_LLVM=${USE_LLVM:-false}
 # Weather useing LLVM or GCC
 
 pkgname="raspberrypi4-overlays-git"
-pkgver=5.18.0.bedcc6308
+pkgver=5.19.0.70a6375f2
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("any")
@@ -19,7 +19,7 @@ makedepends=("git" "cpio" "perl" "tar" "xz" "kmod" "bc")
 conflicts=("raspberrypi-devicetree" "raspberrypi4-overlays")
 provides=("raspberrypi4-overlays")
 source=(config-raspberrypi)
-sha256sums=('14fa674f455bd342e34834e97bdf94b004a57da167ee689924b498ecd8121a01')
+sha256sums=('5f20c1ca81860fb3b8eaefd5d2cb7d5bafe4876e478114c00baca58c64ee1026')
 if [ $(uname -m) != "aarch64" ]
 then
     options+=(!ccache)
