@@ -9,7 +9,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="raspberrypi4-uefi-linux-raspberrypi-git"
 pkgname=("raspberrypi4-uefi-linux-raspberrypi-git" "raspberrypi4-uefi-linux-headers-raspberrypi-git" "raspberrypi4-uefi-linux-api-headers-raspberrypi-git" "raspberrypi4-uefi-linux-docs-raspberrypi-git")
-pkgver=5.19.0.70a6375f2
+pkgver=5.19.0.9a5c6596d
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
