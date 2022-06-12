@@ -5,8 +5,8 @@ buildarch=8 # aarch64
 USE_LLVM=${USE_LLVM:-false}
 # Weather using LLVM or GCC
 
-pkgbase="raspberrypi4-uefi-linux-generic-git"
-pkgname=("raspberrypi4-uefi-linux-generic-git" "raspberrypi4-uefi-linux-headers-generic-git" "raspberrypi4-uefi-linux-api-headers-generic-git" "raspberrypi4-uefi-linux-docs-generic-git")
+pkgbase="linux-rpi4-uefi-generic"
+pkgname=("linux-rpi4-uefi-generic-git" "linux-headers-rpi4-uefi-generic-git" "linux-api-headers-rpi4-uefi-generic-git" "linux-docs-rpi4-uefi-generic-git")
 pkgver=5.19.0.7a68065eb
 pkgrel=1
 url="https://github.com/torvalds/linux"
@@ -82,7 +82,7 @@ prepare(){
     cp ${srcdir}/config-generic .config
     make olddefconfig
     echo "-$pkgrel" > localversion.10-pkgrel
-    echo "" > localversion.20-pkgname
+    echo "${pkgbase#linux}" > localversion.20-pkgname
     make -s kernelrelease > version
     scripts/setlocalversion --save-scmversion
     make prepare
@@ -91,17 +91,17 @@ build(){
     cd ${srcdir}/linux
     make -j$(nproc)
 }
-package_raspberrypi4-uefi-linux-generic-git(){
+package_linux-rpi4-uefi-generic-git(){
     pkgdesc="The Linux Kernel and modules for Raspberrypi 4 UEFI Generic Kernel."
     depends=("coreutils" "kmod" "initramfs" "raspberrypi4-overlays")
     optdepends=(
         "crda: to set the correct wireless channels of your country" 
         "linux-firmware: firmware images needed for some devices"
-        "raspberrypi4-uefi-firmware: for UEFI firmware"
+        "uefi-raspberrypi4: for UEFI firmware"
     )
-    provides=("linux=${pkgver%.*}" "raspberrypi4-uefi-linux=${pkgver%.*}")
-    conflicts=("linux" "uboot-raspberrypi" "raspberrypi4-uefi-linux")
-    replaces=("raspberrypi4-uefi-kernel-generic-git")
+    provides=("linux-rpi4-uefi=${pkgver%.*}")
+    conflicts=("linux-rpi4-uefi")
+    replaces=("raspberrypi4-uefi-linux-generic-git")
     cd ${srcdir}/linux
 	kernver=$(cat version)
     mkdir -p ${pkgdir}/{boot,usr,boot/dtbs}
@@ -127,11 +127,10 @@ package_raspberrypi4-uefi-linux-generic-git(){
     sed -i "s/%KERNVER%/${kernver}/g;s/%PKGBASE%/${pkgbase}/g" ${pkgdir}/usr/share/libalpm/scripts/update-initramfs
     sed -i "s/%KERNVER%/${kernver}/g;s/%PKGBASE%/${pkgbase}/g" ${pkgdir}/usr/share/libalpm/scripts/remove-initramfs
 }
-package_raspberrypi4-uefi-linux-headers-generic-git(){
+package_linux-headers-rpi4-uefi-generic-git(){
     pkgdesc="Header files and scripts for building modules for Raspberrypi 4 UEFI Generic Kernel."
-    provides=("linux-headers=${pkgver%.*}" "raspberrypi4-uefi-linux-headers=${pkgver%.*}")
-    conflicts=("linux-headers")
-    replaces=("raspberrypi4-uefi-kernel-headers-generic-git")
+    provides=("linux-headers=${pkgver%.*}")
+    replaces=("raspberrypi4-uefi-kernel-headers-generic-git" "raspberrypi4-uefi-linux-headers-generic-git")
     depends=("pahole")
     cd ${srcdir}/linux
 	kernver=$(make kernelrelease)
@@ -185,21 +184,21 @@ package_raspberrypi4-uefi-linux-headers-generic-git(){
     mkdir -p ${pkgdir}/usr/src
     ln -sr ${pkgdir}/usr/lib/modules/${kernver}/build ${pkgdir}/usr/src/linux-${kernver}
 }
-package_raspberrypi4-uefi-linux-api-headers-generic-git(){
+package_linux-api-headers-rpi4-uefi-generic-git(){
     pkgdesc="Kernel headers sanitized for use in userspace for Raspberrypi 4 UEFI Generic Kernel."
-	provides=("linux-api-headers=${pkgver%.*}" "raspberrypi4-uefi-linux-api-headers=${pkgver%.*}")
+	provides=("linux-api-headers=${pkgver%.*}")
 	conflicts=("linux-api-headers")
-    replaces=("raspberrypi4-uefi-kernel-api-headers-generic-git")
+    replaces=("raspberrypi4-uefi-kernel-api-headers-generic-git" "raspberrypi4-uefi-linux-api-headers-generic-git")
     cd ${srcdir}/linux
 	make INSTALL_HDR_PATH="${pkgdir}/usr" headers_install
 	# use headers from libdrm
 	rm -r "${pkgdir}/usr/include/drm"
 }
-package_raspberrypi4-uefi-linux-docs-generic-git(){
+package_linux-docs-rpi4-uefi-generic-git(){
     pkgdesc="Documentation for the RaspberryPi 4 UEFI Generic Kernel."
-    provides=("linux-docs=${pkgver%.*}" "raspberrypi4-uefi-linux-docs=${pkgver%.*}")
+    provides=("linux-docs=${pkgver%.*}")
     conflicts=("linux-docs")
-    replaces=("raspberrypi4-uefi-kernel-docs-generic-git")
+    replaces=("raspberrypi4-uefi-kernel-docs-generic-git" "raspberrypi4-uefi-linux-docs-generic-git")
     cd ${srcdir}/linux
     kernver=$(make kernelrelease)
     local src dst

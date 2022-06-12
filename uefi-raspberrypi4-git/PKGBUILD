@@ -4,7 +4,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 buildarch=8 # aarch64
 
-pkgname="raspberrypi4-uefi-firmware-git" 
+pkgname="uefi-raspberrypi4-git" 
 pkgver=20220612
 pkgrel=1
 backup=("boot/config.txt")
@@ -14,8 +14,9 @@ arch=("aarch64")
 license=("custom")
 groups=("raspberrypi4-uefi")
 provides=("raspberrypi4-uefi-firmware")
-conflicts=("raspberrypi4-uefi-firmware")
-depends=("raspberrypi4-overlays" "raspberrypi4-uefi-linux" "raspberrypi-bootloader")
+conflicts=("raspberrypi4-uefi-firmware" "uboot-raspberrypi")
+replaces=("raspberrypi4-uefi-firmware-git")
+depends=("raspberrypi4-overlays" "linux-rpi-uefi" "raspberrypi-bootloader")
 optdepends=(
     "firmware-raspberrypi: firmware for RaspberryPi 4B"
     "linux-firmware: firmware for RaspberryPi 4B")

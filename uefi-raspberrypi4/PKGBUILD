@@ -4,7 +4,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 buildarch=8 # aarch64
 
-pkgname="raspberrypi4-uefi-firmware" 
+pkgname="uefi-raspberrypi4" 
 pkgver=1.33.1.g02bc9ce
 pkgrel=2
 backup=("boot/config.txt")
@@ -13,7 +13,9 @@ url="https://github.com/pftf/RPi4"
 arch=("aarch64")
 license=("custom")
 groups=("raspberrypi4-uefi")
-depends=("raspberrypi4-overlays" "raspberrypi4-uefi-linux" "raspberrypi-bootloader")
+conflicts=("uboot-raspberrypi")
+replaces=("raspberrypi4-uefi-firmware")
+depends=("raspberrypi4-overlays" "linux-rpi4-uefi" "raspberrypi-bootloader")
 optdepends=(
     "firmware-raspberrypi: firmware for RaspberryPi 4B"
     "linux-firmware: firmware for RaspberryPi 4B")
