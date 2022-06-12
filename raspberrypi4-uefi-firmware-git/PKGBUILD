@@ -5,7 +5,7 @@ USE_LLVM=${USE_LLVM:-false}
 buildarch=8 # aarch64
 
 pkgname="raspberrypi4-uefi-firmware-git" 
-pkgver=20220610
+pkgver=20220612
 pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B (git version)"
@@ -20,17 +20,17 @@ optdepends=(
     "firmware-raspberrypi: firmware for RaspberryPi 4B"
     "linux-firmware: firmware for RaspberryPi 4B")
 makedepends=("git" "acpica" "openssl" "util-linux")
-if [ $(uname -m) != "aarch64" ]
+if [[ ${USE_LLVM} == true ]]
+then
+    export _COMPILER=CLANG38
+    makedepends+=("clang" "llvm" "lld")
+elif [ $(uname -m) != "aarch64" ]
 then
     export CROSS_COMPILE=aarch64-linux-gnu-
-    if [[ ${USE_LLVM} == true ]]
-    then
-        export _COMPILER=CLANG38
-        makedepends+=("clang" "llvm" "lld")
-    else
-        export _COMPILER=GCC5
-        makedepends+=("aarch64-linux-gnu-gcc")
-    fi
+    export _COMPILER=GCC5
+    makedepends+=("aarch64-linux-gnu-gcc")
+else
+    export _COMPILER=GCC5
 fi
 source=(
     git+https://github.com/tianocore/edk2-non-osi.git
