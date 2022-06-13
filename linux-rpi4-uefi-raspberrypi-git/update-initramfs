@@ -11,3 +11,4 @@ then
 else
 	echo 'No suppported initramfs generator installed.'
 fi
+[[ ! -f /boot/vmlinuz-%KERNVER% ]] && install -Dm644 /usr/lib/modules/%KERNVER%/vmlinuz /boot/vmlinuz-%KERNVER%

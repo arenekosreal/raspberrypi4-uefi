@@ -2,3 +2,4 @@
 
 [[ -f /boot/initramfs-%KERNVER%.img ]] && rm -f /boot/initramfs-%KERNVER%.img
 [[ -f /boot/initramfs-%KERNVER%-fallback.img ]] && rm -f /boot/initramfs-%KERNVER%-fallback.img
+[[ -f /boot/vmlinuz-%KERNVER%]] && rm -f /boot/vmlinuz-%KERNVER%

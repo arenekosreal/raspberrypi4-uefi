@@ -1,0 +1,96 @@
+# Maintainer: zhanghua <zhanghua.00@qq.com>
+
+buildarch=8 # aarch64
+
+KBRANCH=${KBRANCH:-5.19}
+# Only need if you are using raspberrypi kernel
+USE_LLVM=${USE_LLVM:-false}
+# Weather useing LLVM or GCC
+
+pkgbase="raspberrypi4-devicetree-raspberrypi-git"
+pkgname=("raspberrypi4-overlays-raspberrypi-git" "raspberrypi4-dtbs-raspberrypi-git")
+pkgver=5.19.0.c2be166a4
+pkgrel=1
+url="https://github.com/raspberrypi/linux"
+arch=("any")
+license=("GPL")
+groups=("raspberrypi4-uefi")
+options=("!strip")
+makedepends=("git")
+conflicts=("raspberrypi-devicetree")
+source=(config-raspberrypi)
+sha256sums=('5f20c1ca81860fb3b8eaefd5d2cb7d5bafe4876e478114c00baca58c64ee1026')
+if [ $(uname -m) != "aarch64" ]
+then
+    options+=(!ccache)
+    export ARCH=arm64
+    export CROSS_COMPILE=aarch64-linux-gnu-
+fi
+if [[ ${USE_LLVM} == true ]]
+then
+    # LLVM
+    makedepends+=("clang" "lld" "llvm")
+    export LLVM=1
+    export _STRIPBIN=/usr/bin/llvm-strip
+elif [ $(uname -m) != "aarch64" ]
+then
+    # GCC Cross-compile
+    makedepends+=("aarch64-linux-gnu-gcc")
+    export _STRIPBIN=/usr/bin/${CROSS_COMPILE}strip
+else
+    # native compile
+    export _STRIPBIN=/usr/bin/strip
+fi
+
+export LOCALVERSION=""
+# Disable annoying '+' in modules folder and kernel name
+
+pkgver(){
+    cd ${srcdir}/linux
+    echo $(make kernelversion | sed "s/-.*//").$(git rev-parse --short HEAD)
+}
+prepare(){
+    if [[ -d ${srcdir}/linux/.git ]]
+    then
+        cd ${srcdir}/linux
+        git reset --hard HEAD && git pull --depth=1 origin rpi-${KBRANCH}.y || git fetch --depth=1 origin rpi-${KBRANCH}.y && git checkout rpi-${KBRANCH}.y
+        if [ -f .config ];then
+            mv .config .config.old
+        fi
+    else
+        rm -rf ${srcdir}/linux
+        mkdir ${srcdir}/linux
+        cd ${srcdir}/linux
+        git init -q
+        git remote add origin https://github.com/raspberrypi/linux.git
+        git fetch --depth=1 origin rpi-${KBRANCH}.y
+        git checkout rpi-${KBRANCH}.y
+    fi
+    cp ${srcdir}/config-raspberrypi .config
+    make olddefconfig
+    sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
+    echo "-$pkgrel" > localversion.10-pkgrel
+    echo "" > localversion.20-pkgname
+    make -s kernelrelease > version
+    scripts/setlocalversion --save-scmversion
+    make prepare
+}
+build(){
+    cd ${srcdir}/linux
+    make dtbs
+}
+package_raspberrypi4-overlays-raspberrypi-git(){
+    pkgdesc="/boot/overlays folder for Raspberry Pi 4B"
+    conflicts+=("raspberrypi4-overlays")
+    provides=("raspberrypi4-overlays")
+    cd ${srcdir}/linux
+    mkdir -p ${pkgdir}/boot/overlays
+    cp ${srcdir}/linux/arch/arm64/boot/dts/overlays/{README,*.dtb*} ${pkgdir}/boot/overlays
+}
+package_raspberrypi4-dtbs-raspberrypi-git(){
+    pkgdesc="/boot/bcm2711-rpi-4-b.dtb for Raspberry Pi 4B"
+    conflicts+=("raspberrypi4-dtbs")
+    provides=("raspberrypi4-dtbs")
+    install -Dm644 ${srcdir}/linux/arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dtb \
+        ${pkgdir}/boot/bcm2711-rpi-4-b.dtb
+}

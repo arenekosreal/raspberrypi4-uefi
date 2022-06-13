@@ -2,24 +2,22 @@
 
 buildarch=8 # aarch64
 
-KBRANCH=${KBRANCH:-5.19}
-# Only need if you are using raspberrypi kernel
 USE_LLVM=${USE_LLVM:-false}
 # Weather useing LLVM or GCC
 
-pkgname="raspberrypi4-overlays-git"
-pkgver=5.19.0.9a5c6596d
+pkgbase="raspberrypi4-devicetree-generic-git"
+pkgname=("raspberrypi4-dtbs-generic-git")
+pkgver=5.19.0.b13baccc3
 pkgrel=1
-url="https://github.com/raspberrypi/linux"
+url="https://github.com/torvalds/linux"
 arch=("any")
 license=("GPL")
 groups=("raspberrypi4-uefi")
 options=("!strip")
-makedepends=("git" "cpio" "perl" "tar" "xz" "kmod" "bc")
-conflicts=("raspberrypi-devicetree" "raspberrypi4-overlays")
-provides=("raspberrypi4-overlays")
-source=(config-raspberrypi)
-sha256sums=('5f20c1ca81860fb3b8eaefd5d2cb7d5bafe4876e478114c00baca58c64ee1026')
+makedepends=("git")
+conflicts=("raspberrypi-devicetree")
+source=(config-generic)
+sha256sums=('4a5a28f986f9c25ddc91134396ed1afe79b5b0e9847334b417130a9eeaaa7b6e')
 if [ $(uname -m) != "aarch64" ]
 then
     options+=(!ccache)
@@ -53,7 +51,7 @@ prepare(){
     if [[ -d ${srcdir}/linux/.git ]]
     then
         cd ${srcdir}/linux
-        git reset --hard HEAD && git pull --depth=1 origin rpi-${KBRANCH}.y || git fetch --depth=1 origin rpi-${KBRANCH}.y && git checkout rpi-${KBRANCH}.y
+        git reset --hard HEAD && git pull --depth=1 origin master || git fetch --depth=1 origin master && git checkout master
         if [ -f .config ];then
             mv .config .config.old
         fi
@@ -62,11 +60,11 @@ prepare(){
         mkdir ${srcdir}/linux
         cd ${srcdir}/linux
         git init -q
-        git remote add origin https://github.com/raspberrypi/linux.git
-        git fetch --depth=1 origin rpi-${KBRANCH}.y
-        git checkout rpi-${KBRANCH}.y
+        git remote add origin https://github.com/torvalds/linux.git
+        git fetch --depth=1 origin master
+        git checkout master
     fi
-    cp ${srcdir}/config-raspberrypi .config
+    cp ${srcdir}/config-generic .config
     make olddefconfig
     sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
     echo "-$pkgrel" > localversion.10-pkgrel
@@ -79,8 +77,10 @@ build(){
     cd ${srcdir}/linux
     make dtbs
 }
-package(){
-    cd ${srcdir}/linux
-    mkdir -p ${pkgdir}/boot/overlays
-    cp ${srcdir}/linux/arch/arm64/boot/dts/overlays/{README,*.dtb*} ${pkgdir}/boot/overlays
+package_raspberrypi4-dtbs-generic-git(){
+    pkgdesc="/boot/bcm2711-rpi-4-b.dtb for raspberrypi4"
+    conflicts+=("raspberrypi4-dtbs")
+    provides=("raspberrypi4-dtbs")
+    install -Dm644 ${srcdir}/linux/arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dtb \
+        ${pkgdir}/boot/bcm2711-rpi-4-b.dtb
 }

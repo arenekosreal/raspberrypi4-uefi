@@ -15,7 +15,7 @@ license=("custom")
 groups=("raspberrypi4-uefi")
 conflicts=("uboot-raspberrypi")
 replaces=("raspberrypi4-uefi-firmware")
-depends=("raspberrypi4-overlays" "linux-rpi4-uefi" "raspberrypi-bootloader")
+depends=("raspberrypi4-overlays" "raspberrypi4-dtbs" "raspberrypi-bootloader")
 optdepends=(
     "firmware-raspberrypi: firmware for RaspberryPi 4B"
     "linux-firmware: firmware for RaspberryPi 4B")

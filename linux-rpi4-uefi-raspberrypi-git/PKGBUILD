@@ -9,7 +9,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="linux-rpi4-uefi-raspberrypi"
 pkgname=("linux-rpi4-uefi-raspberrypi-git" "linux-headers-rpi4-uefi-raspberrypi-git" "linux-api-headers-rpi4-uefi-raspberrypi-git" "linux-docs-rpi4-uefi-raspberrypi-git")
-pkgver=5.19.0.9a5c6596d
+pkgver=5.19.0.c2be166a4
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -41,8 +41,8 @@ fi
 sha256sums=('6553cbc5b1bad11a3abbff10d9d20b92f931392f61b1ce562c55d2a98e901a50'
             'e3f755248af1cb966b6a1b4fb172ac68ea797bffd4a2236f96ead6da76d699e5'
             '369d233ea5311e1a4b0b5f771189a35e214bc0e49d85cdd076403bb7499f928d'
-            'c62d9a07bbbb744d59514d74d4651a43489fab12e8d20273eef9b7338de06380'
-            '3b44c20e9bcbeeb958cbf62d3d02a8a078fde637ba7c0eaffd06154bc5563392'
+            '47e07049d1527ac375338d916089e40e4113e7d2f95b0e8901860ba9b0f8f24a'
+            'bf2bb61743f6283eff134bdc941ca528b1b5bfc4331f4643ffbb6d2c0b8ffa20'
             '5f20c1ca81860fb3b8eaefd5d2cb7d5bafe4876e478114c00baca58c64ee1026'
             'a01ef643ca47bee5d9ccb22bb407c61430f48a6e9d877a904b1d3606d4f69f28')
 source=(
@@ -91,7 +91,8 @@ prepare(){
 }
 build(){
     cd ${srcdir}/linux
-    make -j$(nproc)
+    make modules -j$(nproc)
+    make Image.gz -j$(nproc)
 }
 package_linux-rpi4-uefi-raspberrypi-git(){
     pkgdesc="The Linux Kernel and modules for Raspberrypi 4 UEFI RaspberryPi Kernel."
@@ -101,18 +102,15 @@ package_linux-rpi4-uefi-raspberrypi-git(){
         "linux-firmware: firmware images needed for some devices"
         "uefi-raspberrypi4: for UEFI firmware"
     )
-    provides=("linux-rpi4-uefi=${pkgver%.*}")
-    conflicts=("linux-rpi4-uefi")
+    provides=("linux=${pkgver%.*}")
+    conflicts=("linux")
     replaces=("raspberrypi4-uefi-linux-raspberrypi-git")
     cd ${srcdir}/linux
 	kernver=$(cat version)
-    mkdir -p ${pkgdir}/{boot,usr,boot/dtbs}
-	make zinstall INSTALL_PATH=${pkgdir}/boot
-	make modules_install INSTALL_MOD_PATH=${pkgdir}/usr DEPMOD=/doesnt/exist
-	make dtbs_install INSTALL_DTBS_PATH=${pkgdir}/boot/dtbs
-	cp ${pkgdir}/boot/dtbs/broadcom/bcm271*-rpi-*.dtb ${pkgdir}/boot
-	rm -rf ${pkgdir}/boot/dtbs
-    rm ${pkgdir}/boot/System.map*
+
+    mkdir -p ${pkgdir}/usr
+	make modules_install INSTALL_MOD_PATH=${pkgdir}/usr DEPMOD=/usr/bin/true
+
     # systemd expects to find the kernel here to allow hibernation
     # https://github.com/systemd/systemd/commit/edda44605f06a41fb86b7ab8128dcf99161d2344
     install -Dm644 "$(make -s image_name)" ${pkgdir}/usr/lib/modules/${kernver}/vmlinuz
