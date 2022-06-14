@@ -9,7 +9,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="linux-rpi4-uefi-raspberrypi"
 pkgname=("linux-rpi4-uefi-raspberrypi-git" "linux-headers-rpi4-uefi-raspberrypi-git" "linux-api-headers-rpi4-uefi-raspberrypi-git" "linux-docs-rpi4-uefi-raspberrypi-git")
-pkgver=5.19.0.c2be166a4
+pkgver=5.19.0.38be0c190
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -39,20 +39,10 @@ else
     export _STRIPBIN=/usr/bin/strip
 fi
 sha256sums=('6553cbc5b1bad11a3abbff10d9d20b92f931392f61b1ce562c55d2a98e901a50'
-            'e3f755248af1cb966b6a1b4fb172ac68ea797bffd4a2236f96ead6da76d699e5'
-            '369d233ea5311e1a4b0b5f771189a35e214bc0e49d85cdd076403bb7499f928d'
-            '47e07049d1527ac375338d916089e40e4113e7d2f95b0e8901860ba9b0f8f24a'
-            'bf2bb61743f6283eff134bdc941ca528b1b5bfc4331f4643ffbb6d2c0b8ffa20'
-            '5f20c1ca81860fb3b8eaefd5d2cb7d5bafe4876e478114c00baca58c64ee1026'
-            'a01ef643ca47bee5d9ccb22bb407c61430f48a6e9d877a904b1d3606d4f69f28')
+            '5f20c1ca81860fb3b8eaefd5d2cb7d5bafe4876e478114c00baca58c64ee1026')
 source=(
     97-warn-about-merging-kernel-commands.hook
-	98-update-initramfs.hook
-    98-remove-initramfs.hook
-	update-initramfs
-    remove-initramfs
     config-raspberrypi
-    linux.preset
 )
 
 export LOCALVERSION=""
@@ -114,18 +104,10 @@ package_linux-rpi4-uefi-raspberrypi-git(){
     # systemd expects to find the kernel here to allow hibernation
     # https://github.com/systemd/systemd/commit/edda44605f06a41fb86b7ab8128dcf99161d2344
     install -Dm644 "$(make -s image_name)" ${pkgdir}/usr/lib/modules/${kernver}/vmlinuz
-	echo ${kernver} | install -Dm644 /dev/stdin ${pkgdir}/usr/lib/modules/${kernver}/pkgbase
+	echo ${pkgbase} | install -Dm644 /dev/stdin ${pkgdir}/usr/lib/modules/${kernver}/pkgbase
 	rm ${pkgdir}/usr/lib/modules/${kernver}/{source,build}
-    install -Dm755 ${srcdir}/update-initramfs ${pkgdir}/usr/share/libalpm/scripts/update-initramfs
-    install -Dm755 ${srcdir}/remove-initramfs ${pkgdir}/usr/share/libalpm/scripts/remove-initramfs
-    install -Dm644 ${srcdir}/97-warn-about-merging-kernel-commands.hook ${pkgdir}/usr/share/libalpm/hooks/97-warn-about-merging-kernel-commands.hook
-    install -Dm644 ${srcdir}/98-update-initramfs.hook ${pkgdir}/usr/share/libalpm/hooks/98-update-initramfs.hook
-    install -Dm644 ${srcdir}/98-remove-initramfs.hook ${pkgdir}/usr/share/libalpm/hooks/98-remove-initramfs.hook
-    install -Dm644 ${srcdir}/linux.preset ${pkgdir}/etc/mkinitcpio.d/${kernver}.preset
-    sed -i "s/%KERNVER%/${kernver}/g;s/%PKGBASE%/${pkgbase}/g" ${pkgdir}/etc/mkinitcpio.d/${kernver}.preset
-    sed -i "s/%KERNVER%/${kernver}/g;s/%PKGBASE%/${pkgbase}/g" ${pkgdir}/usr/share/libalpm/hooks/98-remove-initramfs.hook
-    sed -i "s/%KERNVER%/${kernver}/g;s/%PKGBASE%/${pkgbase}/g" ${pkgdir}/usr/share/libalpm/scripts/update-initramfs
-    sed -i "s/%KERNVER%/${kernver}/g;s/%PKGBASE%/${pkgbase}/g" ${pkgdir}/usr/share/libalpm/scripts/remove-initramfs
+    install -Dm644 ${srcdir}/97-warn-about-merging-kernel-commands.hook \
+        ${pkgdir}/usr/share/libalpm/hooks/97-warn-about-merging-kernel-commands.hook
 }
 package_linux-headers-rpi4-uefi-raspberrypi-git(){
     pkgdesc="Header files and scripts for building modules for Raspberrypi 4 UEFI RaspberryPi Kernel."
