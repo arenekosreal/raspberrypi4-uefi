@@ -8,7 +8,7 @@ USE_LLVM=${USE_LLVM:-false}
 pkgbase="linux-rpi4-uefi-generic"
 pkgname=("linux-rpi4-uefi-generic-git" "linux-headers-rpi4-uefi-generic-git" "linux-api-headers-rpi4-uefi-generic-git" "linux-docs-rpi4-uefi-generic-git")
 pkgver=5.19.0.b13baccc3
-pkgrel=1
+pkgrel=2
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
 license=("GPL")
@@ -162,7 +162,7 @@ package_linux-headers-rpi4-uefi-generic-git(){
   	done < <(find "${pkgdir}/usr/lib/modules/${kernver}/build" -type f -perm -u+x ! -name vmlinux -print0)
     ${_STRIPBIN} ${STRIP_STATIC} "${pkgdir}/usr/lib/modules/${kernver}/build/vmlinux"
     mkdir -p ${pkgdir}/usr/src
-    ln -sr ${pkgdir}/usr/lib/modules/${kernver}/build ${pkgdir}/usr/src/linux-${kernver}
+    ln -sr ${pkgdir}/usr/lib/modules/${kernver}/build ${pkgdir}/usr/src/${pkgbase}
 }
 package_linux-api-headers-rpi4-uefi-generic-git(){
     pkgdesc="Kernel headers sanitized for use in userspace for Raspberrypi 4 UEFI Generic Kernel."

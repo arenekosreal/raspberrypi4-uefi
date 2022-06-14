@@ -10,7 +10,7 @@ USE_LLVM=${USE_LLVM:-false}
 pkgbase="linux-rpi4-uefi-raspberrypi"
 pkgname=("linux-rpi4-uefi-raspberrypi-git" "linux-headers-rpi4-uefi-raspberrypi-git" "linux-api-headers-rpi4-uefi-raspberrypi-git" "linux-docs-rpi4-uefi-raspberrypi-git")
 pkgver=5.19.0.38be0c190
-pkgrel=1
+pkgrel=2
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
 license=("GPL")
@@ -164,7 +164,7 @@ package_linux-headers-rpi4-uefi-raspberrypi-git(){
   	done < <(find "${pkgdir}/usr/lib/modules/${kernver}/build/scripts" -type f -perm -u+w -print0 2>/dev/null)
     ${_STRIPBIN} ${STRIP_STATIC} "${pkgdir}/usr/lib/modules/${kernver}/build/vmlinux"
     mkdir -p ${pkgdir}/usr/src
-    ln -sr ${pkgdir}/usr/lib/modules/${kernver}/build ${pkgdir}/usr/src/linux-${kernver}
+    ln -sr ${pkgdir}/usr/lib/modules/${kernver}/build ${pkgdir}/usr/src/${pkgbase}
 }
 package_linux-api-headers-rpi4-uefi-raspberrypi-git(){
     pkgdesc="Kernel headers sanitized for use in userspace for Raspberrypi 4 UEFI RaspberryPi Kernel."
