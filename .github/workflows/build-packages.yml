@@ -57,5 +57,4 @@ jobs:
             ```
 
             Notes:
-            - Please choose generic or raspberrypi kernel, they can't be installed at same time because they have different device tree files with same name.
-            - `/boot/overlays` built from raspberrypi kernel has been splited into a single package called `raspberrypi4-overlays-git` which is needed by `raspberrypi4-uefi-firmware` because generic kernel doesn't have overlays.
+            - `/boot/overlays` built from raspberrypi kernel has been splited into a single package called `raspberrypi4-overlays-raspberrypi-git` which is needed by `uefi-raspberrypi4` because generic kernel doesn't have overlays.
