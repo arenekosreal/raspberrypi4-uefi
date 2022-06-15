@@ -7,8 +7,8 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="linux-rpi4-uefi-generic"
 pkgname=("linux-rpi4-uefi-generic-git" "linux-headers-rpi4-uefi-generic-git" "linux-api-headers-rpi4-uefi-generic-git" "linux-docs-rpi4-uefi-generic-git")
-pkgver=5.19.0.b13baccc3
-pkgrel=2
+pkgver=5.19.0.018ab4fab
+pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
 license=("GPL")
