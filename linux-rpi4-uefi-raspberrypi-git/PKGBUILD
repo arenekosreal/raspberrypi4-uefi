@@ -9,7 +9,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="linux-rpi4-uefi-raspberrypi"
 pkgname=("linux-rpi4-uefi-raspberrypi-git" "linux-headers-rpi4-uefi-raspberrypi-git" "linux-api-headers-rpi4-uefi-raspberrypi-git" "linux-docs-rpi4-uefi-raspberrypi-git")
-pkgver=5.19.0.9a2f86c50
+pkgver=5.19.0.ab138cc95
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -39,7 +39,7 @@ else
     export _STRIPBIN=/usr/bin/strip
 fi
 sha256sums=('6553cbc5b1bad11a3abbff10d9d20b92f931392f61b1ce562c55d2a98e901a50'
-            '5f20c1ca81860fb3b8eaefd5d2cb7d5bafe4876e478114c00baca58c64ee1026')
+            'abe7d71e455c4e5db4074c0978e8a5ae15d00d46c97921d24b74dafd615153f1')
 source=(
     97-warn-about-merging-kernel-commands.hook
     config-raspberrypi
@@ -80,9 +80,10 @@ prepare(){
     make prepare
 }
 build(){
+    [[ -z MAKEFLAGS ]] && MAKEFLAGS=-j$(nproc)
     cd ${srcdir}/linux
-    make modules -j$(nproc)
-    make Image.gz -j$(nproc)
+    make modules
+    make Image.gz
 }
 package_linux-rpi4-uefi-raspberrypi-git(){
     pkgdesc="The Linux Kernel and modules for Raspberrypi 4 UEFI RaspberryPi Kernel."

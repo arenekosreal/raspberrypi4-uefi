@@ -7,7 +7,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="raspberrypi4-devicetree-generic-git"
 pkgname=("raspberrypi4-dtbs-generic-git")
-pkgver=5.19.0.018ab4fab
+pkgver=5.19.0.78ca55889
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("any")
@@ -17,7 +17,7 @@ options=("!strip")
 makedepends=("git")
 conflicts=("raspberrypi-devicetree")
 source=(config-generic)
-sha256sums=('4a5a28f986f9c25ddc91134396ed1afe79b5b0e9847334b417130a9eeaaa7b6e')
+sha256sums=('704b6384330ba1bb123682ee6f43252c0ff246a3ee2524977f6537212bf63cc9')
 if [ $(uname -m) != "aarch64" ]
 then
     options+=(!ccache)

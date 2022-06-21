@@ -7,7 +7,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="linux-rpi4-uefi-generic"
 pkgname=("linux-rpi4-uefi-generic-git" "linux-headers-rpi4-uefi-generic-git" "linux-api-headers-rpi4-uefi-generic-git" "linux-docs-rpi4-uefi-generic-git")
-pkgver=5.19.0.018ab4fab
+pkgver=5.19.0.78ca55889
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
@@ -38,7 +38,7 @@ else
 fi
 
 sha256sums=('b261aa7cb2b2d38856623dcf0f06ee0edc70257dc02a69c19e1dd978c52a1836'
-            '4a5a28f986f9c25ddc91134396ed1afe79b5b0e9847334b417130a9eeaaa7b6e')
+            '704b6384330ba1bb123682ee6f43252c0ff246a3ee2524977f6537212bf63cc9')
 source=(
     97-warn-about-merging-kernel-commands.hook
     config-generic
@@ -78,9 +78,10 @@ prepare(){
     make prepare
 }
 build(){
+    [[ -z MAKEFLAGS ]] && MAKEFLAGS=-j$(nproc)
     cd ${srcdir}/linux
-    make modules -j$(nproc)
-    make Image.gz -j$(nproc)
+    make modules
+    make Image.gz
 }
 package_linux-rpi4-uefi-generic-git(){
     pkgdesc="The Linux Kernel and modules for Raspberrypi 4 UEFI Generic Kernel."
