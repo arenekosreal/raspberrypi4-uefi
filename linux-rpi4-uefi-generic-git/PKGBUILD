@@ -7,7 +7,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="linux-rpi4-uefi-generic"
 pkgname=("linux-rpi4-uefi-generic-git" "linux-headers-rpi4-uefi-generic-git" "linux-api-headers-rpi4-uefi-generic-git" "linux-docs-rpi4-uefi-generic-git")
-pkgver=5.19.0.78ca55889
+pkgver=5.19.0.de5c208d5
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
@@ -78,7 +78,7 @@ prepare(){
     make prepare
 }
 build(){
-    [[ -z MAKEFLAGS ]] && MAKEFLAGS=-j$(nproc)
+    [[ ! -z MAKEFLAGS ]] && export MAKEFLAGS=-j$(nproc)
     cd ${srcdir}/linux
     make modules
     make Image.gz

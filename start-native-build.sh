@@ -10,12 +10,18 @@
 set -e
 root=$PWD
 chroot=$HOME/chroot/aarch64
+PKGEXT=$(grep PKGEXT= ${chroot}/etc/makepkg.conf | sed "s/PKGEXT=//;s/'//g")
 mkdir -p ${root}/out
-rm -f ${root}/out/*.pkg.tar.zst
-for package in $(find ${root} -type d -exec test -e '{}/PKGBUILD' \; -print)
+[[ ! -f ${root}/status ]] && rm -f ${root}/out/*${PKGEXT}
+touch ${root}/status
+for package in $(find ${root} -maxdepth 1 -mindepth 1 -type d -exec test -e '{}/PKGBUILD' \; -print)
 do
-    echo "Processing ${package} folder..."
+    relative_package=${package#${root}/}
+    [[ $(grep -c ${relative_package} ${root}/status) != 0 ]] && continue
+    echo "Processing ${relative_package} folder..."
     cd ${package}
     sudo makearmpkg -r ${chroot} -- -sc
-    mv *.pkg.tar.zst ${root}/out
+    mv *${PKGEXT} ${root}/out
+    echo ${relative_package} >> ${root}/status
 done
+[[ -f ${root}/status ]] && rm -f ${root}/status

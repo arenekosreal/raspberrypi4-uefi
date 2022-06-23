@@ -80,7 +80,7 @@ prepare(){
     make prepare
 }
 build(){
-    [[ -z MAKEFLAGS ]] && MAKEFLAGS=-j$(nproc)
+    [[ ! -z MAKEFLAGS ]] && export MAKEFLAGS=-j$(nproc)
     cd ${srcdir}/linux
     make modules
     make Image.gz
