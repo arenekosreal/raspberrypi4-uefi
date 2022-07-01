@@ -9,7 +9,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="linux-rpi4-uefi-raspberrypi"
 pkgname=("linux-rpi4-uefi-raspberrypi-git" "linux-headers-rpi4-uefi-raspberrypi-git" "linux-api-headers-rpi4-uefi-raspberrypi-git" "linux-docs-rpi4-uefi-raspberrypi-git")
-pkgver=5.19.0.ab138cc95
+pkgver=5.19.0.0c629b6b9
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -94,7 +94,6 @@ package_linux-rpi4-uefi-raspberrypi-git(){
         "uefi-raspberrypi4: for UEFI firmware"
     )
     provides=("linux=${pkgver%.*}")
-    conflicts=("linux")
     replaces=("raspberrypi4-uefi-linux-raspberrypi-git")
     cd ${srcdir}/linux
 	kernver=$(cat version)

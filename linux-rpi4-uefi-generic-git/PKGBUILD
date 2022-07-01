@@ -7,7 +7,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="linux-rpi4-uefi-generic"
 pkgname=("linux-rpi4-uefi-generic-git" "linux-headers-rpi4-uefi-generic-git" "linux-api-headers-rpi4-uefi-generic-git" "linux-docs-rpi4-uefi-generic-git")
-pkgver=5.19.0.de5c208d5
+pkgver=5.19.0.a175eca0f
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
@@ -92,7 +92,6 @@ package_linux-rpi4-uefi-generic-git(){
         "uefi-raspberrypi4: for UEFI firmware"
     )
     provides=("linux=${pkgver%.*}")
-    conflicts=("linux")
     replaces=("raspberrypi4-uefi-linux-generic-git")
     cd ${srcdir}/linux
 	kernver=$(cat version)

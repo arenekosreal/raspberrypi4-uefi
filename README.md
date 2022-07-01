@@ -19,7 +19,7 @@ If you are not using Arch Linux, you may have to understand Arch Build System an
 
 ~~UEFI firmware needs root privilege to build on my Arch Distribution. So I think it can't be treated as a valid PKGBUILD because a valid one needs no manual interaction.~~ This problem has been fixed.  
 UEFI firmware needs `gcc10` to build, which is not provided on Arch Linux ARM. This problem will only be solved when pftf upgrade `BrotilCompress` to newer version which supports GCC 11 or Arch Linux ARM provides `gcc10` package.  
-Also, both kernels are stripped because some devices I may never use, this also results that these kernels are not suitable for everyone's use. You can change kernel config as you like, just remember one thing: DO NOT disable UEFI and ACPI related configs.  
+Also, both kernels are stripped because some devices I may never use, this also results that these kernels are not suitable for everyone's use. You can change kernel config as you like, just remember one thing: DO NOT disable Raspberry Pi, UEFI and ACPI related configs.  
 As for other aspects, there should be no issue to upload, I have even set `buildarch` to meet Arch Linux ARM's requirements.  
 If you think pacman or other wrapper complains about not found these packages, please add them to `IgnorePkg` in `/etc/pacman.conf`
 
@@ -33,6 +33,7 @@ Also, due to that Arch Linux ARM doesn't provide `gcc10` package, native compile
 1. Backup your Pi's files or at least backup boot partition. Or you may have to reinstall your original system.  
 2. UEFI firmware is experimental, that means maybe some features may not work properly. You can get more infomation at [there](https://github.com/pftf/RPi4)  
 3. Install grub with `--removeable` flag, or you have to choose boot from `/EFI/grub/grubaa64.efi` file in UEFI manually when your Pi is powering on. Also you can add a boot entry in UEFI manualy to solve this. For systemd-boot, `--no-variables` should be OK.
+4. According to kernel [documentation](https://www.kernel.org/doc/Documentation/arm64/booting.rst), a compressed aarch64 kernel does not have a decompressor, so you have to choose a bootloader which can do the decompression job. I am using GRUB and it works well on my Raspberry Pi 4B. You can also decompress vmlinux from vmlinuz image if you must use a bootloader which can not decompress kernel image such as systemd-boot, rEFInd and so on. Pacman hook may be a good idea to do the decompressing job automatically.
 
 ## References
 

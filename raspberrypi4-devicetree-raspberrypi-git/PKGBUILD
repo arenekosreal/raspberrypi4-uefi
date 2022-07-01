@@ -9,7 +9,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="raspberrypi4-devicetree-raspberrypi-git"
 pkgname=("raspberrypi4-overlays-raspberrypi-git" "raspberrypi4-dtbs-raspberrypi-git")
-pkgver=5.19.0.ab138cc95
+pkgver=5.19.0.0c629b6b9
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("any")
