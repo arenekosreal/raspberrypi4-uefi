@@ -3,11 +3,11 @@
 buildarch=8 # aarch64
 
 USE_LLVM=${USE_LLVM:-false}
-# Weather useing LLVM or GCC
+# Weather using LLVM or GCC
 
 pkgbase="raspberrypi4-devicetree-generic-git"
 pkgname=("raspberrypi4-dtbs-generic-git")
-pkgver=5.19.0.a175eca0f
+pkgver=5.19.0.rc5.r56.e35e5b6f695d
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("any")
@@ -16,8 +16,11 @@ groups=("raspberrypi4-uefi")
 options=("!strip")
 makedepends=("git")
 conflicts=("raspberrypi-devicetree")
-source=(config-generic)
-sha256sums=('704b6384330ba1bb123682ee6f43252c0ff246a3ee2524977f6537212bf63cc9')
+source=(
+    config-generic
+    git+https://github.com/torvalds/linux.git)
+sha256sums=('beebb073e936ccc5eb4a8701fd245aae8752595f9cf5a1dffb16a47af893e93a'
+            'SKIP')
 if [ $(uname -m) != "aarch64" ]
 then
     options+=(!ccache)
@@ -45,25 +48,19 @@ export LOCALVERSION=""
 
 pkgver(){
     cd ${srcdir}/linux
-    echo $(make kernelversion | sed "s/-.*//").$(git rev-parse --short HEAD)
+    version_str=$(make -s kernelversion | sed 's/.0//')
+    if [[ ${version_str} = *-* ]]
+    then
+        version_str=$(echo ${version_str} | sed 's/-/.0./') # 5.19.0.rc5
+    else
+        version_str=$(echo ${version_str}.0) # 5.19.0
+    fi
+    release_num=r$(git rev-list --count v$(make -s kernelversion | sed 's/.0//')..HEAD)
+    commit_id=$(git rev-parse --short HEAD)
+    echo ${version_str}.${release_num}.${commit_id}
 }
 prepare(){
-    if [[ -d ${srcdir}/linux/.git ]]
-    then
-        cd ${srcdir}/linux
-        git reset --hard HEAD && git pull --depth=1 origin master || git fetch --depth=1 origin master && git checkout master
-        if [ -f .config ];then
-            mv .config .config.old
-        fi
-    else
-        rm -rf ${srcdir}/linux
-        mkdir ${srcdir}/linux
-        cd ${srcdir}/linux
-        git init -q
-        git remote add origin https://github.com/torvalds/linux.git
-        git fetch --depth=1 origin master
-        git checkout master
-    fi
+    cd ${srcdir}/linux
     cp ${srcdir}/config-generic .config
     make olddefconfig
     sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config

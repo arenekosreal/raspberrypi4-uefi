@@ -18,3 +18,5 @@ edk2*
 *.patch
 *.zip
 status
+skip
+linux

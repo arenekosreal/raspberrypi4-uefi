@@ -6,10 +6,11 @@ KBRANCH=${KBRANCH:-5.19}
 # Only need if you are using raspberrypi kernel
 USE_LLVM=${USE_LLVM:-false}
 # Weather using LLVM or GCC
+_count_start=88084a3 # Linux 5.19-rc5
 
 pkgbase="linux-rpi4-uefi-raspberrypi"
 pkgname=("linux-rpi4-uefi-raspberrypi-git" "linux-headers-rpi4-uefi-raspberrypi-git" "linux-api-headers-rpi4-uefi-raspberrypi-git" "linux-docs-rpi4-uefi-raspberrypi-git")
-pkgver=5.19.0.0c629b6b9
+pkgver=5.19.0.rc5.r686.3ecdb680a5a9
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -39,10 +40,12 @@ else
     export _STRIPBIN=/usr/bin/strip
 fi
 sha256sums=('6553cbc5b1bad11a3abbff10d9d20b92f931392f61b1ce562c55d2a98e901a50'
-            'abe7d71e455c4e5db4074c0978e8a5ae15d00d46c97921d24b74dafd615153f1')
+            '18b93d16b78f01e11ec536bd7e1ba1d7a152b2fbaabd1ec995c4917be3bc246d'
+            'SKIP')
 source=(
     97-warn-about-merging-kernel-commands.hook
     config-raspberrypi
+    git+https://github.com/raspberrypi/linux.git#branch=rpi-${KBRANCH}.y
 )
 
 export LOCALVERSION=""
@@ -50,26 +53,19 @@ export LOCALVERSION=""
 
 pkgver(){
     cd ${srcdir}/linux
-    echo $(cat version | sed "s/-.*//").$(git rev-parse --short HEAD)
+    version_str=$(make -s kernelversion | sed 's/.0//')
+    if [[ ${version_str} = *-* ]]
+    then
+        version_str=$(echo ${version_str} | sed 's/-/.0./') # 5.19.0.rc5
+    else
+        version_str=$(echo ${version_str}.0) # 5.19.0
+    fi
+    release_num=r$(git rev-list --count ${_count_start}..HEAD)
+    commit_id=$(git rev-parse --short HEAD)
+    echo ${version_str}.${release_num}.${commit_id}
 }
 prepare(){
-    if [[ -d ${srcdir}/linux/.git ]]
-    then
-        cd ${srcdir}/linux
-        git reset --hard HEAD && git pull --depth=1 origin rpi-${KBRANCH}.y || git fetch --depth=1 origin rpi-${KBRANCH}.y && git checkout rpi-${KBRANCH}.y
-        if [ -f .config ];then
-            mv .config .config.old
-        fi
-    else
-        rm -rf ${srcdir}/linux
-        mkdir ${srcdir}/linux
-        cd ${srcdir}/linux
-        git init -q
-        git remote add origin https://github.com/raspberrypi/linux.git
-        git fetch --depth=1 origin rpi-${KBRANCH}.y
-        git checkout rpi-${KBRANCH}.y
-    fi
-    # move to source once it supports depth=1 option
+    cd ${srcdir}/linux
     cp ${srcdir}/config-raspberrypi .config
     make olddefconfig
     sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
@@ -93,7 +89,7 @@ package_linux-rpi4-uefi-raspberrypi-git(){
         "linux-firmware: firmware images needed for some devices"
         "uefi-raspberrypi4: for UEFI firmware"
     )
-    provides=("linux=${pkgver%.*}")
+    provides=("linux=${pkgver%%.r*}")
     replaces=("raspberrypi4-uefi-linux-raspberrypi-git")
     cd ${srcdir}/linux
 	kernver=$(cat version)
@@ -111,7 +107,7 @@ package_linux-rpi4-uefi-raspberrypi-git(){
 }
 package_linux-headers-rpi4-uefi-raspberrypi-git(){
     pkgdesc="Header files and scripts for building modules for Raspberrypi 4 UEFI RaspberryPi Kernel."
-    provides=("linux-headers=${pkgver%.*}")
+    provides=("linux-headers=${pkgver%%.r*}")
     replaces=("raspberrypi4-uefi-kernel-headers-raspberrypi-git" "raspberrypi4-uefi-linux-headers-raspberrypi-git")
     depends=("pahole")
     cd ${srcdir}/linux
@@ -168,7 +164,7 @@ package_linux-headers-rpi4-uefi-raspberrypi-git(){
 }
 package_linux-api-headers-rpi4-uefi-raspberrypi-git(){
     pkgdesc="Kernel headers sanitized for use in userspace for Raspberrypi 4 UEFI RaspberryPi Kernel."
-	provides=("linux-api-headers=${pkgver%.*}")
+	provides=("linux-api-headers=${pkgver%%.r*}")
 	conflicts=("linux-api-headers")
     replaces=("raspberrypi4-uefi-kernel-api-headers-raspberrypi-git" "raspberrypi4-uefi-linux-api-headers-raspberrypi-git")
     cd ${srcdir}/linux
@@ -178,7 +174,7 @@ package_linux-api-headers-rpi4-uefi-raspberrypi-git(){
 }
 package_linux-docs-rpi4-uefi-raspberrypi-git(){
     pkgdesc="Documentation for the RaspberryPi 4 UEFI RaspberryPi Kernel."
-    provides=("linux-docs=${pkgver%.*}")
+    provides=("linux-docs=${pkgver%%.r*}")
     conflicts=("linux-docs")
     replaces=("raspberrypi4-uefi-kernel-docs-raspberrypi-git" "raspberrypi4-uefi-linux-docs-raspberrypi-git")
     cd ${srcdir}/linux

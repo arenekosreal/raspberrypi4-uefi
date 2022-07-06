@@ -18,6 +18,7 @@ for package in $(find ${root} -maxdepth 1 -mindepth 1 -type d -exec test -e '{}/
 do
     relative_package=${package#${root}/}
     [[ $(grep -c ${relative_package} ${root}/status) != 0 ]] && continue
+    [[ -f ${root}/skip && $(grep -c ${relative_package} ${root}/skip) != 0 ]] && continue
     echo "Processing ${relative_package} folder..."
     cd ${package}
     sudo makearmpkg -r ${chroot} -- -sc
