@@ -1,8 +1,0 @@
-[Trigger]
-Type = Package
-Operation = Install
-Target = raspberrypi4-uefi-kernel-raspberrypi-git
-[Action]
-Description = Sending notification about merge kernel commands ...
-When = PostTransaction
-Exec = /usr/bin/echo -e '\033[7m[NOTE]\033[0m Please check /boot/cmdline.txt and merge those commands into your bootloader!'

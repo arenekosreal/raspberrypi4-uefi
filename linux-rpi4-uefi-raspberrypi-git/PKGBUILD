@@ -6,11 +6,11 @@ KBRANCH=${KBRANCH:-5.19}
 # Only need if you are using raspberrypi kernel
 USE_LLVM=${USE_LLVM:-false}
 # Weather using LLVM or GCC
-_count_start=88084a3 # Linux 5.19-rc5
+_count_start=3234649 # Linux 5.19-rc6
 
 pkgbase="linux-rpi4-uefi-raspberrypi"
 pkgname=("linux-rpi4-uefi-raspberrypi-git" "linux-headers-rpi4-uefi-raspberrypi-git" "linux-api-headers-rpi4-uefi-raspberrypi-git" "linux-docs-rpi4-uefi-raspberrypi-git")
-pkgver=5.19.0.rc5.r686.3ecdb680a5a9
+pkgver=5.19.rc6.r694.d407011d7a01
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -39,11 +39,9 @@ else
     # native compile
     export _STRIPBIN=/usr/bin/strip
 fi
-sha256sums=('6553cbc5b1bad11a3abbff10d9d20b92f931392f61b1ce562c55d2a98e901a50'
-            '18b93d16b78f01e11ec536bd7e1ba1d7a152b2fbaabd1ec995c4917be3bc246d'
+sha256sums=('39cdf1dc99b8bc31edc21b44ce0a4da0a1c3ab2a4b5c91e6158e4eb0aaf1ef6d'
             'SKIP')
 source=(
-    97-warn-about-merging-kernel-commands.hook
     config-raspberrypi
     git+https://github.com/raspberrypi/linux.git#branch=rpi-${KBRANCH}.y
 )
@@ -53,16 +51,10 @@ export LOCALVERSION=""
 
 pkgver(){
     cd ${srcdir}/linux
-    version_str=$(make -s kernelversion | sed 's/.0//')
-    if [[ ${version_str} = *-* ]]
-    then
-        version_str=$(echo ${version_str} | sed 's/-/.0./') # 5.19.0.rc5
-    else
-        version_str=$(echo ${version_str}.0) # 5.19.0
-    fi
+    version_str=$(make -s kernelversion | sed 's/.0//;s/-/./') # 5.19.rc6/5.19
     release_num=r$(git rev-list --count ${_count_start}..HEAD)
     commit_id=$(git rev-parse --short HEAD)
-    echo ${version_str}.${release_num}.${commit_id}
+    echo ${version_str}.${release_num}.${commit_id} # 5.19.rc6.rxxx.xxx/5.19.rxxx.xxx
 }
 prepare(){
     cd ${srcdir}/linux
@@ -102,8 +94,6 @@ package_linux-rpi4-uefi-raspberrypi-git(){
     install -Dm644 "$(make -s image_name)" ${pkgdir}/usr/lib/modules/${kernver}/vmlinuz
 	echo ${pkgbase} | install -Dm644 /dev/stdin ${pkgdir}/usr/lib/modules/${kernver}/pkgbase
 	rm ${pkgdir}/usr/lib/modules/${kernver}/{source,build}
-    install -Dm644 ${srcdir}/97-warn-about-merging-kernel-commands.hook \
-        ${pkgdir}/usr/share/libalpm/hooks/97-warn-about-merging-kernel-commands.hook
 }
 package_linux-headers-rpi4-uefi-raspberrypi-git(){
     pkgdesc="Header files and scripts for building modules for Raspberrypi 4 UEFI RaspberryPi Kernel."

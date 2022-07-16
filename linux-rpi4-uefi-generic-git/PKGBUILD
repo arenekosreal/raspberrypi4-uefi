@@ -7,7 +7,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="linux-rpi4-uefi-generic"
 pkgname=("linux-rpi4-uefi-generic-git" "linux-headers-rpi4-uefi-generic-git" "linux-api-headers-rpi4-uefi-generic-git" "linux-docs-rpi4-uefi-generic-git")
-pkgver=5.19.0.rc5.r56.e35e5b6f695d
+pkgver=5.19.rc6.r272.e5d523f1ae8f
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
@@ -37,11 +37,9 @@ else
     export _STRIPBIN=/usr/bin/strip
 fi
 
-sha256sums=('b261aa7cb2b2d38856623dcf0f06ee0edc70257dc02a69c19e1dd978c52a1836'
-            'beebb073e936ccc5eb4a8701fd245aae8752595f9cf5a1dffb16a47af893e93a'
+sha256sums=('e85d42cc44b0d46c076dd38cd9dd769c6928b4aabbb1072a95a46dd7f08a6006'
             'SKIP')
 source=(
-    97-warn-about-merging-kernel-commands.hook
     config-generic
     git+https://github.com/torvalds/linux.git
 )
@@ -51,16 +49,10 @@ export LOCALVERSION=""
 
 pkgver(){
     cd ${srcdir}/linux
-    version_str=$(make -s kernelversion | sed 's/.0//')
-    if [[ ${version_str} = *-* ]]
-    then
-        version_str=$(echo ${version_str} | sed 's/-/.0./') # 5.19.0.rc5
-    else
-        version_str=$(echo ${version_str}.0) # 5.19.0
-    fi
+    version_str=$(make -s kernelversion | sed 's/.0//;s/-/./') # 5.19.rc6/5.19
     release_num=r$(git rev-list --count v$(make -s kernelversion | sed 's/.0//')..HEAD)
     commit_id=$(git rev-parse --short HEAD)
-    echo ${version_str}.${release_num}.${commit_id}
+    echo ${version_str}.${release_num}.${commit_id} # 5.19.rc6.rxxx.xxx/5.19.rxxx.xxx
 }
 prepare(){
     cd ${srcdir}/linux
@@ -99,8 +91,6 @@ package_linux-rpi4-uefi-generic-git(){
     install -Dm644 "$(make -s image_name)" ${pkgdir}/usr/lib/modules/${kernver}/vmlinuz
 	echo ${pkgbase} | install -Dm644 /dev/stdin ${pkgdir}/usr/lib/modules/${kernver}/pkgbase
 	rm ${pkgdir}/usr/lib/modules/${kernver}/{source,build}
-    install -Dm644 ${srcdir}/97-warn-about-merging-kernel-commands.hook \
-        ${pkgdir}/usr/share/libalpm/hooks/97-warn-about-merging-kernel-commands.hook
 }
 package_linux-headers-rpi4-uefi-generic-git(){
     pkgdesc="Header files and scripts for building modules for Raspberrypi 4 UEFI Generic Kernel."
@@ -162,7 +152,7 @@ package_linux-headers-rpi4-uefi-generic-git(){
 package_linux-api-headers-rpi4-uefi-generic-git(){
     pkgdesc="Kernel headers sanitized for use in userspace for Raspberrypi 4 UEFI Generic Kernel."
 	provides=("linux-api-headers=${pkgver%%.r*}")
-	conflicts=("linux-api-headers")
+    conflicts=("linux-api-headers")
     replaces=("raspberrypi4-uefi-kernel-api-headers-generic-git" "raspberrypi4-uefi-linux-api-headers-generic-git")
     cd ${srcdir}/linux
 	make INSTALL_HDR_PATH="${pkgdir}/usr" headers_install
@@ -172,7 +162,6 @@ package_linux-api-headers-rpi4-uefi-generic-git(){
 package_linux-docs-rpi4-uefi-generic-git(){
     pkgdesc="Documentation for the RaspberryPi 4 UEFI Generic Kernel."
     provides=("linux-docs=${pkgver%%.r*}")
-    conflicts=("linux-docs")
     replaces=("raspberrypi4-uefi-kernel-docs-generic-git" "raspberrypi4-uefi-linux-docs-generic-git")
     cd ${srcdir}/linux
     kernver=$(make kernelrelease)
