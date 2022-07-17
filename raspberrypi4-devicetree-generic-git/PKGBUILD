@@ -19,7 +19,7 @@ conflicts=("raspberrypi-devicetree")
 source=(
     config-generic
     git+https://github.com/torvalds/linux.git)
-sha256sums=('0530c31549a6ca56db9481e91d49eb18b12abc82d231a7f120db80ddff7d9719'
+sha256sums=('f69408a5e9a355b05db3cfabfcaa3afcf78a65ad638fb1ee1fed3e8514179185'
             'SKIP')
 if [ $(uname -m) != "aarch64" ]
 then

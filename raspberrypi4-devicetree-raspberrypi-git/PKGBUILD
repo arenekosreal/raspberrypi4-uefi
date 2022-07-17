@@ -22,7 +22,7 @@ conflicts=("raspberrypi-devicetree")
 source=(
     config-raspberrypi
     git+https://github.com/raspberrypi/linux.git#branch=rpi-${KBRANCH}.y)
-sha256sums=('f9d9c2352942f9aac97ea25e92a654e9ba3f9e278af0488a109218edd3e43b05'
+sha256sums=('39cdf1dc99b8bc31edc21b44ce0a4da0a1c3ab2a4b5c91e6158e4eb0aaf1ef6d'
             'SKIP')
 if [ $(uname -m) != "aarch64" ]
 then
