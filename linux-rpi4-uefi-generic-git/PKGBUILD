@@ -37,7 +37,7 @@ else
     export _STRIPBIN=/usr/bin/strip
 fi
 
-sha256sums=('e85d42cc44b0d46c076dd38cd9dd769c6928b4aabbb1072a95a46dd7f08a6006'
+sha256sums=('f69408a5e9a355b05db3cfabfcaa3afcf78a65ad638fb1ee1fed3e8514179185'
             'SKIP')
 source=(
     config-generic
