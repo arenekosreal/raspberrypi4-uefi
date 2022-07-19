@@ -5,5 +5,5 @@ armstub=RPI_EFI.fd
 disable_commandline_tags=2
 device_tree_address=0x1f0000
 device_tree_end=0x200000
-dtoverlay=miniuart-bt
+dtoverlay=miniuart-bt,krnbt=on
 dtoverlay=upstream-pi4
