@@ -8,7 +8,9 @@ RUN pacman-key --init &&\
     useradd -m builder && \
     echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers &&\
     mkdir -p /home/builder/build_files &&\
-    chown -R builder:builder /home/builder/build_files
+    chown -R builder:builder /home/builder/build_files &&\
+    chown root:root /usr/bin &&\
+    chmod u+s /usr/bin/sudo
 USER builder
 COPY start-build.sh /home/builder/start-build.sh
 COPY common.sh /home/builder/common.sh
