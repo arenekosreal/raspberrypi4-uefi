@@ -10,7 +10,7 @@ _count_start=ff69927 # Linux 5.19-rc7
 
 pkgbase="linux-rpi4-uefi-raspberrypi"
 pkgname=("linux-rpi4-uefi-raspberrypi-git" "linux-headers-rpi4-uefi-raspberrypi-git" "linux-api-headers-rpi4-uefi-raspberrypi-git" "linux-docs-rpi4-uefi-raspberrypi-git")
-pkgver=5.19.rc7.r693.442bb1ab68eb
+pkgver=5.19.rc7.r695.48c360f1fb98
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -39,7 +39,7 @@ else
     # native compile
     export _STRIPBIN=/usr/bin/strip
 fi
-sha256sums=('39cdf1dc99b8bc31edc21b44ce0a4da0a1c3ab2a4b5c91e6158e4eb0aaf1ef6d'
+sha256sums=('80d3509d1528f7596fa26a912e40c4287d8e177824e3905b9bbc21da883565c8'
             'SKIP')
 source=(
     config-raspberrypi
