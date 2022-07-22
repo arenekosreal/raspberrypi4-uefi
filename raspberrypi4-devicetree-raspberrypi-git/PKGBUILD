@@ -10,7 +10,7 @@ _count_start=ff69927 # Linux 5.19-rc7
 
 pkgbase="raspberrypi4-devicetree-raspberrypi-git"
 pkgname=("raspberrypi4-overlays-raspberrypi-git" "raspberrypi4-dtbs-raspberrypi-git")
-pkgver=5.19.rc7.r695.48c360f1fb98
+pkgver=5.19.rc7.r699.047df2c06678
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("any")

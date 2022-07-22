@@ -13,7 +13,6 @@ RUN pacman-key --init &&\
     chmod u+s /usr/bin/sudo
 USER builder
 COPY start-build.sh /home/builder/start-build.sh
-COPY common.sh /home/builder/common.sh
 COPY makepkg-aarch64.conf /home/builder/makepkg-aarch64.conf
 WORKDIR /home/builder/build_files
 ENTRYPOINT [ "/usr/bin/bash", "/home/builder/start-build.sh" ]
