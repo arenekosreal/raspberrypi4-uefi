@@ -6,11 +6,11 @@ KBRANCH=${KBRANCH:-5.19}
 # Only need if you are using raspberrypi kernel
 USE_LLVM=${USE_LLVM:-false}
 # Weather using LLVM or GCC
-_count_start=ff69927 # Linux 5.19-rc7
+_count_start=3d7cb6b # Linux 5.19
 
 pkgbase="raspberrypi4-devicetree-raspberrypi-git"
 pkgname=("raspberrypi4-overlays-raspberrypi-git" "raspberrypi4-dtbs-raspberrypi-git")
-pkgver=5.19.rc7.r699.047df2c06678
+pkgver=5.19.r700.1d21e5ecd957
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("any")
@@ -21,7 +21,7 @@ makedepends=("git")
 conflicts=("raspberrypi-devicetree")
 source=(
     config-raspberrypi
-    git+https://github.com/raspberrypi/linux.git#branch=rpi-${KBRANCH}.y)
+    linux-raspberrypi::git+https://github.com/raspberrypi/linux.git#branch=rpi-${KBRANCH}.y)
 sha256sums=('80d3509d1528f7596fa26a912e40c4287d8e177824e3905b9bbc21da883565c8'
             'SKIP')
 if [ $(uname -m) != "aarch64" ]
@@ -50,14 +50,14 @@ export LOCALVERSION=""
 # Disable annoying '+' in modules folder and kernel name
 
 pkgver(){
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-raspberrypi
     version_str=$(make -s kernelversion | sed 's/.0//;s/-/./')
     release_num=r$(git rev-list --count ${_count_start}..HEAD)
     commit_id=$(git rev-parse --short HEAD)
     echo ${version_str}.${release_num}.${commit_id}
 }
 prepare(){
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-raspberrypi
     cp ${srcdir}/config-raspberrypi .config
     make olddefconfig
     sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
@@ -68,21 +68,21 @@ prepare(){
     make prepare
 }
 build(){
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-raspberrypi
     make dtbs
 }
 package_raspberrypi4-overlays-raspberrypi-git(){
     pkgdesc="/boot/overlays folder for Raspberry Pi 4B"
     conflicts+=("raspberrypi4-overlays")
     provides=("raspberrypi4-overlays")
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-raspberrypi
     mkdir -p ${pkgdir}/boot/overlays
-    cp ${srcdir}/linux/arch/arm64/boot/dts/overlays/{README,*.dtb*} ${pkgdir}/boot/overlays
+    cp ${srcdir}/linux-raspberrypi/arch/arm64/boot/dts/overlays/{README,*.dtb*} ${pkgdir}/boot/overlays
 }
 package_raspberrypi4-dtbs-raspberrypi-git(){
     pkgdesc="/boot/bcm2711-rpi-4-b.dtb for Raspberry Pi 4B"
     conflicts+=("raspberrypi4-dtbs")
     provides=("raspberrypi4-dtbs")
-    install -Dm644 ${srcdir}/linux/arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dtb \
+    install -Dm644 ${srcdir}/linux-raspberrypi/arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dtb \
         ${pkgdir}/boot/bcm2711-rpi-4-b.dtb
 }

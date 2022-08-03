@@ -7,7 +7,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="raspberrypi4-devicetree-generic-git"
 pkgname=("raspberrypi4-dtbs-generic-git")
-pkgver=5.19.rc7.r135.68e77ffbfd06
+pkgver=5.19.r2600.c2a24a7a036b
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("any")
@@ -18,7 +18,7 @@ makedepends=("git")
 conflicts=("raspberrypi-devicetree")
 source=(
     config-generic
-    git+https://github.com/torvalds/linux.git)
+    linux-generic::git+https://github.com/torvalds/linux.git)
 sha256sums=('18b864bc77ba28522e991f3bcb552bb25b3bb43027b7bd64e827e423d8e44d81'
             'SKIP')
 if [ $(uname -m) != "aarch64" ]
@@ -47,14 +47,14 @@ export LOCALVERSION=""
 # Disable annoying '+' in modules folder and kernel name
 
 pkgver(){
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-generic
     version_str=$(make -s kernelversion | sed 's/.0//;s/-/./')
     release_num=r$(git rev-list --count v$(make -s kernelversion | sed 's/.0//')..HEAD)
     commit_id=$(git rev-parse --short HEAD)
     echo ${version_str}.${release_num}.${commit_id}
 }
 prepare(){
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-generic
     cp ${srcdir}/config-generic .config
     make olddefconfig
     sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
@@ -65,13 +65,13 @@ prepare(){
     make prepare
 }
 build(){
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-generic
     make dtbs
 }
 package_raspberrypi4-dtbs-generic-git(){
     pkgdesc="/boot/bcm2711-rpi-4-b.dtb for Raspberry Pi 4B"
     conflicts+=("raspberrypi4-dtbs")
     provides=("raspberrypi4-dtbs")
-    install -Dm644 ${srcdir}/linux/arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dtb \
+    install -Dm644 ${srcdir}/linux-generic/arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dtb \
         ${pkgdir}/boot/bcm2711-rpi-4-b.dtb
 }

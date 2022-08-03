@@ -7,7 +7,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="linux-rpi4-uefi-generic"
 pkgname=("linux-rpi4-uefi-generic-git" "linux-headers-rpi4-uefi-generic-git" "linux-api-headers-rpi4-uefi-generic-git" "linux-docs-rpi4-uefi-generic-git")
-pkgver=5.19.rc7.r135.68e77ffbfd06
+pkgver=5.19.r2600.c2a24a7a036b
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
@@ -41,21 +41,21 @@ sha256sums=('18b864bc77ba28522e991f3bcb552bb25b3bb43027b7bd64e827e423d8e44d81'
             'SKIP')
 source=(
     config-generic
-    git+https://github.com/torvalds/linux.git
+    linux-generic::git+https://github.com/torvalds/linux.git
 )
 
 export LOCALVERSION=""
 # Disable annoying '+' in modules folder and kernel name
 
 pkgver(){
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-generic
     version_str=$(make -s kernelversion | sed 's/.0//;s/-/./') # 5.19.rc6/5.19
     release_num=r$(git rev-list --count v$(make -s kernelversion | sed 's/.0//')..HEAD)
     commit_id=$(git rev-parse --short HEAD)
     echo ${version_str}.${release_num}.${commit_id} # 5.19.rc6.rxxx.xxx/5.19.rxxx.xxx
 }
 prepare(){
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-generic
     cp ${srcdir}/config-generic .config
     make olddefconfig
     echo "-$pkgrel" > localversion.10-pkgrel
@@ -66,13 +66,13 @@ prepare(){
 }
 build(){
     [[ ! -z MAKEFLAGS ]] && export MAKEFLAGS=-j$(nproc)
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-generic
     make modules
     make Image.gz
 }
 package_linux-rpi4-uefi-generic-git(){
     pkgdesc="The Linux Kernel and modules for Raspberrypi 4 UEFI Generic Kernel."
-    depends=("coreutils" "kmod" "initramfs" "raspberrypi4-overlays")
+    depends=("coreutils" "kmod" "initramfs")
     optdepends=(
         "crda: to set the correct wireless channels of your country" 
         "linux-firmware: firmware images needed for some devices"
@@ -80,7 +80,7 @@ package_linux-rpi4-uefi-generic-git(){
     )
     provides=("linux=${pkgver%%.r*}")
     replaces=("raspberrypi4-uefi-linux-generic-git")
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-generic
 	kernver=$(cat version)
 
     mkdir -p ${pkgdir}/usr
@@ -97,7 +97,7 @@ package_linux-headers-rpi4-uefi-generic-git(){
     provides=("linux-headers=${pkgver%%.r*}")
     replaces=("raspberrypi4-uefi-kernel-headers-generic-git" "raspberrypi4-uefi-linux-headers-generic-git")
     depends=("pahole")
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-generic
 	kernver=$(make kernelrelease)
 	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build -m644 Makefile .config Module.symvers System.map \
         localversion.* version vmlinux
@@ -154,7 +154,7 @@ package_linux-api-headers-rpi4-uefi-generic-git(){
 	provides=("linux-api-headers=${pkgver%%.r*}")
     conflicts=("linux-api-headers")
     replaces=("raspberrypi4-uefi-kernel-api-headers-generic-git" "raspberrypi4-uefi-linux-api-headers-generic-git")
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-generic
 	make INSTALL_HDR_PATH="${pkgdir}/usr" headers_install
 	# use headers from libdrm
 	rm -r "${pkgdir}/usr/include/drm"
@@ -163,7 +163,7 @@ package_linux-docs-rpi4-uefi-generic-git(){
     pkgdesc="Documentation for the RaspberryPi 4 UEFI Generic Kernel."
     provides=("linux-docs=${pkgver%%.r*}")
     replaces=("raspberrypi4-uefi-kernel-docs-generic-git" "raspberrypi4-uefi-linux-docs-generic-git")
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-generic
     kernver=$(make kernelrelease)
     local src dst
     while read -rd '' src; do

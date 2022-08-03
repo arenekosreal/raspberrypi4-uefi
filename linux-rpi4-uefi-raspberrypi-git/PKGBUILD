@@ -6,11 +6,11 @@ KBRANCH=${KBRANCH:-5.19}
 # Only need if you are using raspberrypi kernel
 USE_LLVM=${USE_LLVM:-false}
 # Weather using LLVM or GCC
-_count_start=ff69927 # Linux 5.19-rc7
+_count_start=3d7cb6b # Linux 5.19
 
 pkgbase="linux-rpi4-uefi-raspberrypi"
 pkgname=("linux-rpi4-uefi-raspberrypi-git" "linux-headers-rpi4-uefi-raspberrypi-git" "linux-api-headers-rpi4-uefi-raspberrypi-git" "linux-docs-rpi4-uefi-raspberrypi-git")
-pkgver=5.19.rc7.r699.047df2c06678
+pkgver=5.19.r700.1d21e5ecd957
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -43,21 +43,21 @@ sha256sums=('80d3509d1528f7596fa26a912e40c4287d8e177824e3905b9bbc21da883565c8'
             'SKIP')
 source=(
     config-raspberrypi
-    git+https://github.com/raspberrypi/linux.git#branch=rpi-${KBRANCH}.y
+    linux-raspberrypi::git+https://github.com/raspberrypi/linux.git#branch=rpi-${KBRANCH}.y
 )
 
 export LOCALVERSION=""
 # Disable annoying '+' in modules folder and kernel name
 
 pkgver(){
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-raspberrypi
     version_str=$(make -s kernelversion | sed 's/.0//;s/-/./') # 5.19.rc6/5.19
     release_num=r$(git rev-list --count ${_count_start}..HEAD)
     commit_id=$(git rev-parse --short HEAD)
     echo ${version_str}.${release_num}.${commit_id} # 5.19.rc6.rxxx.xxx/5.19.rxxx.xxx
 }
 prepare(){
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-raspberrypi
     cp ${srcdir}/config-raspberrypi .config
     make olddefconfig
     sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
@@ -69,13 +69,13 @@ prepare(){
 }
 build(){
     [[ ! -z MAKEFLAGS ]] && export MAKEFLAGS=-j$(nproc)
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-raspberrypi
     make modules
     make Image.gz
 }
 package_linux-rpi4-uefi-raspberrypi-git(){
     pkgdesc="The Linux Kernel and modules for Raspberrypi 4 UEFI RaspberryPi Kernel."
-    depends=("coreutils" "kmod" "initramfs" "raspberrypi4-overlays")
+    depends=("coreutils" "kmod" "initramfs")
     optdepends=(
         "crda: to set the correct wireless channels of your country" 
         "linux-firmware: firmware images needed for some devices"
@@ -83,7 +83,7 @@ package_linux-rpi4-uefi-raspberrypi-git(){
     )
     provides=("linux=${pkgver%%.r*}")
     replaces=("raspberrypi4-uefi-linux-raspberrypi-git")
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-raspberrypi
 	kernver=$(cat version)
 
     mkdir -p ${pkgdir}/usr
@@ -100,7 +100,7 @@ package_linux-headers-rpi4-uefi-raspberrypi-git(){
     provides=("linux-headers=${pkgver%%.r*}")
     replaces=("raspberrypi4-uefi-kernel-headers-raspberrypi-git" "raspberrypi4-uefi-linux-headers-raspberrypi-git")
     depends=("pahole")
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-raspberrypi
 	kernver=$(make kernelrelease)
 	install -Dt ${pkgdir}/usr/lib/modules/${kernver}/build -m644 Makefile .config Module.symvers System.map \
         localversion.* version vmlinux
@@ -157,7 +157,7 @@ package_linux-api-headers-rpi4-uefi-raspberrypi-git(){
 	provides=("linux-api-headers=${pkgver%%.r*}")
 	conflicts=("linux-api-headers")
     replaces=("raspberrypi4-uefi-kernel-api-headers-raspberrypi-git" "raspberrypi4-uefi-linux-api-headers-raspberrypi-git")
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-raspberrypi
 	make INSTALL_HDR_PATH="${pkgdir}/usr" headers_install
 	# use headers from libdrm
 	rm -r "${pkgdir}/usr/include/drm"
@@ -167,7 +167,7 @@ package_linux-docs-rpi4-uefi-raspberrypi-git(){
     provides=("linux-docs=${pkgver%%.r*}")
     conflicts=("linux-docs")
     replaces=("raspberrypi4-uefi-kernel-docs-raspberrypi-git" "raspberrypi4-uefi-linux-docs-raspberrypi-git")
-    cd ${srcdir}/linux
+    cd ${srcdir}/linux-raspberrypi
     kernver=$(make kernelrelease)
     local src dst
     while read -rd '' src; do

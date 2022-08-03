@@ -28,6 +28,7 @@
 #         this.
 
 set -e
+
 function is_in_line(){
     # is_in_line /path/to/file $string
     for line in $(cat $1)
@@ -38,14 +39,15 @@ function is_in_line(){
 }
 
 MAKEPKG_ARGS=-fdc
+CHROOT_MAKEPKG_ARGS=-sc
+CI=${CI:-false}
 CHROOT=${CHROOT:-false}
 LOCAL=${LOCAL:-false}
 SUDO=${SUDO:-sudo}
 CHROOT_ROOT=${CHROOT_ROOT:-${HOME}/chroot/aarch64}
 
-export USE_LLVM=${USE_LLVM:-true}
-
-if [[ ${CI} == true ]];then
+if ${CI}
+then
     sudo chown -R builder:builder .
     root=/home/builder/build_files
     conf=/home/builder/makepkg-aarch64.conf
@@ -55,7 +57,7 @@ else
     then
         if ${LOCAL}
         then
-            conf=/etc/makepkg.conf
+            conf=${root}/makepkg-aarch64.conf
         else
             conf=${root}/makepkg-distcc.conf
         fi
@@ -64,27 +66,34 @@ else
         conf=${root}/makepkg-aarch64.conf
     fi
 fi
+
+export root
+export USE_LLVM=${USE_LLVM:-true}
+
+for config_file in $(find configs -type f)
+do
+    install -Dm644 ${config_file} ${root}/tmp/src/$(basename ${config_file})
+done
 [[ $1 == "--chroot" ]] && \
     CHROOT=true && shift && echo "Starting chroot build..."
 echo "\$root is ${root}."
 PKGEXT=$(grep PKGEXT= ${conf} | sed "s/PKGEXT=//;s/'//g")
 mkdir -p ${root}/out
-[[ ! -f ${root}/status ]] && rm -f ${root}/out/*${PKGEXT}
-touch ${root}/status
+[[ ! -f ${root}/tmp/status ]] && rm -f ${root}/out/*${PKGEXT}
+touch ${root}/tmp/status
 for relative_package in $(cat ${root}/build-orders)
 do
-    is_in_line ${root}/status ${relative_package} && continue
+    is_in_line ${root}/tmp/status ${relative_package} && continue
     [[ -f ${root}/skip ]] && is_in_line ${root}/skip ${relative_package} && continue
     [[ ! -f ${root}/${relative_package}/PKGBUILD ]] && continue
     echo "Processing ${relative_package} folder..."
     cd ${root}/${relative_package}
     if $CHROOT
     then
-        ${SUDO} makearmpkg -r ${CHROOT_ROOT} -- -sc
+        ${SUDO} makearmpkg -r ${CHROOT_ROOT} -- ${CHROOT_MAKEPKG_ARGS}
     else
         makepkg ${MAKEPKG_ARGS} --config=${conf}
     fi
-    mv *${PKGEXT} ${root}/out
-    echo ${relative_package} >> ${root}/status
+    echo ${relative_package} >> ${root}/tmp/status
 done
-[[ -f ${root}/status ]] && rm -f ${root}/status
+[[ -f ${root}/tmp/status ]] && rm -f ${root}/tmp/status
