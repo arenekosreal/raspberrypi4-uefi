@@ -7,7 +7,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="linux-rpi4-uefi-generic"
 pkgname=("linux-rpi4-uefi-generic-git" "linux-headers-rpi4-uefi-generic-git" "linux-api-headers-rpi4-uefi-generic-git" "linux-docs-rpi4-uefi-generic-git")
-pkgver=5.19.r2600.c2a24a7a036b
+pkgver=5.19.r7280.b44f2fd87919
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
@@ -37,9 +37,11 @@ else
     export _STRIPBIN=/usr/bin/strip
 fi
 
-sha256sums=('18b864bc77ba28522e991f3bcb552bb25b3bb43027b7bd64e827e423d8e44d81'
+sha256sums=('44f31b8ae7bc7d4547710c9906a8dfec06f3a0b2bff17939bf426200d6575f41'
+            '3f6e7dbe327d21e4be09d804740d8f9d9764cfdb33a9c804c72c0e162277e9c2'
             'SKIP')
 source=(
+    user_ns_unprivileged.patch
     config-generic
     linux-generic::git+https://github.com/torvalds/linux.git
 )
@@ -57,6 +59,7 @@ pkgver(){
 prepare(){
     cd ${srcdir}/linux-generic
     cp ${srcdir}/config-generic .config
+    git apply ${srcdir}/user_ns_unprivileged.patch
     make olddefconfig
     echo "-$pkgrel" > localversion.10-pkgrel
     echo "${pkgbase#linux}" > localversion.20-pkgname

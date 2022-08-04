@@ -11,7 +11,7 @@ _count_start=3d7cb6b # Linux 5.19
 pkgbase="linux-rpi4-uefi-raspberrypi"
 pkgname=("linux-rpi4-uefi-raspberrypi-git" "linux-headers-rpi4-uefi-raspberrypi-git" "linux-api-headers-rpi4-uefi-raspberrypi-git" "linux-docs-rpi4-uefi-raspberrypi-git")
 pkgver=5.19.r700.1d21e5ecd957
-pkgrel=1
+pkgrel=2
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
 license=("GPL")
@@ -39,9 +39,11 @@ else
     # native compile
     export _STRIPBIN=/usr/bin/strip
 fi
-sha256sums=('80d3509d1528f7596fa26a912e40c4287d8e177824e3905b9bbc21da883565c8'
+sha256sums=('44f31b8ae7bc7d4547710c9906a8dfec06f3a0b2bff17939bf426200d6575f41'
+            '751ffd8ef2dcff64d5dd57f461c186e55282ddbef5d205ec4dcfb1385d453de6'
             'SKIP')
 source=(
+    user_ns_unprivileged.patch
     config-raspberrypi
     linux-raspberrypi::git+https://github.com/raspberrypi/linux.git#branch=rpi-${KBRANCH}.y
 )
@@ -59,6 +61,7 @@ pkgver(){
 prepare(){
     cd ${srcdir}/linux-raspberrypi
     cp ${srcdir}/config-raspberrypi .config
+    git apply ${srcdir}/user_ns_unprivileged.patch
     make olddefconfig
     sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
     echo "-$pkgrel" > localversion.10-pkgrel

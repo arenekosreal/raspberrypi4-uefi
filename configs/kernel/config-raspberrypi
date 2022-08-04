@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm64 5.19.0-rc7 Kernel Configuration
+# Linux/arm64 5.19.0 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="aarch64-linux-gnu-gcc (GCC) 12.1.0"
 CONFIG_CC_IS_GCC=y
@@ -196,6 +196,7 @@ CONFIG_UTS_NS=y
 CONFIG_TIME_NS=y
 CONFIG_IPC_NS=y
 CONFIG_USER_NS=y
+CONFIG_USER_NS_UNPRIVILEGED=y
 CONFIG_PID_NS=y
 CONFIG_NET_NS=y
 CONFIG_CHECKPOINT_RESTORE=y
