@@ -38,6 +38,7 @@ jobs:
           sha256sum *.pkg.tar.zst >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
           echo SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-8) >> $GITHUB_ENV
+          echo DATE=$(date -I | sed s/-//g) >> $GITHUB_ENV
       - name: Push to GitHub Releases
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -45,7 +46,7 @@ jobs:
         with: 
           draft: false
           prerelease: false
-          tag_name: ${{ env.SHORT_SHA }}-CI
+          tag_name: ${{ env.SHORT_SHA }}-CI-${{ env.DATE }}
           files: "out/*.pkg.tar.zst"
           name: Raspberry Pi 4 UEFI Boot Packages for Arch Based Linux Distribution
           body: |
