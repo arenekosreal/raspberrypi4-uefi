@@ -10,7 +10,7 @@ _count_start=568035b # Linux 6.0-rc1
 
 pkgbase="raspberrypi4-devicetree-raspberrypi-git"
 pkgname=("raspberrypi4-overlays-raspberrypi-git" "raspberrypi4-dtbs-raspberrypi-git")
-pkgver=6.0.rc1.r574.85b3b4e97552
+pkgver=6.0.rc1.r580.45b3565e3cbc
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("any")
@@ -20,11 +20,11 @@ options=("!strip")
 makedepends=("git")
 conflicts=("raspberrypi-devicetree")
 source=(
-    user_ns_unprivileged.patch
+    0001-CONFIG_USER_NS_UNPRIVILEGED.patch
     config-raspberrypi
     linux-raspberrypi::git+https://github.com/raspberrypi/linux.git#branch=rpi-${KBRANCH}.y)
-sha256sums=('44f31b8ae7bc7d4547710c9906a8dfec06f3a0b2bff17939bf426200d6575f41'
-            '751ffd8ef2dcff64d5dd57f461c186e55282ddbef5d205ec4dcfb1385d453de6'
+sha256sums=('82e6886938854236037a9c5d1763e59675b5f1dfeabffc93645a52da39d0c21c'
+            '284db1f8bda25f7a41fd95d4796c30e3f1984dcf78a321dda20c5b006cafa063'
             'SKIP')
 if [ $(uname -m) != "aarch64" ]
 then
@@ -61,7 +61,7 @@ pkgver(){
 prepare(){
     cd ${srcdir}/linux-raspberrypi
     cp ${srcdir}/config-raspberrypi .config
-    git apply ${srcdir}/user_ns_unprivileged.patch
+    git apply ${srcdir}/0001-CONFIG_USER_NS_UNPRIVILEGED.patch
     make olddefconfig
     sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
     echo "-$pkgrel" > localversion.10-pkgrel
