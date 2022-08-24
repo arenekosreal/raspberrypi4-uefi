@@ -5,7 +5,7 @@ USE_LLVM=${USE_LLVM:-false}
 buildarch=8 # aarch64
 
 pkgname="uefi-raspberrypi4-git" 
-pkgver=20220817
+pkgver=20220824
 pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B (git version)"
@@ -79,11 +79,6 @@ prepare(){
     cp ${srcdir}/build.sh build-runtime.sh
     patch --binary -d edk2 -p1 -i ../0001-MdeModulePkg-UefiBootManagerLib-Signal-ReadyToBoot-o.patch
 	patch --binary -d edk2-platforms -p1 -i ../0002-Check-for-Boot-Discovery-Policy-change.patch
-    
-    # Fix build, by https://github.com/kuqin12/edk2-platforms/commit/8553e9816a50ac5adb1039f9f3869c046e96d3c2
-    grep -q 'PlatformPKPotectionLib' ${srcdir}/edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc || \
-        sed -i '168a\PlatformPKProtectionLib|SecurityPkg/Library/PlatformPKProtectionLibVarPolicy/PlatformPKProtectionLibVarPolicy.inf' \
-            ${srcdir}/edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc
 }
 build(){
     cd ${srcdir}
