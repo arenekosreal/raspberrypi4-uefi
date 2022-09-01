@@ -6,11 +6,11 @@ KBRANCH=${KBRANCH:-6.0}
 # Only need if you are using raspberrypi kernel
 USE_LLVM=${USE_LLVM:-false}
 # Weather using LLVM or GCC
-_count_start=1c23f9e # Linux 6.0-rc2
+_count_start=b90cb10 # Linux 6.0-rc3
 
 pkgbase="raspberrypi4-devicetree-raspberrypi-git"
 pkgname=("raspberrypi4-overlays-raspberrypi-git" "raspberrypi4-dtbs-raspberrypi-git")
-pkgver=6.0.rc2.r577.b123e29de71d
+pkgver=6.0.rc3.r593.73014d183406
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("any")
@@ -24,7 +24,7 @@ source=(
     config-raspberrypi
     linux-raspberrypi::git+https://github.com/raspberrypi/linux.git#branch=rpi-${KBRANCH}.y)
 sha256sums=('82e6886938854236037a9c5d1763e59675b5f1dfeabffc93645a52da39d0c21c'
-            '284db1f8bda25f7a41fd95d4796c30e3f1984dcf78a321dda20c5b006cafa063'
+            '9a4921b49b2e1a746be933d0b92c82e0425b9d67b8efcb58ead3a883aded04ba'
             'SKIP')
 if [ $(uname -m) != "aarch64" ]
 then

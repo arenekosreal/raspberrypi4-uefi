@@ -7,7 +7,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="linux-rpi4-uefi-generic"
 pkgname=("linux-rpi4-uefi-generic-git" "linux-headers-rpi4-uefi-generic-git" "linux-api-headers-rpi4-uefi-generic-git" "linux-docs-rpi4-uefi-generic-git")
-pkgver=6.0.rc2.r54.c40e8341e3b3
+pkgver=6.0.rc3.r31.c5e4d5e99162
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("aarch64")
@@ -38,7 +38,7 @@ else
 fi
 
 sha256sums=('82e6886938854236037a9c5d1763e59675b5f1dfeabffc93645a52da39d0c21c'
-            '06dec4e9cdc71951b296145f5f8fd1722652245dcfda31a248d03e27045d3af0'
+            '4d0238e88cf7ee8d743edb9b67dc4efe80607cc235ae30989d31ca644aadc269'
             'SKIP')
 source=(
     0001-CONFIG_USER_NS_UNPRIVILEGED.patch

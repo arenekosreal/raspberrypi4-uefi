@@ -7,7 +7,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="raspberrypi4-devicetree-generic-git"
 pkgname=("raspberrypi4-dtbs-generic-git")
-pkgver=6.0.rc2.r54.c40e8341e3b3
+pkgver=6.0.rc3.r31.c5e4d5e99162
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("any")
@@ -21,7 +21,7 @@ source=(
     config-generic
     linux-generic::git+https://github.com/torvalds/linux.git)
 sha256sums=('82e6886938854236037a9c5d1763e59675b5f1dfeabffc93645a52da39d0c21c'
-            '06dec4e9cdc71951b296145f5f8fd1722652245dcfda31a248d03e27045d3af0'
+            '4d0238e88cf7ee8d743edb9b67dc4efe80607cc235ae30989d31ca644aadc269'
             'SKIP')
 if [ $(uname -m) != "aarch64" ]
 then
