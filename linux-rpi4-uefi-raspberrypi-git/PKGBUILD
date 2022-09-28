@@ -40,7 +40,7 @@ else
     export _STRIPBIN=/usr/bin/strip
 fi
 sha256sums=('82e6886938854236037a9c5d1763e59675b5f1dfeabffc93645a52da39d0c21c'
-            'a2330950cd21b0d17293df63ab0805dbcaf060982a259e33cb628f76a3e2bb02'
+            'aa2f7291fad3747a6996efd9028d01cc3dfc773935e200ccdc5ba39a8f0ba5d9'
             'SKIP')
 source=(
     0001-CONFIG_USER_NS_UNPRIVILEGED.patch
