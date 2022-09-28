@@ -10,7 +10,7 @@ _count_start=f76349c # Linux 6.0-rc7
 
 pkgbase="raspberrypi4-devicetree-raspberrypi-git"
 pkgname=("raspberrypi4-overlays-raspberrypi-git" "raspberrypi4-dtbs-raspberrypi-git")
-pkgver=6.0.rc7.r688.b48f68494fbf
+pkgver=6.0.rc7.r694.3fb5ca89c844
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("any")
