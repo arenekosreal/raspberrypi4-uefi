@@ -21,7 +21,7 @@ source=(
     config-generic
     linux-generic::git+https://github.com/torvalds/linux.git)
 sha256sums=('82e6886938854236037a9c5d1763e59675b5f1dfeabffc93645a52da39d0c21c'
-            '48eda7e88c5905403992595eb67e91b3afb011a8055f14a8cc9e3719e72a6e02'
+            '7f84a3d807964711ed3277063914b6afd4e829b28e71529da4d4ceaadd1c406d'
             'SKIP')
 if [ $(uname -m) != "aarch64" ]
 then
