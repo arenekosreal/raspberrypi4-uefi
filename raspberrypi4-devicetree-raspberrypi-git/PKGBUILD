@@ -24,7 +24,7 @@ source=(
     config-raspberrypi
     linux-raspberrypi::git+https://github.com/raspberrypi/linux.git#branch=rpi-${KBRANCH}.y)
 sha256sums=('82e6886938854236037a9c5d1763e59675b5f1dfeabffc93645a52da39d0c21c'
-            '33030e5beb0f5531ba26dcbb302297c9aff2b93bfaaba37c4636a3555865a884'
+            '70f35963130ab43bce04bc97cf7824d5b46e06597ed596eb535a963ef30736d0'
             'SKIP')
 if [ $(uname -m) != "aarch64" ]
 then
