@@ -7,7 +7,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="raspberrypi4-devicetree-generic-git"
 pkgname=("raspberrypi4-dtbs-generic-git")
-pkgver=6.0.r5118.833477fce7a1
+pkgver=6.0.r10822.60bb8154d1d7
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("any")
@@ -17,10 +17,10 @@ options=("!strip")
 makedepends=("git")
 conflicts=("raspberrypi-devicetree")
 source=(
-    0001-CONFIG_USER_NS_UNPRIVILEGED.patch
+    0002-CONFIG_USER_NS_UNPRIVILEGED.patch
     config-generic
     linux-generic::git+https://github.com/torvalds/linux.git)
-sha256sums=('82e6886938854236037a9c5d1763e59675b5f1dfeabffc93645a52da39d0c21c'
+sha256sums=('dd8a712f6312bc4fdc4aec49aaa084e1d33ca827cb299e9aa6837ad257a76a8c'
             '7f84a3d807964711ed3277063914b6afd4e829b28e71529da4d4ceaadd1c406d'
             'SKIP')
 if [ $(uname -m) != "aarch64" ]
@@ -58,7 +58,7 @@ pkgver(){
 prepare(){
     cd ${srcdir}/linux-generic
     cp ${srcdir}/config-generic .config
-    git apply ${srcdir}/0001-CONFIG_USER_NS_UNPRIVILEGED.patch
+    git apply ${srcdir}/0002-CONFIG_USER_NS_UNPRIVILEGED.patch
     make olddefconfig
     sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
     echo "-$pkgrel" > localversion.10-pkgrel

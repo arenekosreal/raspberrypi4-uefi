@@ -10,7 +10,7 @@ _count_start=4fe89d0 # Linux 6.0
 
 pkgbase="linux-rpi4-uefi-raspberrypi"
 pkgname=("linux-rpi4-uefi-raspberrypi-git" "linux-headers-rpi4-uefi-raspberrypi-git" "linux-api-headers-rpi4-uefi-raspberrypi-git" "linux-docs-rpi4-uefi-raspberrypi-git")
-pkgver=6.0.r704.34e79d8b23c9
+pkgver=6.0.r706.974e8bd0dec6
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
