@@ -6,11 +6,11 @@ KBRANCH=${KBRANCH:-6.0}
 # Only need if you are using raspberrypi kernel
 USE_LLVM=${USE_LLVM:-false}
 # Weather using LLVM or GCC
-_count_start=4fe89d0 # Linux 6.0
+_count_start=fbd56dd # Linux 6.0.1
 
 pkgbase="raspberrypi4-devicetree-raspberrypi-git"
 pkgname=("raspberrypi4-overlays-raspberrypi-git" "raspberrypi4-dtbs-raspberrypi-git")
-pkgver=6.0.r706.974e8bd0dec6
+pkgver=6.1.r706.f9d15714a2e2
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("any")

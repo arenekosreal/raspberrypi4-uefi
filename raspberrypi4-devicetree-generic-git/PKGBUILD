@@ -7,7 +7,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="raspberrypi4-devicetree-generic-git"
 pkgname=("raspberrypi4-dtbs-generic-git")
-pkgver=6.0.r10822.60bb8154d1d7
+pkgver=6.0.r11658.a185a0995518
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("any")
@@ -20,7 +20,7 @@ source=(
     0002-CONFIG_USER_NS_UNPRIVILEGED.patch
     config-generic
     linux-generic::git+https://github.com/torvalds/linux.git)
-sha256sums=('dd8a712f6312bc4fdc4aec49aaa084e1d33ca827cb299e9aa6837ad257a76a8c'
+sha256sums=('214725274d1c2104cfeff2ac4e7b0d0f016dfd83df9ddc36d9cfdf0c3946ec78'
             '9024fbb4cf329f5a0d9c78ada9fce72f1f076f6a88de0dc267dc1b895295e4f4'
             'SKIP')
 if [ $(uname -m) != "aarch64" ]

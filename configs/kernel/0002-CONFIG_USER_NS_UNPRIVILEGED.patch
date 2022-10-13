@@ -21,7 +21,7 @@ index 45f09bec02c4..87b20e2ee274 100644
  {
  	return &init_user_ns;
 diff --git a/init/Kconfig b/init/Kconfig
-index d6c4302b1c08..3a6edbd4a7c3 100644
+index 694f7c160c9c..c8c696ef0c6b 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1247,6 +1247,22 @@ config USER_NS
@@ -48,12 +48,12 @@ index d6c4302b1c08..3a6edbd4a7c3 100644
  	bool "PID Namespaces"
  	default y
 diff --git a/kernel/fork.c b/kernel/fork.c
-index 5f986a32d0e6..d698effa53d1 100644
+index 08969f5aa38d..ff601cb7a1fa 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
-@@ -99,6 +99,10 @@
+@@ -98,6 +98,10 @@
+ #include <linux/io_uring.h>
  #include <linux/bpf.h>
- #include <linux/sched/mm.h>
  
 +#ifdef CONFIG_USER_NS
 +#include <linux/user_namespace.h>
@@ -62,7 +62,7 @@ index 5f986a32d0e6..d698effa53d1 100644
  #include <asm/pgalloc.h>
  #include <linux/uaccess.h>
  #include <asm/mmu_context.h>
-@@ -2009,6 +2013,10 @@ static __latent_entropy struct task_struct *copy_process(
+@@ -2008,6 +2012,10 @@ static __latent_entropy struct task_struct *copy_process(
  	if ((clone_flags & (CLONE_NEWUSER|CLONE_FS)) == (CLONE_NEWUSER|CLONE_FS))
  		return ERR_PTR(-EINVAL);
  
@@ -73,7 +73,7 @@ index 5f986a32d0e6..d698effa53d1 100644
  	/*
  	 * Thread groups must share signals as well, and detached threads
  	 * can only be started up within the thread group.
-@@ -3167,6 +3175,12 @@ int ksys_unshare(unsigned long unshare_flags)
+@@ -3166,6 +3174,12 @@ int ksys_unshare(unsigned long unshare_flags)
  	if (unshare_flags & CLONE_NEWNS)
  		unshare_flags |= CLONE_FS;
  
