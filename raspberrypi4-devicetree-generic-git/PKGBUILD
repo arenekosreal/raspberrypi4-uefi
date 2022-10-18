@@ -17,7 +17,7 @@ options=("!strip")
 makedepends=("git")
 conflicts=("raspberrypi-devicetree")
 source=(
-    0002-CONFIG_USER_NS_UNPRIVILEGED.patch
+    0001-CONFIG_USER_NS_UNPRIVILEGED.patch
     config-generic
     linux-generic::git+https://github.com/torvalds/linux.git)
 sha256sums=('214725274d1c2104cfeff2ac4e7b0d0f016dfd83df9ddc36d9cfdf0c3946ec78'
@@ -58,7 +58,7 @@ pkgver(){
 prepare(){
     cd ${srcdir}/linux-generic
     cp ${srcdir}/config-generic .config
-    git apply ${srcdir}/0002-CONFIG_USER_NS_UNPRIVILEGED.patch
+    git apply ${srcdir}/0001-CONFIG_USER_NS_UNPRIVILEGED.patch
     make olddefconfig
     sed -i "s/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/;s/CONFIG_SURFACE_PLATFORMS=y/# CONFIG_SURFACE_PLATFORMS is not set/" .config
     echo "-$pkgrel" > localversion.10-pkgrel

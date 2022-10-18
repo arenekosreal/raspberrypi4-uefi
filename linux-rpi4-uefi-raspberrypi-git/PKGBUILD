@@ -2,15 +2,15 @@
 
 buildarch=8 # aarch64
 
-KBRANCH=${KBRANCH:-6.0}
+KBRANCH=${KBRANCH:-6.1}
 # Only need if you are using raspberrypi kernel
 USE_LLVM=${USE_LLVM:-false}
 # Weather using LLVM or GCC
-_count_start=dab08f7 # Linux 6.0.2
+_count_start=9abf231 # Linux 6.1.0
 
 pkgbase="linux-rpi4-uefi-raspberrypi"
 pkgname=("linux-rpi4-uefi-raspberrypi-git" "linux-headers-rpi4-uefi-raspberrypi-git" "linux-api-headers-rpi4-uefi-raspberrypi-git" "linux-docs-rpi4-uefi-raspberrypi-git")
-pkgver=6.2.r586.45681bb2eec4
+pkgver=6.1.rc1.r479.c4d555756f64
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
@@ -39,7 +39,7 @@ else
     # native compile
     export _STRIPBIN=/usr/bin/strip
 fi
-sha256sums=('82e6886938854236037a9c5d1763e59675b5f1dfeabffc93645a52da39d0c21c'
+sha256sums=('214725274d1c2104cfeff2ac4e7b0d0f016dfd83df9ddc36d9cfdf0c3946ec78'
             '70f35963130ab43bce04bc97cf7824d5b46e06597ed596eb535a963ef30736d0'
             'SKIP')
 source=(
@@ -53,7 +53,7 @@ export LOCALVERSION=""
 
 pkgver(){
     cd ${srcdir}/linux-raspberrypi
-    version_str=$(make -s kernelversion | sed 's/.0//;s/-/./') # 5.19.rc6/5.19
+    version_str=$(make -s kernelversion | sed 's/.0-/./;s/-/./') # 5.19.rc6/5.19
     release_num=r$(git rev-list --count ${_count_start}..HEAD)
     commit_id=$(git rev-parse --short HEAD)
     echo ${version_str}.${release_num}.${commit_id} # 5.19.rc6.rxxx.xxx/5.19.rxxx.xxx
