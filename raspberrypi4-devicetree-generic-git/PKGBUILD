@@ -7,7 +7,7 @@ USE_LLVM=${USE_LLVM:-false}
 
 pkgbase="raspberrypi4-devicetree-generic-git"
 pkgname=("raspberrypi4-dtbs-generic-git")
-pkgver=6.0.r11658.a185a0995518
+pkgver=6.1.rc1.r10.bb1a1146467a
 pkgrel=1
 url="https://github.com/torvalds/linux"
 arch=("any")

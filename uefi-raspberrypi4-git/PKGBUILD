@@ -5,7 +5,7 @@ USE_LLVM=${USE_LLVM:-false}
 buildarch=8 # aarch64
 
 pkgname="uefi-raspberrypi4-git" 
-pkgver=20221013
+pkgver=20221018
 pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B (git version)"

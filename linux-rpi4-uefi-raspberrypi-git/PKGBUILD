@@ -6,11 +6,11 @@ KBRANCH=${KBRANCH:-6.0}
 # Only need if you are using raspberrypi kernel
 USE_LLVM=${USE_LLVM:-false}
 # Weather using LLVM or GCC
-_count_start=fbd56dd # Linux 6.0.1
+_count_start=dab08f7 # Linux 6.0.2
 
 pkgbase="linux-rpi4-uefi-raspberrypi"
 pkgname=("linux-rpi4-uefi-raspberrypi-git" "linux-headers-rpi4-uefi-raspberrypi-git" "linux-api-headers-rpi4-uefi-raspberrypi-git" "linux-docs-rpi4-uefi-raspberrypi-git")
-pkgver=6.1.r706.f9d15714a2e2
+pkgver=6.2.r586.45681bb2eec4
 pkgrel=1
 url="https://github.com/raspberrypi/linux"
 arch=("aarch64")
