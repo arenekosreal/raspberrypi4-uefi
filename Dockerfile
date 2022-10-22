@@ -2,7 +2,7 @@ FROM archlinux/archlinux:base-devel
 RUN pacman-key --init &&\
     pacman-key --populate archlinux &&\
     pacman -Syu --noconfirm &&\
-    pacman -S git acpica aarch64-linux-gnu-gcc openssh clang lld llvm --noconfirm --needed &&\
+    pacman -S git acpica aarch64-linux-gnu-gcc openssl python clang lld llvm --noconfirm --needed &&\
     pacman -U \
         https://archive.archlinux.org/packages/g/gcc10/gcc10-1%3A10.3.0-2-x86_64.pkg.tar.zst \
         https://archive.archlinux.org/packages/g/gcc10-libs/gcc10-libs-1%3A10.3.0-2-x86_64.pkg.tar.zst \
