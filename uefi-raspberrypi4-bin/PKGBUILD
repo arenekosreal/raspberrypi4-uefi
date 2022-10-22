@@ -20,8 +20,8 @@ optdepends=(
     "linux-firmware: firmware for RaspberryPi 4B")
 source=(
     "LICENCE.EDK2::https://raw.githubusercontent.com/tianocore/edk2/master/License.txt"
-	"LICENCE.broadcom::https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/LICENCE.broadcom"
-	"https://github.com/pftf/RPi4/releases/download/v${pkgver}/RPi4_UEFI_Firmware_v${pkgver}.zip"
+    "LICENCE.broadcom::https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/LICENCE.broadcom"
+    "https://github.com/pftf/RPi4/releases/download/v${pkgver}/RPi4_UEFI_Firmware_v${pkgver}.zip"
     "70-post-install-uefi.hook"
     "80-pre-remove-uefi.hook"
     "post-install-uefi"
@@ -36,8 +36,8 @@ sha256sums=('50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             '4052d07f78e0230406c311aab5dcd153c111fb72024d4afa33f2ea019eeb3a6a')
 
 package(){
-	install -Dm644 ${srcdir}/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
-	install -Dm644 ${srcdir}/config.txt ${pkgdir}/boot/config.txt
+    install -Dm644 ${srcdir}/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
+    install -Dm644 ${srcdir}/config.txt ${pkgdir}/boot/config.txt
     install -Dm644 ${srcdir}/70-post-install-uefi.hook ${pkgdir}/usr/share/libalpm/hooks/70-post-install-uefi.hook
     install -Dm644 ${srcdir}/80-pre-remove-uefi.hook ${pkgdir}/usr/share/libalpm/hooks/80-pre-remove-uefi.hook
     install -Dm755 ${srcdir}/post-install-uefi ${pkgdir}/usr/share/libalpm/scripts/post-install-uefi

@@ -6,7 +6,7 @@ buildarch=8 # aarch64
 
 pkgname="uefi-raspberrypi4" 
 pkgver=1.33.1.g02bc9ce
-pkgrel=3
+pkgrel=4
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
 url="https://github.com/pftf/RPi4"
@@ -19,7 +19,7 @@ depends=("raspberrypi-overlays" "linux-aarch64" "raspberrypi-bootloader")
 optdepends=(
     "firmware-raspberrypi: firmware for RaspberryPi 4B"
     "linux-firmware: firmware for RaspberryPi 4B")
-makedepends=("gcc10" "git" "acpica" "openssl" "util-linux")
+makedepends=("gcc10" "git" "acpica" "openssl" "util-linux" "python")
 if [[ ${USE_LLVM} == true ]]
 then
     export _COMPILER=CLANG38
@@ -35,11 +35,11 @@ fi
 source=(
     "git+https://github.com/pftf/RPi4"
     "LICENCE.EDK2::https://raw.githubusercontent.com/tianocore/edk2/master/License.txt"
-	"LICENCE.broadcom::https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/LICENCE.broadcom"
-	"ms_kek.cer::https://go.microsoft.com/fwlink/?LinkId=321185"
-	"ms_db1.cer::https://go.microsoft.com/fwlink/?linkid=321192"
-	"ms_db2.cer::https://go.microsoft.com/fwlink/?linkid=321194"
-	"arm64_dbx.bin::https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin"
+    "LICENCE.broadcom::https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/LICENCE.broadcom"
+    "ms_kek.cer::https://go.microsoft.com/fwlink/?LinkId=321185"
+    "ms_db1.cer::https://go.microsoft.com/fwlink/?linkid=321192"
+    "ms_db2.cer::https://go.microsoft.com/fwlink/?linkid=321194"
+    "arm64_dbx.bin::https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin"
     "build.sh"
     "70-post-install-uefi.hook"
     "80-pre-remove-uefi.hook"
@@ -61,7 +61,7 @@ sha256sums=('SKIP'
 
 pkgver(){
     cd ${srcdir}/RPi4
-	git describe --tags | sed "s/v//;s/-/./g"
+    git describe --tags | sed "s/v//;s/-/./g"
 }
 prepare(){
     cd ${srcdir}/RPi4
@@ -71,14 +71,14 @@ prepare(){
     openssl req -new -x509 -newkey rsa:2048 -subj "/CN=Raspberry Pi Platform Key/" -keyout /dev/null -outform DER -out keys/pk.cer -days 7300 -nodes -sha256
     cp ${srcdir}/build.sh build.sh
     patch --binary -d edk2 -p1 -i ../0001-MdeModulePkg-UefiBootManagerLib-Signal-ReadyToBoot-o.patch
-	patch --binary -d edk2-platforms -p1 -i ../0002-Check-for-Boot-Discovery-Policy-change.patch
-	mkdir -p ${srcdir}/gcc10
-	cd ${srcdir}/gcc10
-	for item in c++ c89 c99 cc cpp g++ gcc gcc-ar gcc-nm gcc-ranlib
-	do
-        	ln -sf /usr/bin/${item}-10 ${item}
+    patch --binary -d edk2-platforms -p1 -i ../0002-Check-for-Boot-Discovery-Policy-change.patch
+    mkdir -p ${srcdir}/gcc10
+    cd ${srcdir}/gcc10
+    for item in c++ c89 c99 cc cpp g++ gcc gcc-ar gcc-nm gcc-ranlib
+    do
+        ln -sf /usr/bin/${item}-10 ${item}
     done
-	# We use gcc 10 to create BrotliCompress to avoid compile failure. Simply downgrade gcc to 10 will broke whole Arch Distribution.
+    # We use gcc 10 to create BrotliCompress to avoid compile failure. Simply downgrade gcc to 10 will broke whole Arch Distribution.
 }
 build(){
     cd ${srcdir}/RPi4
@@ -87,8 +87,8 @@ build(){
     bash build.sh
 }
 package(){
-	install -Dm644 ${srcdir}/RPi4/Build/RPi4/RELEASE_${_COMPILER}/FV/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
-	install -Dm644 ${srcdir}/RPi4/config.txt ${pkgdir}/boot/config.txt
+    install -Dm644 ${srcdir}/RPi4/Build/RPi4/RELEASE_${_COMPILER}/FV/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
+    install -Dm644 ${srcdir}/RPi4/config.txt ${pkgdir}/boot/config.txt
     install -Dm644 ${srcdir}/70-post-install-uefi.hook ${pkgdir}/usr/share/libalpm/hooks/70-post-install-uefi.hook
     install -Dm644 ${srcdir}/80-pre-remove-uefi.hook ${pkgdir}/usr/share/libalpm/hooks/80-pre-remove-uefi.hook
     install -Dm755 ${srcdir}/post-install-uefi ${pkgdir}/usr/share/libalpm/scripts/post-install-uefi
