@@ -91,7 +91,7 @@ prepare(){
 build(){
     cd ${srcdir}
     sed -i "s/%FIRMVER%/${pkgver}-${pkgrel}/g;s/%CROSS_COMPILE%/${CROSS_COMPILE}/g;s/%COMPILER%/${_COMPILER}/g" build-runtime.sh
-    MAKEFLAGS= make -C edk2/BaseTools
+    MAKEFLAGS= PYTHON_COMMAND=python make -C edk2/BaseTools
     bash build-runtime.sh
 }
 package(){
