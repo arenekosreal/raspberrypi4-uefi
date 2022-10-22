@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+echo "Removing /boot/vmlinux-linux..."
+rm -f /boot/vmlinux-linux
+echo "Removing /boot/vmlinuz-linux..."
+rm -f /boot/vmlinuz-linux
+echo "Removing /boot/bcm2711-rpi-4-b"
+rm -f /boot/bcm2711-rpi-4-b.dtb

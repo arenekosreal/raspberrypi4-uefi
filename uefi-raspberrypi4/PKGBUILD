@@ -6,7 +6,7 @@ buildarch=8 # aarch64
 
 pkgname="uefi-raspberrypi4" 
 pkgver=1.33.1.g02bc9ce
-pkgrel=2
+pkgrel=3
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
 url="https://github.com/pftf/RPi4"
@@ -15,7 +15,7 @@ license=("custom")
 groups=("raspberrypi4-uefi")
 conflicts=("uboot-raspberrypi")
 replaces=("raspberrypi4-uefi-firmware")
-depends=("raspberrypi4-overlays" "raspberrypi4-dtbs" "raspberrypi-bootloader")
+depends=("raspberrypi-overlays" "linux-aarch64" "raspberrypi-bootloader")
 optdepends=(
     "firmware-raspberrypi: firmware for RaspberryPi 4B"
     "linux-firmware: firmware for RaspberryPi 4B")
@@ -33,14 +33,18 @@ else
     export _COMPILER=GCC5
 fi
 source=(
-    git+https://github.com/pftf/RPi4
-    LICENCE.EDK2::https://raw.githubusercontent.com/tianocore/edk2/master/License.txt
-	LICENCE.broadcom::https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/LICENCE.broadcom
-	ms_kek.cer::https://go.microsoft.com/fwlink/?LinkId=321185
-	ms_db1.cer::https://go.microsoft.com/fwlink/?linkid=321192
-	ms_db2.cer::https://go.microsoft.com/fwlink/?linkid=321194
-	arm64_dbx.bin::https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin
-    build.sh
+    "git+https://github.com/pftf/RPi4"
+    "LICENCE.EDK2::https://raw.githubusercontent.com/tianocore/edk2/master/License.txt"
+	"LICENCE.broadcom::https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/LICENCE.broadcom"
+	"ms_kek.cer::https://go.microsoft.com/fwlink/?LinkId=321185"
+	"ms_db1.cer::https://go.microsoft.com/fwlink/?linkid=321192"
+	"ms_db2.cer::https://go.microsoft.com/fwlink/?linkid=321194"
+	"arm64_dbx.bin::https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin"
+    "build.sh"
+    "70-post-install-uefi.hook"
+    "80-pre-remove-uefi.hook"
+    "post-install-uefi"
+    "pre-remove-uefi"
 )
 sha256sums=('SKIP'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
@@ -49,7 +53,11 @@ sha256sums=('SKIP'
             'e8e95f0733a55e8bad7be0a1413ee23c51fcea64b3c8fa6a786935fddcc71961'
             '48e99b991f57fc52f76149599bff0a58c47154229b9f8d603ac40d3500248507'
             'f42c187f8b01b497f81fb0459164b27d16ca2af0b95c7331a82c1a27a731a885'
-            '4b71df9b8e7dd77b9534efb16a220849ef2ebe789739fc7a198b581217a29d8f')
+            '4b71df9b8e7dd77b9534efb16a220849ef2ebe789739fc7a198b581217a29d8f'
+            '8e55eb4afdd6b572d2413e87b64219d2f9d3bd033de2dfd37e176e92d25d5821'
+            'caa86b22a1452d8974e7bbecbb6d9fb591a58da928a06d5e13cee9592e785b12'
+            '02a799c12e818c6a177df4a5c52454d177f3c8cea11584fcc19e392f08c7418c'
+            '4052d07f78e0230406c311aab5dcd153c111fb72024d4afa33f2ea019eeb3a6a')
 
 pkgver(){
     cd ${srcdir}/RPi4
@@ -81,6 +89,10 @@ build(){
 package(){
 	install -Dm644 ${srcdir}/RPi4/Build/RPi4/RELEASE_${_COMPILER}/FV/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
 	install -Dm644 ${srcdir}/RPi4/config.txt ${pkgdir}/boot/config.txt
+    install -Dm644 ${srcdir}/70-post-install-uefi.hook ${pkgdir}/usr/share/libalpm/hooks/70-post-install-uefi.hook
+    install -Dm644 ${srcdir}/80-pre-remove-uefi.hook ${pkgdir}/usr/share/libalpm/hooks/80-pre-remove-uefi.hook
+    install -Dm755 ${srcdir}/post-install-uefi ${pkgdir}/usr/share/libalpm/scripts/post-install-uefi
+    install -Dm755 ${srcdir}/pre-remove-uefi ${pkgdir}/usr/share/libalpm/scripts/pre-remove-uefi
     install -Dm644 ${srcdir}/LICENCE.EDK2 ${pkgdir}/usr/share/licenses/${pkgname}/LICENCE.EDK2
     install -Dm644 ${srcdir}/LICENCE.broadcom ${pkgdir}/usr/share/licenses/${pkgname}/LICENCE.broadcom
 }

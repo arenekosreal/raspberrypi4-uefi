@@ -1,7 +1,4 @@
 uefi-raspberrypi4-bin
 uefi-raspberrypi4
 uefi-raspberrypi4-git
-raspberrypi4-devicetree-raspberrypi-git
-linux-rpi4-uefi-raspberrypi-git
-raspberrypi4-devicetree-generic-git
-linux-rpi4-uefi-generic-git
+raspberrypi-overlays
