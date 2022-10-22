@@ -67,6 +67,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with: 
           draft: false
+          generate_release_notes: true
           prerelease: false
           tag_name: ${{ env.SHORT_SHA }}-CI-${{ env.DATE }}
           files: "out/*.pkg.tar.zst"
