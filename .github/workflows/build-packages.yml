@@ -78,6 +78,3 @@ jobs:
             ```
             ${{ env.SUMS }}
             ```
-
-            Notes:
-            - `/boot/overlays` built from raspberrypi kernel has been splited into a single package called `raspberrypi4-overlays-raspberrypi-git` which is needed by `uefi-raspberrypi4` because generic kernel doesn't have overlays.
