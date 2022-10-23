@@ -38,8 +38,8 @@ function is_in_line(){
     return 1
 }
 
-MAKEPKG_ARGS=-fdc
-CHROOT_MAKEPKG_ARGS=-sc
+MAKEPKG_ARGS=-fc
+CHROOT_MAKEPKG_ARGS=-srfc
 CI=${CI:-false}
 CHROOT=${CHROOT:-false}
 LOCAL=${LOCAL:-false}
