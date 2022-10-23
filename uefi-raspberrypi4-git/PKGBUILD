@@ -5,21 +5,13 @@ USE_LLVM=${USE_LLVM:-false}
 buildarch=8 # aarch64
 
 pkgname="uefi-raspberrypi4-git" 
-pkgver=20221022
-pkgrel=2
+pkgver=20221023
+pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B (git version)"
 url="https://github.com/tianocore"
 arch=("aarch64")
-license=("custom")
-groups=("raspberrypi4-uefi")
-provides=("raspberrypi4-uefi-firmware" "uefi-raspberrypi4")
-conflicts=("raspberrypi4-uefi-firmware" "uboot-raspberrypi" "uefi-raspberrypi4")
-replaces=("raspberrypi4-uefi-firmware-git")
-depends=("raspberrypi-overlays" "linux-aarch64" "raspberrypi-bootloader")
-optdepends=(
-    "firmware-raspberrypi: firmware for RaspberryPi 4B"
-    "linux-firmware: firmware for RaspberryPi 4B")
+license=("custom:edk2" "custom:broadcom")
 makedepends=("git" "acpica" "openssl" "util-linux" "python")
 if [[ ${USE_LLVM} == true ]]
 then
@@ -95,6 +87,13 @@ build(){
     bash build-runtime.sh
 }
 package(){
+    provides=("uefi-raspberrypi4")
+    conflicts=("uboot-raspberrypi" "uefi-raspberrypi4")
+    depends=("raspberrypi-overlays" "linux-aarch64>=5.8" "raspberrypi-bootloader")
+    optdepends=(
+        "firmware-raspberrypi: firmware for RaspberryPi 4B"
+        "linux-firmware: firmware for RaspberryPi 4B")
+
     install -Dm644 ${srcdir}/Build/RPi4/RELEASE_${_COMPILER}/FV/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
     install -Dm644 ${srcdir}/config.txt ${pkgdir}/boot/config.txt
     install -Dm644 ${srcdir}/70-post-install-uefi.hook ${pkgdir}/usr/share/libalpm/hooks/70-post-install-uefi.hook

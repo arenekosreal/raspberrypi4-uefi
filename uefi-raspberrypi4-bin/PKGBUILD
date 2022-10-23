@@ -9,15 +9,7 @@ backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B (bin version)"
 url="https://github.com/pftf/RPi4"
 arch=("aarch64")
-license=("custom")
-groups=("raspberrypi4-uefi")
-provides=("uefi-raspberrypi4")
-conflicts=("uefi-raspberrypi4" "uboot-raspberrypi")
-replaces=("raspberrypi4-uefi-firmware-bin")
-depends=("raspberrypi-overlays" "linux-aarch64" "raspberrypi-bootloader")
-optdepends=(
-    "firmware-raspberrypi: firmware for RaspberryPi 4B"
-    "linux-firmware: firmware for RaspberryPi 4B")
+license=("custom:edk2" "custom:broadcom")
 source=(
     "LICENCE.EDK2::https://raw.githubusercontent.com/tianocore/edk2/master/License.txt"
     "LICENCE.broadcom::https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/LICENCE.broadcom"
@@ -36,6 +28,13 @@ sha256sums=('50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             '4052d07f78e0230406c311aab5dcd153c111fb72024d4afa33f2ea019eeb3a6a')
 
 package(){
+    provides=("uefi-raspberrypi4")
+    conflicts=("uefi-raspberrypi4" "uboot-raspberrypi")
+    depends=("raspberrypi-overlays" "linux-aarch64" "raspberrypi-bootloader")
+    optdepends=(
+        "firmware-raspberrypi: firmware for RaspberryPi 4B"
+        "linux-firmware: firmware for RaspberryPi 4B")
+
     install -Dm644 ${srcdir}/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
     install -Dm644 ${srcdir}/config.txt ${pkgdir}/boot/config.txt
     install -Dm644 ${srcdir}/70-post-install-uefi.hook ${pkgdir}/usr/share/libalpm/hooks/70-post-install-uefi.hook

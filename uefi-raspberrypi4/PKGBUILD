@@ -6,19 +6,12 @@ buildarch=8 # aarch64
 
 pkgname="uefi-raspberrypi4" 
 pkgver=1.33.1.g02bc9ce
-pkgrel=4
+pkgrel=5
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
 url="https://github.com/pftf/RPi4"
 arch=("aarch64")
-license=("custom")
-groups=("raspberrypi4-uefi")
-conflicts=("uboot-raspberrypi")
-replaces=("raspberrypi4-uefi-firmware")
-depends=("raspberrypi-overlays" "linux-aarch64" "raspberrypi-bootloader")
-optdepends=(
-    "firmware-raspberrypi: firmware for RaspberryPi 4B"
-    "linux-firmware: firmware for RaspberryPi 4B")
+license=("custom:edk2" "custom:broadcom")
 makedepends=("gcc10" "git" "acpica" "openssl" "util-linux" "python")
 if [[ ${USE_LLVM} == true ]]
 then
@@ -78,7 +71,7 @@ prepare(){
     do
         ln -sf /usr/bin/${item}-10 ${item}
     done
-    # We use gcc 10 to create BrotliCompress to avoid compile failure. Simply downgrade gcc to 10 will broke whole Arch Distribution.
+    # We use gcc 10 to create BrotliCompress to avoid compile failure. Simply downgrade gcc to 10 will break whole Arch Distribution.
 }
 build(){
     cd ${srcdir}/RPi4
@@ -87,6 +80,12 @@ build(){
     bash build.sh
 }
 package(){
+    conflicts=("uboot-raspberrypi")
+    depends=("raspberrypi-overlays" "linux-aarch64>=5.8" "raspberrypi-bootloader")
+    optdepends=(
+        "firmware-raspberrypi: firmware for RaspberryPi 4B"
+        "linux-firmware: firmware for RaspberryPi 4B")
+
     install -Dm644 ${srcdir}/RPi4/Build/RPi4/RELEASE_${_COMPILER}/FV/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
     install -Dm644 ${srcdir}/RPi4/config.txt ${pkgdir}/boot/config.txt
     install -Dm644 ${srcdir}/70-post-install-uefi.hook ${pkgdir}/usr/share/libalpm/hooks/70-post-install-uefi.hook
