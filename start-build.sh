@@ -23,9 +23,6 @@
 #         USE_LLVM to false to use gcc cross-compile toolchain.
 #      5. We use $HOME/chroot/aarch64 as default chroot path, yo can use your own path by 
 #         setting CHROOT_ROOT environment variable.
-#      6. If you build under aarch64 architecture, we use distcc to speed up. You may have
-#         to configure distcc. You can set LOCAL environment variable to true to disable
-#         this.
 
 set -e
 
@@ -42,7 +39,6 @@ MAKEPKG_ARGS=-fc
 CHROOT_MAKEPKG_ARGS=-srfc
 CI=${CI:-false}
 CHROOT=${CHROOT:-false}
-LOCAL=${LOCAL:-false}
 SUDO=${SUDO:-sudo}
 CHROOT_ROOT=${CHROOT_ROOT:-${HOME}/chroot/aarch64}
 
@@ -53,17 +49,10 @@ then
     conf=/home/builder/makepkg-aarch64.conf
 else
     root=$(realpath $(dirname $0))
+    conf=${MAKEPKG_CONF:-${root}/makepkg-aarch64.conf}
     if [[ $(uname -m) == "aarch64" ]]
     then
-        if ${LOCAL}
-        then
-            conf=${root}/makepkg-aarch64.conf
-        else
-            conf=${root}/makepkg-distcc.conf
-        fi
         MAKEPKG_ARGS=-fcsr
-    else
-        conf=${root}/makepkg-aarch64.conf
     fi
 fi
 
