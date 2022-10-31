@@ -5,8 +5,8 @@ USE_LLVM=${USE_LLVM:-false}
 buildarch=8 # aarch64
 
 pkgname="uefi-raspberrypi4-git" 
-pkgver=20221029
-pkgrel=1
+pkgver=20221031
+pkgrel=2
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B (git version)"
 url="https://github.com/tianocore"
@@ -83,7 +83,11 @@ prepare(){
 build(){
     cd ${srcdir}
     sed -i "s/%FIRMVER%/${pkgver}-${pkgrel}/g;s/%CROSS_COMPILE%/${CROSS_COMPILE}/g;s/%COMPILER%/${_COMPILER}/g" build-runtime.sh
-    MAKEFLAGS= PYTHON_COMMAND=python make -C edk2/BaseTools
+    if [[ ${USE_LLVM} == true ]]
+    then
+        MAKEARGS=CXX=llvm
+    fi
+    MAKEFLAGS= PYTHON_COMMAND=python make -C edk2/BaseTools ${MAKEARGS}
     bash build-runtime.sh
 }
 package(){

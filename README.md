@@ -21,7 +21,7 @@ If you are not using Arch Linux, you may have to understand Arch Build System an
 ## Why not upload to AUR or Arch Linux ARM repository?
 
 ~~UEFI firmware needs root privilege to build on my Arch Distribution. So I think it can't be treated as a valid PKGBUILD because a valid one needs no manual interaction.~~ This problem has been fixed.  
-UEFI firmware needs `gcc10` to build, which is not provided on Arch Linux ARM. This problem will only be solved when pftf upgrade `BrotilCompress` to newer version which supports GCC 12 or Arch Linux ARM provides `gcc10` package.   
+UEFI firmware needs `gcc10` to build, which is not provided on Arch Linux ARM. This problem will only be solved when pftf upgrade `BrotilCompress` to newer version which supports GCC 12 or Arch Linux ARM provides `gcc10` package. **Update:** This can be workarounded by using clang as compiler, this is also the default behavior now.   
 As for other aspects, there should be no issue to upload, I have even set `buildarch` to meet Arch Linux ARM's requirements.  
 If you think pacman or other wrapper complains about not found these packages, please add them to `IgnorePkg` in `/etc/pacman.conf`
 
