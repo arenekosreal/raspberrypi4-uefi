@@ -1,5 +1,10 @@
+# Temp files
 out
 skip
 tmp
 src
 pkg
+
+# ACT
+.actrc
+*.env

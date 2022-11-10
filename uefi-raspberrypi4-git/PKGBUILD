@@ -5,26 +5,14 @@ USE_LLVM=${USE_LLVM:-false}
 buildarch=8 # aarch64
 
 pkgname="uefi-raspberrypi4-git" 
-pkgver=20221105
+pkgver=20221110
 pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B (git version)"
 url="https://github.com/tianocore"
 arch=("aarch64")
 license=("custom:edk2" "custom:broadcom")
-makedepends=("git" "acpica" "openssl" "util-linux" "python")
-if [[ ${USE_LLVM} == true ]]
-then
-    export _COMPILER=CLANG38
-    makedepends+=("clang" "llvm" "lld")
-elif [ $(uname -m) != "aarch64" ]
-then
-    export CROSS_COMPILE=aarch64-linux-gnu-
-    export _COMPILER=GCC5
-    makedepends+=("aarch64-linux-gnu-gcc")
-else
-    export _COMPILER=GCC5
-fi
+makedepends=("git" "acpica" "openssl" "util-linux" "python" "clang" "llvm" "lld")
 source=(
     "git+https://github.com/tianocore/edk2-non-osi.git"
     "git+https://github.com/tianocore/edk2-platforms.git"
@@ -82,12 +70,12 @@ prepare(){
 }
 build(){
     cd ${srcdir}
-    sed -i "s/%FIRMVER%/${pkgver}-${pkgrel}/g;s/%CROSS_COMPILE%/${CROSS_COMPILE}/g;s/%COMPILER%/${_COMPILER}/g" build-runtime.sh
-    if [[ ${USE_LLVM} == true ]]
+    if [[ $(uname -m) != "aarch64" ]]
     then
-        MAKEARGS=CXX=llvm
+        CROSS_COMPILE=aarch64-linux-gnu-
     fi
-    MAKEFLAGS= PYTHON_COMMAND=python make -C edk2/BaseTools ${MAKEARGS}
+    sed -i "s/%FIRMVER%/${pkgver}-${pkgrel}/g;s/%CROSS_COMPILE%/${CROSS_COMPILE}/g;s/%COMPILER%/CLANG38/g" build-runtime.sh
+    MAKEFLAGS= PYTHON_COMMAND=python make -C edk2/BaseTools CXX=llvm
     bash build-runtime.sh
 }
 package(){
@@ -98,7 +86,7 @@ package(){
         "firmware-raspberrypi: firmware for RaspberryPi 4B"
         "linux-firmware: firmware for RaspberryPi 4B")
 
-    install -Dm644 ${srcdir}/Build/RPi4/RELEASE_${_COMPILER}/FV/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
+    install -Dm644 ${srcdir}/Build/RPi4/RELEASE_CLANG38/FV/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
     install -Dm644 ${srcdir}/config.txt ${pkgdir}/boot/config.txt
     install -Dm644 ${srcdir}/70-post-install-uefi.hook ${pkgdir}/usr/share/libalpm/hooks/70-post-install-uefi.hook
     install -Dm644 ${srcdir}/80-pre-remove-uefi.hook ${pkgdir}/usr/share/libalpm/hooks/80-pre-remove-uefi.hook

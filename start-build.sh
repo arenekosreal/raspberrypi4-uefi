@@ -1,28 +1,20 @@
 #! /usr/bin/env bash
 
 # Build Ach Linux ARM packages for RaspberryPi 4B in UEFI mode
-# You can choose directly build under Arch Linux x86_64 host or use aarch64 chroot build.
 #
-# Chroot build requirements:
-#   sudo/doas, armutils 
-#   Follow https://gitlab.com/mipimipi/armutils to finish setting up an aarch64 chroot 
-#   environment and install build requirements in Dockerfile into chroot environment.
-#
-# Direct build requirements:
-#   See Dockerfile
+# Requirements:
+#   sudo/doas, armutils, devtools 
 #
 # Note: 
-#      1. Direct build is also available on aarch64 environment if you have installed gcc10,
-#         that means you can build this repo on your RaspberryPi which runs an Arch Linux ARM
-#         if you have installed proper dependencies in Dockerfile.
-#      2. Start chroot build by passing argument --chroot, like bash start-build.sh --chroot,
-#         You can also set CHROOT environment variable to true to start chroot build.
-#      3. Set environment variable SUDO to which you want, like sudo or doas, we use sudo
-#         by default.
-#      4. We use llvm to build those packages by default, you can set environment variable
-#         USE_LLVM to false to use gcc cross-compile toolchain.
-#      5. We use $HOME/chroot/aarch64 as default chroot path, yo can use your own path by 
-#         setting CHROOT_ROOT environment variable.
+#   1. Set environment variable SUDO to which you want, like sudo or doas, we use sudo
+#      by default.
+#   2. Set CHROOT_MAKEPKG_ARGS to what you want to pass to makepkg.
+#   3. Set CHROOT_ROOT to where you want to save chroot environment, we use tmp/chroot/aarch64 
+#      by default.
+#   4. Set ALARM_URL to the mirrorsite you want, this may be useful for someone. We use 
+#      official site http://os.archlinuxarm.org by default.
+#      For ones live in China, you can use https://mirrors.bfsu.edu.cn/archlinuxarm instead 
+#      default value.
 
 set -e
 
@@ -35,41 +27,64 @@ function is_in_line(){
     return 1
 }
 
-MAKEPKG_ARGS=-fc
-CHROOT_MAKEPKG_ARGS=-srfc
-CI=${CI:-false}
-CHROOT=${CHROOT:-false}
-SUDO=${SUDO:-sudo}
-CHROOT_ROOT=${CHROOT_ROOT:-${HOME}/chroot/aarch64}
-
-if ${CI}
-then
-    sudo chown -R builder:builder .
-    root=/home/builder/build_files
-    conf=/home/builder/makepkg-aarch64.conf
-else
-    root=$(realpath $(dirname $0))
-    conf=${MAKEPKG_CONF:-${root}/makepkg-aarch64.conf}
-    if [[ $(uname -m) == "aarch64" ]]
+function check_depends(){
+    command -v ${SUDO} > /dev/null || return 1
+    if [[ $(uname -m) == "aarch64" ]] 
     then
-        MAKEPKG_ARGS=-fcsr
+        command -v mkarchroot > /dev/null || return 1
+        command -v makechrootpkg > /dev/null || return 1
+    else
+        command -v mkarmchroot > /dev/null || return 1
+        command -v makearmpkg > /dev/null || return 1
     fi
-fi
+    return 0
+}
 
-export root
-export USE_LLVM=${USE_LLVM:-true}
+function echo_and_exit(){
+    # echo_and_exit $content $code
+    echo $1
+    exit $2
+}
 
-for config_file in $(find configs -type f)
+root=$(realpath $(dirname $0))
+
+# For public
+CHROOT_MAKEPKG_ARGS=${CHROOT_MAKEPKG_ARGS}
+SUDO=${SUDO:-sudo}
+CHROOT_ROOT=${CHROOT_ROOT:-${root}/tmp/chroot/aarch64}
+ALARM_URL=${ALARM_URL:-http://os.archlinuxarm.org}
+
+# For internal use
+extra_packages=(git python acpica clang llvm lld)
+
+# Environment
+export PKGDEST=${root}/out
+export SRCDEST=${root}/tmp/src
+export LOGDEST=${root}/tmp/log
+
+check_depends || echo_and_exit 'Dependencies check failed, please make sure you have installed them.' 1
+
+for config_file in $(find ${root}/configs -type f)
 do
     install -Dm644 ${config_file} ${root}/tmp/src/$(basename ${config_file})
 done
-[[ $1 == "--chroot" ]] && \
-    CHROOT=true && shift && echo "Starting chroot build..."
-echo "\$root is ${root}."
-PKGEXT=$(grep PKGEXT= ${conf} | sed "s/PKGEXT=//;s/'//g")
-mkdir -p ${root}/out
-[[ ! -f ${root}/tmp/status ]] && rm -f ${root}/out/*${PKGEXT}
+
+mkdir -p ${root}/{out,tmp/{src,log}}
+[[ ! -f ${root}/tmp/status ]] && rm -f out/*
 touch ${root}/tmp/status
+if [[ ! -d ${root}/tmp/chroot/aarch64/root ]]
+then
+    if [[ $(uname -m) == "aarch64" ]]
+    then
+        ${SUDO} mkarchroot \
+            ${root}/tmp/chroot/aarch64/root base-devel ${extra_packages[@]}
+    else
+        ${SUDO} mkarmchroot \
+            -u ${ALARM_URL}/os/ArchLinuxARM-aarch64-latest.tar.gz \
+            ${root}/tmp/chroot/aarch64/root base-devel ${extra_packages[@]}
+    fi
+fi
+
 for relative_package in $(cat ${root}/build-orders)
 do
     is_in_line ${root}/tmp/status ${relative_package} && continue
@@ -77,11 +92,13 @@ do
     [[ ! -f ${root}/${relative_package}/PKGBUILD ]] && continue
     echo "Processing ${relative_package} folder..."
     cd ${root}/${relative_package}
-    if $CHROOT
+    if [[ $(uname -m) == "aarch64" ]]
     then
-        ${SUDO} makearmpkg -r ${CHROOT_ROOT} -- ${CHROOT_MAKEPKG_ARGS}
+        makechrootpkg -cu -r ${CHROOT_ROOT} -l uefi \
+            -- ${CHROOT_MAKEPKG_ARGS}
     else
-        makepkg ${MAKEPKG_ARGS} --config=${conf}
+        makearmpkg -cu -r ${CHROOT_ROOT} -l uefi \
+            -- ${CHROOT_MAKEPKG_ARGS}
     fi
     echo ${relative_package} >> ${root}/tmp/status
 done

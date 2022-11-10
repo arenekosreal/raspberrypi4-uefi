@@ -1,31 +1,16 @@
 # Maintainer: zhanghua <zhanghua.00@qq.com>
 
-USE_LLVM=${USE_LLVM:-false}
-
 buildarch=8 # aarch64
 
 pkgname="uefi-raspberrypi4" 
 pkgver=1.33.1.g02bc9ce
-pkgrel=6
+pkgrel=7
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
 url="https://github.com/pftf/RPi4"
 arch=("aarch64")
 license=("custom:edk2" "custom:broadcom")
-makedepends=("git" "acpica" "openssl" "util-linux" "python")
-if [[ ${USE_LLVM} == true ]]
-then
-    export _COMPILER=CLANG38
-    makedepends+=("clang" "llvm" "lld")
-elif [ $(uname -m) != "aarch64" ]
-then
-    export CROSS_COMPILE=aarch64-linux-gnu-
-    export _COMPILER=GCC5
-    makedepends+=("aarch64-linux-gnu-gcc" "gcc10")
-else
-    export _COMPILER=GCC5
-    makedepends+=("gcc10")
-fi
+makedepends=("git" "acpica" "openssl" "util-linux" "python" "clang" "llvm" "lld")
 source=(
     "git+https://github.com/pftf/RPi4"
     "LICENCE.EDK2::https://raw.githubusercontent.com/tianocore/edk2/master/License.txt"
@@ -66,25 +51,15 @@ prepare(){
     cp ${srcdir}/build.sh build.sh
     patch --binary -d edk2 -p1 -i ../0001-MdeModulePkg-UefiBootManagerLib-Signal-ReadyToBoot-o.patch
     patch --binary -d edk2-platforms -p1 -i ../0002-Check-for-Boot-Discovery-Policy-change.patch
-    if [[ ${USE_LLVM} != true ]]
-    then
-        mkdir -p ${srcdir}/gcc10
-        cd ${srcdir}/gcc10
-        for item in c++ c89 c99 cc cpp g++ gcc gcc-ar gcc-nm gcc-ranlib
-        do
-            ln -sf /usr/bin/${item}-10 ${item}
-        done
-        # We use gcc 10 to create BrotliCompress to avoid compile failure. Simply downgrade gcc to 10 will break whole Arch Distribution.
-    fi
 }
 build(){
     cd ${srcdir}/RPi4
-    sed -i "s/%FIRMVER%/${pkgver}-${pkgrel}/g;s/%CROSS_COMPILE%/${CROSS_COMPILE}/g;s/%COMPILER%/${_COMPILER}/g" build.sh
-    if [[ ${USE_LLVM} == true ]]
+    if [[ $(uname -m) != "aarch64" ]]
     then
-        MAKEARGS=CXX=llvm
+        CROSS_COMPILE=aarch64-linux-gnu-
     fi
-    MAKEFLAGS= PATH="${srcdir}/gcc10":${PATH} make -C edk2/BaseTools ${MAKEARGS}
+    sed -i "s/%FIRMVER%/${pkgver}-${pkgrel}/g;s/%CROSS_COMPILE%/${CROSS_COMPILE}/g;s/%COMPILER%/CLANG38/g" build.sh
+    MAKEFLAGS= PATH="${srcdir}/gcc10":${PATH} make -C edk2/BaseTools CXX=llvm
     bash build.sh
 }
 package(){
@@ -94,7 +69,7 @@ package(){
         "firmware-raspberrypi: firmware for RaspberryPi 4B"
         "linux-firmware: firmware for RaspberryPi 4B")
 
-    install -Dm644 ${srcdir}/RPi4/Build/RPi4/RELEASE_${_COMPILER}/FV/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
+    install -Dm644 ${srcdir}/RPi4/Build/RPi4/RELEASE_CLANG38/FV/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
     install -Dm644 ${srcdir}/RPi4/config.txt ${pkgdir}/boot/config.txt
     install -Dm644 ${srcdir}/70-post-install-uefi.hook ${pkgdir}/usr/share/libalpm/hooks/70-post-install-uefi.hook
     install -Dm644 ${srcdir}/80-pre-remove-uefi.hook ${pkgdir}/usr/share/libalpm/hooks/80-pre-remove-uefi.hook
