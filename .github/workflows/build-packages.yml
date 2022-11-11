@@ -38,6 +38,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Prepare builder user
         run: |
+          mkdir -p tmp/chroot/aarch64/uefi/etc/sudoers.d
           useradd -r builder
           chown -R builder .
           echo 'builder ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/builder-no-passwd
