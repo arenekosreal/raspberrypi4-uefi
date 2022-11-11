@@ -15,6 +15,7 @@
 #      official site http://os.archlinuxarm.org by default.
 #      For ones live in China, you can use https://mirrors.bfsu.edu.cn/archlinuxarm instead 
 #      default value.
+#   5. Set MAKECHROOTPKG_ARGS to what you want to pass to makechrootpkg/makearmpkg
 
 set -e
 
@@ -50,6 +51,7 @@ root=$(realpath $(dirname $0))
 
 # For public
 CHROOT_MAKEPKG_ARGS=${CHROOT_MAKEPKG_ARGS}
+MAKECHROOTPKG_ARGS=${MAKECHROOTPKG_ARGS}
 SUDO=${SUDO:-sudo}
 CHROOT_ROOT=${CHROOT_ROOT:-${root}/tmp/chroot/aarch64}
 ALARM_URL=${ALARM_URL:-http://os.archlinuxarm.org}
@@ -94,10 +96,10 @@ do
     cd ${root}/${relative_package}
     if [[ $(uname -m) == "aarch64" ]]
     then
-        makechrootpkg -cu -r ${CHROOT_ROOT} -l uefi \
+        makechrootpkg -cu -r ${CHROOT_ROOT} -l uefi ${MAKECHROOTPKG_ARGS} \
             -- ${CHROOT_MAKEPKG_ARGS}
     else
-        makearmpkg -cu -r ${CHROOT_ROOT} -l uefi \
+        makearmpkg -cu -r ${CHROOT_ROOT} -l uefi ${MAKECHROOTPKG_ARGS} \
             -- ${CHROOT_MAKEPKG_ARGS}
     fi
     echo ${relative_package} >> ${root}/tmp/status
