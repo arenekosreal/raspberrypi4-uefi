@@ -16,7 +16,7 @@ jobs:
     container: 
       image: archlinux:base-devel
       options: |
-        --privileged=true
+        --privileged
     steps:
       - name: Prepare pacman
         run: |
