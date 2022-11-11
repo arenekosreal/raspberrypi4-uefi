@@ -40,8 +40,9 @@ jobs:
         run: |
           useradd -r builder
           chown -R builder .
+          echo 'builder ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/builder-no-passwd
       - name: Build
-        run: MAKECHROOTPKG_ARGS="-U builder" bash start-build.sh
+        run: sudo -u builder bash start-build.sh
       - name: Generare Release info
         run: |
           cd out
