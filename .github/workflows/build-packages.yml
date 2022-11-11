@@ -16,7 +16,7 @@ jobs:
     container: 
       image: archlinux:base-devel
       options: |
-        --cap-add=SYS_ADMIN
+        --security-opt seccomp=clone
     steps:
       - name: Prepare pacman
         run: |
