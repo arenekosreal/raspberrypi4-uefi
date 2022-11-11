@@ -16,7 +16,7 @@ jobs:
     container: 
       image: archlinux:base-devel
       options: |
-        --security-opt seccomp=clone
+        --security-opt seccomp=unconfined
     steps:
       - name: Prepare pacman
         run: |
