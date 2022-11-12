@@ -80,8 +80,6 @@ jobs:
           tag_name: ${{ env.SHORT_SHA }}-CI-${{ env.DATE }}
       
       - name: Push to GitHub Releases
-        env: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: softprops/action-gh-release@v1
         with: 
           draft: false
