@@ -54,6 +54,7 @@ jobs:
         run: bash start-build.sh
       
       - name: Generare Release info
+        if: ${{ ! github.event.pull_request }}
         run: |
           cd out
           echo 'SUMS<<EOF' >> $GITHUB_ENV
@@ -64,6 +65,7 @@ jobs:
           
       - name: Check if tag exists
         id: tag-exists
+        if: ${{ ! github.event.pull_request }}
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: mukunku/tag-exists-action@v1.0.0
@@ -71,7 +73,7 @@ jobs:
           tag: ${{ env.SHORT_SHA }}-CI-${{ env.DATE }}
           
       - name: Remove existing tag
-        if: ${{ steps.tag-exists.outputs.exists == 'true' }}
+        if: ${{ (! github.event.pull_request) && (steps.tag-exists.outputs.exists == 'true') }}
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: dev-drprasad/delete-tag-and-release@v0.2.0
@@ -80,6 +82,7 @@ jobs:
           tag_name: ${{ env.SHORT_SHA }}-CI-${{ env.DATE }}
       
       - name: Push to GitHub Releases
+        if: ${{ ! github.event.pull_request }}
         uses: softprops/action-gh-release@v1
         with: 
           draft: false
