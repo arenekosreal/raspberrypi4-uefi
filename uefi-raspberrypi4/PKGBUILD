@@ -3,8 +3,8 @@
 buildarch=8 # aarch64
 
 pkgname="uefi-raspberrypi4" 
-pkgver=1.33.1.g02bc9ce
-pkgrel=7
+pkgver=1.34
+pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
 url="https://github.com/pftf/RPi4"
