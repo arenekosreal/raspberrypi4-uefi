@@ -74,16 +74,25 @@ done
 mkdir -p ${root}/{out,tmp/{src,log}}
 [[ ! -f ${root}/tmp/status ]] && rm -f out/*
 touch ${root}/tmp/status
-if [[ ! -d ${root}/tmp/chroot/aarch64/root ]]
+if [[ ! -d ${CHROOT_ROOT}/root ]]
 then
     if [[ $(uname -m) == "aarch64" ]]
     then
         ${SUDO} mkarchroot \
-            ${root}/tmp/chroot/aarch64/root base-devel ${extra_packages[@]}
+            ${CHROOT_ROOT}/root base-devel ${extra_packages[@]}
     else
         ${SUDO} mkarmchroot \
             -u ${ALARM_URL}/os/ArchLinuxARM-aarch64-latest.tar.gz \
-            ${root}/tmp/chroot/aarch64/root base-devel ${extra_packages[@]}
+            ${CHROOT_ROOT}/root base-devel ${extra_packages[@]}
+    fi
+else
+    if [[ $(uname -m) == "aarch64" ]]
+    then
+        ${SUDO} arch-nspawn \
+            ${CHROOT_ROOT}/root pacman -Syu --noconfirm
+    else
+        ${SUDO} arm-nspawn \
+            ${CHROOT_ROOT}/root pacman -Syu --noconfirm
     fi
 fi
 
