@@ -5,7 +5,7 @@ USE_LLVM=${USE_LLVM:-false}
 buildarch=8 # aarch64
 
 pkgname="uefi-raspberrypi4-git" 
-pkgver=20221219
+pkgver=20221225
 pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B (git version)"
@@ -44,7 +44,7 @@ sha256sums=('SKIP'
             '48e99b991f57fc52f76149599bff0a58c47154229b9f8d603ac40d3500248507'
             'f42c187f8b01b497f81fb0459164b27d16ca2af0b95c7331a82c1a27a731a885'
             '4b71df9b8e7dd77b9534efb16a220849ef2ebe789739fc7a198b581217a29d8f'
-            'c2d440eb6575c8daed15369b3ef3814c84fe1b99dea4ebaeb3b1407214071c35'
+            '96d0176152702a67935b8e288ec6a206952b716ee7607c45376a696253a266d5'
             '8e55eb4afdd6b572d2413e87b64219d2f9d3bd033de2dfd37e176e92d25d5821'
             'caa86b22a1452d8974e7bbecbb6d9fb591a58da928a06d5e13cee9592e785b12'
             '02a799c12e818c6a177df4a5c52454d177f3c8cea11584fcc19e392f08c7418c'
