@@ -4,7 +4,7 @@ buildarch=8 # aarch64
 
 pkgname="uefi-raspberrypi4" 
 pkgver=1.34.r2.ga65c69d
-pkgrel=2
+pkgrel=3
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
 url="https://github.com/pftf/RPi4"
@@ -13,6 +13,26 @@ license=("custom:edk2" "custom:broadcom")
 makedepends=("git" "acpica" "openssl" "util-linux" "python" "clang" "llvm" "lld")
 source=(
     "git+https://github.com/pftf/RPi4"
+    # Submodules
+    "git+https://github.com/tianocore/edk2"
+    "git+https://github.com/tianocore/edk2-non-osi"
+    "git+https://github.com/tianocore/edk2-platforms"
+
+    "git+https://github.com/openssl/openssl"
+    "git+https://github.com/ucb-bar/berkeley-softfloat-3"
+    "cmocka::git+https://github.com/tianocore/edk2-cmocka"
+    "git+https://github.com/kkos/oniguruma"
+    "git+https://github.com/google/brotli"
+    "git+https://github.com/akheron/jansson"
+    "git+https://github.com/google/googletest"
+
+    "git+https://github.com/google/wycheproof"
+    "boringssl::git+https://boringssl.googlesource.com/boringssl.git"
+    "git+https://github.com/krb5/krb5"
+    "pyca-cryptography::git+https://github.com/pyca/cryptography"
+
+    "git+https://github.com/riscv/opensbi"
+
     "LICENCE.EDK2::https://raw.githubusercontent.com/tianocore/edk2/master/License.txt"
     "LICENCE.broadcom::https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/LICENCE.broadcom"
     "ms_kek.cer::https://go.microsoft.com/fwlink/?LinkId=321185"
@@ -26,6 +46,21 @@ source=(
     "pre-remove-uefi"
 )
 sha256sums=('SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
             '50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
             'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
             'a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
@@ -43,8 +78,28 @@ pkgver(){
     git describe --tags --long | sed "s/v//;s/-/.r/;s/-/./g"
 }
 prepare(){
+    target_dirs=(
+        "${srcdir}/RPi4"
+        "${srcdir}/RPi4/edk2"
+        "${srcdir}/RPi4/edk2/CryptoPkg/Library/OpensslLib/openssl"
+        "${srcdir}/RPi4/edk2-platforms"
+    )
+    for target_dir in "${target_dirs[@]}"
+    do
+        msg2 "Processing ${target_dir}..."
+        cd ${target_dir}
+        git submodule init
+        git config --file .gitmodules --get-regexp 'submodule.*.path' | while read -r submodule
+        do
+            module=$(echo "${submodule}" | cut -d " " -f 1)
+            path=$(echo "${submodule}" | cut -d " " -f 2)
+            name=$(basename "${path}")
+            msg2 "Modifying ${module} to use local path ${name}..."
+            git config "${module/%.path/.url}" "${srcdir}/${name}"
+        done
+        git -c protocol.file.allow=always submodule update
+    done
     cd ${srcdir}/RPi4
-    git submodule update --init --recursive
     mkdir -p keys
     cp ${srcdir}/{ms_kek.cer,ms_db1.cer,ms_db2.cer,arm64_dbx.bin} keys/
     openssl req -new -x509 -newkey rsa:2048 -subj "/CN=Raspberry Pi Platform Key/" -keyout /dev/null -outform DER -out keys/pk.cer -days 7300 -nodes -sha256
@@ -59,7 +114,7 @@ build(){
         CROSS_COMPILE=aarch64-linux-gnu-
     fi
     sed -i "s/%FIRMVER%/${pkgver}-${pkgrel}/g;s/%CROSS_COMPILE%/${CROSS_COMPILE}/g;s/%COMPILER%/CLANG38/g" build.sh
-    MAKEFLAGS= make -C edk2/BaseTools CXX=llvm
+    MAKEFLAGS="" make -C edk2/BaseTools CXX=llvm
     bash build.sh
 }
 package(){

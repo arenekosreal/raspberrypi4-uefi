@@ -1,5 +1,4 @@
+raspberrypi4-uefi-devel-meta
+raspberrypi-overlays
 uefi-raspberrypi4-bin
 uefi-raspberrypi4
-
-raspberrypi-overlays
-raspberrypi4-uefi-devel-meta

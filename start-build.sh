@@ -19,17 +19,34 @@
 
 set -e
 
+root=$(realpath "$(dirname "$0")")
+
+# For public
+#CHROOT_MAKEPKG_ARGS=""
+#MAKECHROOTPKG_ARGS=""
+SUDO="${SUDO:-sudo}"
+CHROOT_ROOT="${CHROOT_ROOT:-${root}/tmp/chroot/aarch64}"
+ALARM_URL="${ALARM_URL:-http://os.archlinuxarm.org}"
+
+# For internal use
+extra_packages=(git python acpica clang llvm lld)
+
+# Environment
+export PKGDEST=${root}/out
+export SRCDEST=${root}/tmp/src
+export LOGDEST=${root}/tmp/log
+
 function is_in_line(){
     # is_in_line /path/to/file $string
-    for line in $(cat $1)
+    while read -r line
     do
         [[ "$2" == "${line}" ]] && return 0
-    done
+    done < "$1"
     return 1
 }
 
 function check_depends(){
-    command -v ${SUDO} > /dev/null || return 1
+    command -v "${SUDO}" > /dev/null || return 1
     if [[ $(uname -m) == "aarch64" ]] 
     then
         command -v mkarchroot > /dev/null || return 1
@@ -43,74 +60,57 @@ function check_depends(){
 
 function echo_and_exit(){
     # echo_and_exit $content $code
-    echo $1
-    exit $2
+    echo "$1"
+    exit "$2"
 }
-
-root=$(realpath $(dirname $0))
-
-# For public
-CHROOT_MAKEPKG_ARGS=${CHROOT_MAKEPKG_ARGS}
-MAKECHROOTPKG_ARGS=${MAKECHROOTPKG_ARGS}
-SUDO=${SUDO:-sudo}
-CHROOT_ROOT=${CHROOT_ROOT:-${root}/tmp/chroot/aarch64}
-ALARM_URL=${ALARM_URL:-http://os.archlinuxarm.org}
-
-# For internal use
-extra_packages=(git python acpica clang llvm lld)
-
-# Environment
-export PKGDEST=${root}/out
-export SRCDEST=${root}/tmp/src
-export LOGDEST=${root}/tmp/log
 
 check_depends || echo_and_exit 'Dependencies check failed, please make sure you have installed them.' 1
 
-for config_file in $(find ${root}/configs -type f)
+find "${root}/configs" -type f | while read -r config_file
 do
-    install -Dm644 ${config_file} ${root}/tmp/src/$(basename ${config_file})
+    install -Dm644 "${config_file}" "${root}/tmp/src/$(basename "${config_file}")"
 done
 
-mkdir -p ${root}/{out,tmp/{src,log}}
-[[ ! -f ${root}/tmp/status ]] && rm -f out/*
-touch ${root}/tmp/status
+mkdir -p "${root}"/{out,tmp/{src,log}}
+[[ ! -f "${root}/tmp/status" ]] && rm -f out/*
+touch "${root}/tmp/status"
 if [[ ! -d ${CHROOT_ROOT}/root ]]
 then
     if [[ $(uname -m) == "aarch64" ]]
     then
         ${SUDO} mkarchroot \
-            ${CHROOT_ROOT}/root base-devel ${extra_packages[@]}
+            "${CHROOT_ROOT}/root" base-devel ${extra_packages[@]}
     else
         ${SUDO} mkarmchroot \
-            -u ${ALARM_URL}/os/ArchLinuxARM-aarch64-latest.tar.gz \
-            ${CHROOT_ROOT}/root base-devel ${extra_packages[@]}
+            -u "${ALARM_URL}/os/ArchLinuxARM-aarch64-latest.tar.gz" \
+            "${CHROOT_ROOT}/root" base-devel ${extra_packages[@]}
     fi
 else
     if [[ $(uname -m) == "aarch64" ]]
     then
         ${SUDO} arch-nspawn \
-            ${CHROOT_ROOT}/root pacman -Syu --noconfirm
+            "${CHROOT_ROOT}/root" pacman -Syu --noconfirm
     else
         ${SUDO} arm-nspawn \
-            ${CHROOT_ROOT}/root pacman -Syu --noconfirm
+            "${CHROOT_ROOT}/root" pacman -Syu --noconfirm
     fi
 fi
 
-for relative_package in $(cat ${root}/build-orders)
+while read -r relative_package
 do
-    is_in_line ${root}/tmp/status ${relative_package} && continue
-    [[ -f ${root}/skip ]] && is_in_line ${root}/skip ${relative_package} && continue
-    [[ ! -f ${root}/${relative_package}/PKGBUILD ]] && continue
+    is_in_line "${root}/tmp/status" "${relative_package}" && continue
+    [[ -f "${root}/skip" ]] && is_in_line "${root}/skip" "${relative_package}" && continue
+    [[ ! -f "${root}/${relative_package}/PKGBUILD" ]] && continue
     echo "Processing ${relative_package} folder..."
-    cd ${root}/${relative_package}
+    cd "${root}/${relative_package}"
     if [[ $(uname -m) == "aarch64" ]]
     then
-        makechrootpkg -cu -r ${CHROOT_ROOT} -l uefi ${MAKECHROOTPKG_ARGS} \
-            -- ${CHROOT_MAKEPKG_ARGS}
+        makechrootpkg -cu -r "${CHROOT_ROOT}" -l uefi "${MAKECHROOTPKG_ARGS}" \
+            -- "${CHROOT_MAKEPKG_ARGS}"
     else
-        makearmpkg -cu -r ${CHROOT_ROOT} -l uefi ${MAKECHROOTPKG_ARGS} \
-            -- ${CHROOT_MAKEPKG_ARGS}
+        makearmpkg -cu -r "${CHROOT_ROOT}" -l uefi "${MAKECHROOTPKG_ARGS}" \
+            -- "${CHROOT_MAKEPKG_ARGS}"
     fi
-    echo ${relative_package} >> ${root}/tmp/status
-done
-[[ -f ${root}/tmp/status ]] && rm -f ${root}/tmp/status
+    echo "${relative_package}" >> "${root}/tmp/status"
+done < "${root}/build-orders"
+[[ -f "${root}/tmp/status" ]] && rm -f "${root}/tmp/status"
