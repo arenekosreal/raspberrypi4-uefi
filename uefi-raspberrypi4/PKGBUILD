@@ -4,13 +4,13 @@ buildarch=8 # aarch64
 
 pkgname="uefi-raspberrypi4" 
 pkgver=1.35.r0.g218b601
-pkgrel=1
+pkgrel=2
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
 url="https://github.com/pftf/RPi4"
 arch=("aarch64")
 license=("custom:edk2" "custom:broadcom")
-makedepends=("git" "acpica" "openssl" "util-linux" "python" "clang" "llvm" "lld")
+makedepends=("git" "acpica" "openssl" "util-linux" "python")
 source=(
     "git+https://github.com/pftf/RPi4"
     # Submodules
