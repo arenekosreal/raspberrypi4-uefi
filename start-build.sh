@@ -29,7 +29,7 @@ CHROOT_ROOT="${CHROOT_ROOT:-${root}/tmp/chroot/aarch64}"
 ALARM_URL="${ALARM_URL:-http://os.archlinuxarm.org}"
 
 # For internal use
-extra_packages=(git python acpica clang llvm lld)
+extra_packages=(git python acpica)
 
 # Environment
 export PKGDEST=${root}/out
