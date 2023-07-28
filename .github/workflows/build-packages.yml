@@ -54,41 +54,25 @@ jobs:
         run: bash start-build.sh
       
       - name: Generare Release info
-        if: ${{ ! github.event.pull_request }}
+        if: ${{ github.event_name == 'push' }}
+        id: release-info
         run: |
           cd out
-          echo 'SUMS<<EOF' >> $GITHUB_ENV
-          sha256sum *.pkg.tar.* >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
-          echo SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-8) >> $GITHUB_ENV
-          echo DATE=$(date -I | sed s/-//g) >> $GITHUB_ENV
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "sums<<$EOF" >> "$GITHUB_OUTPUT"
+          sha256sum *.pkg.tar.* >> "$GITHUB_OUTPUT"
+          echo "$EOF" >> "$GITHUB_OUTPUT"
+          echo date=$(date -I | sed s/-//g) >> "$GITHUB_OUTPUT"
           
-      - name: Check if tag exists
-        id: tag-exists
-        if: ${{ ! github.event.pull_request }}
-        env: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        uses: mukunku/tag-exists-action@v1.0.0
-        with:
-          tag: ${{ env.SHORT_SHA }}-CI-${{ env.DATE }}
-          
-      - name: Remove existing tag
-        if: ${{ (! github.event.pull_request) && (steps.tag-exists.outputs.exists == 'true') }}
-        env: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        uses: dev-drprasad/delete-tag-and-release@v1.0
-        with:
-          delete_release: true
-          tag_name: ${{ env.SHORT_SHA }}-CI-${{ env.DATE }}
       
       - name: Push to GitHub Releases
-        if: ${{ ! github.event.pull_request }}
+        if: ${{ github.event_name == 'push' }}
         uses: softprops/action-gh-release@v1
         with: 
           draft: false
           generate_release_notes: true
           prerelease: false
-          tag_name: ${{ env.SHORT_SHA }}-CI-${{ env.DATE }}
+          tag_name: ${{ steps.release-info.outputs.date }}
           files: "out/*.pkg.tar.*"
           name: Raspberry Pi 4 UEFI Boot Packages for Arch Based Linux Distribution
           body: |
@@ -96,5 +80,5 @@ jobs:
             
             sha256sums:
             ```
-            ${{ env.SUMS }}
+            ${{ steps.release-info.outputs.sums }}
             ```
