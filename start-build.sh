@@ -134,6 +134,12 @@ function get_aarch64_binfmt_item() {
     done
 }
 
+function exec_hook() {
+    # exec_hook $file $args
+    [[ -x "./$1" ]] && "./$1" "$2" || echo "Hook $1 failed to execute!"
+    return 0
+}
+
 echo 'Printing variables:'
 echo "    CHROOT_MAKEPKG_ARGS=${CHROOT_MAKEPKG_ARGS}"
 echo "    MAKECHROOTPKG_ARGS=${MAKECHROOTPKG_ARGS}"
@@ -200,12 +206,15 @@ else
     fi
 fi
 
+exec_hook before-build
+
 while read -r relative_package
 do
     is_in_line "${root}/tmp/status" "${relative_package}" && continue
     [[ -f "${root}/skip" ]] && is_in_line "${root}/skip" "${relative_package}" && continue
     [[ ! -f "${root}/${relative_package}/PKGBUILD" ]] && continue
     echo "Processing ${relative_package} folder..."
+    exec_hook on-package-build "${relative_package}"
     cd "${root}/${relative_package}"
     if [[ $(uname -m) == "aarch64" ]]
     then
@@ -217,8 +226,12 @@ do
     fi
     echo "${relative_package}" >> "${root}/tmp/status"
 done < "${root}/build-orders"
+
 [[ -f "${root}/tmp/status" ]] && rm -f "${root}/tmp/status"
+
 if ! ${CI} && ${TMPFS}
 then
     ${SUDO} umount "${root}/tmp"
 fi
+
+exec_hook after-build

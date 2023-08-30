@@ -8,3 +8,8 @@ pkg
 # ACT
 .actrc
 *.env
+
+# Hooks
+before-build
+on-package-build
+after-build
