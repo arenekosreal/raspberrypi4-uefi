@@ -1,14 +1,18 @@
 buildarch=1 # any
 
 pkgname="raspberrypi4-uefi-devel-meta"
-pkgver=0.1.1
+pkgver=0.1.2
 pkgrel=1
 pkgdesc="Meta package for building raspberrypi4-uefi repo."
 url="https://github.com/zhanghua000/raspberrypi4-uefi"
 arch=("any")
-license=("GPL2")
-depends=("python" "git" "acpica" "openssl" "util-linux" "clang" "llvm" "lld")
+license=("WTFPL")
 
 package(){
-    true
+    depends=("python" "git" "acpica" "openssl" "util-linux")
+    optdepends=(
+        "clang: Building with clang"
+        "llvm: Building with clang"
+        "lld: Building with clang"
+    )
 }

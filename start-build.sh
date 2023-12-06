@@ -1,237 +1,231 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
-# Build Ach Linux ARM packages for RaspberryPi 4B in UEFI mode
-#
-# Requirements:
-#   sudo/opendoas/..., bash
-# Extra requirements on non-aarch64 platform:
-#   sed, grep, armutils
-# Extra requirements on aarch64 platform:
-#   devtools
-# Extra requirements when build packages on tmpfs:
-#   mount, umount
-#
-# Note: 
-#   1. Set environment variable SUDO to which you want, like sudo or doas, we use sudo
-#      by default.
-#   2. Set CHROOT_MAKEPKG_ARGS to what you want to pass to makepkg.
-#   3. Set CHROOT_ROOT to where you want to save chroot environment, we use tmp/chroot/aarch64 
-#      by default.
-#   4. Set ALARM_URL to the mirrorsite you want, this may be useful for someone. We use 
-#      official site http://os.archlinuxarm.org by default.
-#      For ones live in China, you can use https://mirrors.bfsu.edu.cn/archlinuxarm instead 
-#      default value.
-#   5. Set MAKECHROOTPKG_ARGS to what you want to pass to makechrootpkg/makearmpkg
-#   6. Set TMPFS to true to build packages in a tmpfs to save space. You can adjust mount
-#      options by setting TMPFS_ARGS. This is only working when CI environment variable is
-#      not set to true.
-#   7. If you meet
-#      `sudo: effective uid is not 0, is /usr/bin/sudo on a file system with the 'nosuid' option set
-#       or an NFS file system without root privileges?`
-#      on non-aarch64 environment, you may check this after you have followed sudo's output:
-#      https://bbs.archlinux.org/viewtopic.php?id=242708
-#      We have added a automatical fixup for this but once it fails, you need to do this manually.
 
-set -e
+declare -r PODMAN=${PODMAN:-podman} # docker
+declare -r LOG=${LOG:-2} # 0=error 1=warn 2=info 3=debug
+declare -r ALARM_URL="${ALARM_URL:-http://os.archlinuxarm.org}"
 
-root=$(realpath "$(dirname "$0")")
+#shellcheck disable=SC2155
+declare -r _root=$(realpath "$(dirname "$0")")
+declare -r _depends=("buildah" "$PODMAN")
+declare -r _pkgdest="$_root/out"
+declare -r _logdest="$_root/log"
+declare -r _base_image_tag="alarm:base-devel"
+# retun codes:
+declare -r _NORMAL_EXIT=0
+declare -r _ERR_NO_BINARY=1
+declare -r _ERR_QEMU_FLAG_INVALID=2
 
-# For public
-CHROOT_MAKEPKG_ARGS=""
-MAKECHROOTPKG_ARGS=""
-TMPFS_ARGS="defaults,size=12G,nodev"
-CI="${CI:-false}"
-TMPFS="${TMPFS:-false}"
-SUDO="${SUDO:-sudo}"
-CHROOT_ROOT="${CHROOT_ROOT:-${root}/tmp/chroot/aarch64}"
-ALARM_URL="${ALARM_URL:-http://os.archlinuxarm.org}"
 
-# Environment
-export PKGDEST=${root}/out
-export SRCDEST=${root}/tmp/src
-export LOGDEST=${root}/tmp/log
+# Print a log
+# log $level $content
+function log() {
+    _reset="\e[0m"
+    _error_left="\e[40;31m"
+    _error_right="$_reset"
+    _warn_left="\e[40;33m"
+    _warn_right="$_reset"
+    _info_left="\e[46;37m"
+    _info_right="$_reset"
+    _debug_left="\e[47;33m"
+    _debug_right="$_reset"
+    ready=false
+    case $1 in
+        error) # 0
+            if [[ $LOG -ge 0 ]]
+            then
+                echo -ne "$_error_left$(date +%Y-%m-%d\ %H:%M:%S) [EROR]$_error_right "
+                ready=true
+            fi
+            ;;
+        warn) # 1
+            if [[ $LOG -ge 1 ]]
+            then
+                echo -ne "$_warn_left$(date +%Y-%m-%d\ %H:%M:%S) [WARN]$_warn_right "
+                ready=true
+            fi
+            ;;
+        info) # 2
+            if [[ $LOG -ge 2 ]]
+            then
+                echo -ne "$_info_left$(date +%Y-%m-%d\ %H:%M:%S) [INFO]$_info_right "
+                ready=true
+            fi
+            ;;
+        debug) # 3
+            if [[ $LOG -ge 3 ]]
+            then
+                echo -ne "$_debug_left$(date +%Y-%m-%d\ %H:%M:%S) [DEBG]$_debug_right "
+                ready=true
+            fi
+            ;;
+    esac
+    if $ready
+    then
+        echo "$2"
+    fi
+}
 
-function is_in_line(){
-    # is_in_line /path/to/file $string
-    while read -r line
-    do
-        [[ "$2" == "${line}" ]] && return 0
-    done < "$1"
+# If a string in one line of a file
+# is_in_line /path/to/file $string
+function is_in_line() {
+    if [[ -f "$1" ]]
+    then
+        while read -r line
+        do
+            [[ "$2" == "${line}" ]] && return 0
+        done < "$1"
+    fi
     return 1
 }
 
-function check_depends(){
-    echo "Checking ${SUDO}..."
-    command -v "${SUDO}" > /dev/null || return 1
-    echo 'Checking tee...'
-    command -v tee > /dev/null || return 1
-    if [[ $(uname -m) == "aarch64" ]] 
-    then
-        echo 'Checking mkarchroot...'
-        command -v mkarchroot > /dev/null || return 1
-        echo 'Checking makechrootpkg...'
-        command -v makechrootpkg > /dev/null || return 1
-    else
-        echo 'Checking mkarmchroot...'
-        command -v mkarmchroot > /dev/null || return 1
-        echo 'Checking makearmpkg...'
-        command -v makearmpkg > /dev/null || return 1
-        echo 'Checking grep...'
-        command -v grep > /dev/null || return 1
-        echo 'Checking sed...'
-        command -v sed > /dev/null || return 1
-    fi
-    if ! ${CI} && ${TMPFS}
-    then
-        echo 'Checking mount...'
-        command -v mount > /dev/null || return 1
-        echo 'Checking umount...'
-        command -v umount > /dev/null || return 1
-    fi
+# Check depends
+# check_depends
+function check_depends() {
+    for bin in "${_depends[@]}"
+    do
+        log info "Checking $bin..."
+        command -v "$bin" > /dev/null || return 1
+    done
     return 0
 }
 
-function echo_and_exit(){
-    # echo_and_exit $content $code
-    echo "$1"
+# Check QEMU User Static setting if its flags is OCF
+# See https://github.com/multiarch/qemu-user-static/issues/17
+# check_qemu_flags
+function check_qemu_flags() {
+    result=0
+    find /proc/sys/fs/binfmt_misc -mindepth 1 -maxdepth 1 ! -name register ! -name status | while read -r file
+    do
+        interpreter=$(grep interpreter "$file" | sed 's/interpreter //')
+        flags=$(grep flags "$file" | sed 's/flags: //')
+        log debug "interpreter and flags of $file: $interpreter and $flags"
+        [[ "$interpreter" =~ qemu-aarch64-static ]]
+        log debug "$interpreter match qemu-aarch64-static: $?"
+        [[ "$flags" != "OCF" ]]
+        log debug "flags is not OCF: $?"
+        if [[ "$interpreter" =~ qemu-aarch64-static ]] && [[ "$flags" != "OCF" ]]
+        then
+            result=1
+            break
+        fi
+    done
+    return $result
+}
+
+# Log a message and exit program
+# log_and_exit $content $code
+function log_and_exit() {
+    if [[ $2 -eq 0 ]]
+    then
+        log info "$1"
+    else
+        log error "$1"
+    fi
     exit "$2"
 }
 
-function get_binfmt_interpreter() {
-    # get_binfmt_interpreter $item
-    grep "interpreter " "/proc/sys/fs/binfmt_misc/$1" | sed "s/interpreter //"
-}
-
-function get_binfmt_flags() {
-    # get_binfmt_flags $item
-    grep "flags: " "/proc/sys/fs/binfmt_misc/$1" | sed "s/flags: //"
-}
-
-function disable_binfmt_item() {
-    # disable_binfmt_item $file
-    echo -1 | ${SUDO} tee "/proc/sys/fs/binfmt_misc/$1" > /dev/null
-}
-
-function register_new_aarch64_binfmt_item() {
-    # register_new_aarch64_binfmt_item $item
-    #shellcheck disable=SC2028
-    echo ":$1:M::\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\xb7\x00:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/bin/qemu-aarch64-static:OCF" | \
-        ${SUDO} tee /proc/sys/fs/binfmt_misc/register > /dev/null
-}
-
-function get_aarch64_binfmt_item() {
-    for file in /proc/sys/fs/binfmt_misc/*
-    do
-        item=${file//\/proc\/sys\/fs\/binfmt_misc\//}
-        if [[ ${item} == "register" ]] || [[ ${item} == "status" ]]
-        then
-            continue
-        elif [[ $(get_binfmt_interpreter "${item}") =~ qemu-aarch64-static$ ]]
-        then
-            echo "${item}"
-            return 0
-        fi
-    done
-}
-
+# Exec a hook
+# exec_hook $file $args...
 function exec_hook() {
-    # exec_hook $file $args
-    [[ -x "./$1" ]] && "./$1" "$2" || echo "Hook $1 failed to execute!"
+    log debug "Trying calling hook $1..."
+    if [[ -x "./$1" ]]
+    then
+        "./$*" || log error "Hook $1 failed to execute!"
+    fi
     return 0
 }
 
-echo 'Printing variables:'
-echo "    CHROOT_MAKEPKG_ARGS=${CHROOT_MAKEPKG_ARGS}"
-echo "    MAKECHROOTPKG_ARGS=${MAKECHROOTPKG_ARGS}"
-echo "    TMPFS_ARGS=${TMPFS_ARGS}"
-echo "    CI=${CI}"
-echo "    TMPFS=${TMPFS}"
-echo "    SUDO=${SUDO}"
-echo "    CHROOT_ROOT=${CHROOT_ROOT}"
-echo "    ALARM_URL=${ALARM_URL}"
-
-check_depends || echo_and_exit 'Dependencies check failed, please make sure you have installed them.' 1
-
-if [[ $(uname -m) != "aarch64" ]]
-then
-    aarch64_binfmt_item=$(get_aarch64_binfmt_item)
-    if [[ -n ${aarch64_binfmt_item} ]] && [[ $(get_binfmt_flags "${aarch64_binfmt_item}") != "OCF" ]]
+# Create the basic runtime image if needed
+# create_base_image
+function create_base_image() {
+    if [[ $($PODMAN image list -q $_base_image_tag | wc -l) -eq 0 ]]
     then
-        echo 'Trying to apply correct flags to aarch64 binfmt...'
-        disable_binfmt_item "${aarch64_binfmt_item}"
-        register_new_aarch64_binfmt_item "${aarch64_binfmt_item}"
+        log info "Creating basic runtime image $_base_image_tag..."
+        bootstrap_container=$(buildah from curlimages/curl:latest)
+        buildah run --user=root "$bootstrap_container" apk upgrade --no-cache
+        buildah run --user=root "$bootstrap_container" apk add libarchive-tools
+        buildah run --user=root "$bootstrap_container" mkdir /alarm
+        buildah run --user=root "$bootstrap_container" curl -LO "$ALARM_URL/os/ArchLinuxARM-aarch64-latest.tar.gz"
+        buildah run --user=root "$bootstrap_container" bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C /alarm
+        container=$(buildah from --arch=arm64 scratch)
+        buildah copy --from="$bootstrap_container" "$container" /alarm/ /
+        buildah run "$container" bash -c "echo Server = $ALARM_URL/\\\$arch/\\\$repo > /etc/pacman.d/mirrorlist"
+        buildah run "$container" pacman-key --init
+        buildah run "$container" pacman-key --populate archlinuxarm
+        buildah run "$container" pacman-key --populate archlinux
+        buildah run "$container" pacman -Syu --noconfirm
+        buildah run "$container" pacman -S base-devel --needed --noconfirm
+        buildah run "$container" useradd -r builder
+        buildah run "$container" bash -c "echo builder ALL=\(ALL\) NOPASSWD:ALL > /etc/sudoers.d/00-builder"
+        buildah run "$container" mkdir /build /srcdest /pkgdest /logdest
+        buildah run "$container" chown builder:builder /build /srcdest /pkgdest /logdest
+        if [[ -d "$_root/containers" ]]
+        then
+            log info "Adding extra file(s) to container..."
+            buildah copy "$container" "$_root/containers" /
+        fi
+        log info "Creating image..."
+        buildah commit "$container" "$_base_image_tag"
+        buildah rm "$bootstrap_container"
+        buildah rm "$container"
     else
-        echo 'There is no need to apply correct flags to aarch64 binfmt.'
+        log info "There is no need to create basic runtime image."
     fi
-fi
+}
 
-if ! ${CI} && ${TMPFS}
+# main
+check_depends || log_and_exit "No required executable found." $_ERR_NO_BINARY
+if [[ "$(uname -m)" != "aarch64" ]]
 then
-    if ! mount | grep -q "${root}/tmp type tmpfs"
-    then
-        ${SUDO} rm -rf "${root}/tmp"
-        mkdir "${root}/tmp"
-        echo "Mounting tmpfs on ${root}/tmp"
-        ${SUDO} mount -t tmpfs -o "${TMPFS_ARGS}" tmpfs "${root}/tmp"
-    fi
+    check_qemu_flags || log_and_exit "QEMU User Static binary interpreter flag is not OCF!" $_ERR_QEMU_FLAG_INVALID
 fi
+create_base_image
 
-find "${root}/configs" -type f | while read -r config_file
-do
-    install -Dm644 "${config_file}" "${root}/tmp/src/$(basename "${config_file}")"
-done
-
-mkdir -p "${root}"/{out,tmp/{src,log}}
-[[ ! -f "${root}/tmp/status" ]] && rm -f out/*
-touch "${root}/tmp/status"
-if [[ ! -d ${CHROOT_ROOT}/root ]]
-then
-    if [[ $(uname -m) == "aarch64" ]]
-    then
-        ${SUDO} mkarchroot \
-            "${CHROOT_ROOT}/root" base-devel
-    else
-        ${SUDO} mkarmchroot \
-            -u "${ALARM_URL}/os/ArchLinuxARM-aarch64-latest.tar.gz" \
-            "${CHROOT_ROOT}/root" base-devel
-    fi
-else
-    if [[ $(uname -m) == "aarch64" ]]
-    then
-        ${SUDO} arch-nspawn \
-            "${CHROOT_ROOT}/root" pacman -Syu --noconfirm
-    else
-        ${SUDO} arm-nspawn \
-            "${CHROOT_ROOT}/root" pacman -Syu --noconfirm
-    fi
-fi
+log info "Preparing files..."
+[[ ! -f "$_root/status" ]] && rm -f out/*
+touch "$_root/status"
 
 exec_hook before-build
-
-while read -r relative_package
+mkdir -p "$_pkgdest" "$_logdest"
+while read -r package
 do
-    is_in_line "${root}/tmp/status" "${relative_package}" && continue
-    [[ -f "${root}/skip" ]] && is_in_line "${root}/skip" "${relative_package}" && continue
-    [[ ! -f "${root}/${relative_package}/PKGBUILD" ]] && continue
-    echo "Processing ${relative_package} folder..."
-    exec_hook on-package-build "${relative_package}"
-    cd "${root}/${relative_package}"
-    if [[ $(uname -m) == "aarch64" ]]
+    if is_in_line "$_root/status" "$package"
     then
-        makechrootpkg -cu -r "${CHROOT_ROOT}" -l uefi "${MAKECHROOTPKG_ARGS}" \
-            -- "${CHROOT_MAKEPKG_ARGS}"
-    else
-        makearmpkg -cu -r "${CHROOT_ROOT}" -l uefi "${MAKECHROOTPKG_ARGS}" \
-            -- "${CHROOT_MAKEPKG_ARGS}"
+        log debug "Skipping $package because it is built..."
+        continue
     fi
-    echo "${relative_package}" >> "${root}/tmp/status"
-done < "${root}/build-orders"
-
-[[ -f "${root}/tmp/status" ]] && rm -f "${root}/tmp/status"
-
-if ! ${CI} && ${TMPFS}
-then
-    ${SUDO} umount "${root}/tmp"
-fi
-
+    if [[ -f "$_root/skip" ]] && is_in_line "$_root/skip" "$package"
+    then
+        log debug "Skipping $package because it is in $_root/skip..."
+        continue
+    fi
+    if [[ ! -f "$_root/$package/PKGBUILD" ]]
+    then
+        log error "No $package's PKGBUILD found, skipping..."
+        continue
+    fi
+    log info "Building $package..."
+    exec_hook before-package-build "$package"
+    # shellcheck disable=SC2086
+    $PODMAN run --arch arm64 --name "alarmbuilder-$package" \
+        --workdir /startdir \
+        --user builder \
+        -v "$_root/$package:/startdir" \
+        -e "BUILDDIR=/build" \
+        -e "PKGDEST=/pkgdest" \
+        -e "LOGDEST=/logdest" \
+        -e "SRCDEST=/srcdest" \
+        $CONTAINER_ARGS \
+        $_base_image_tag \
+        start-build
+    $PODMAN cp "alarmbuilder-$package:/pkgdest" "$_pkgdest"
+    $PODMAN cp "alarmbuilder-$package:/logdest" "$_logdest"
+    $PODMAN container rm "alarmbuilder-$package"
+    echo "$package" >> "$_root/status"
+done < "$_root/build-orders"
 exec_hook after-build
+rm "$_root/status"
+mv "$_pkgdest/pkgdest/"*.pkg.tar.* "$_pkgdest"
+mv "$_logdest/logdest/"*.log "$_logdest"
+rm -r "$_pkgdest/pkgdest" "$_logdest/logdest"

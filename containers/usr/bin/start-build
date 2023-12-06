@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+if [[ "$(whoami)" != "builder" ]]
+then
+    echo "You must run this script with user builder"
+    exit 1
+fi
+
+
+if [[ -n "$SRCDEST" ]]
+then
+    find  . -maxdepth 1 -mindepth 1 -type f | while read -r file
+    do
+        if [[ "$(basename $file)" == "PKGBUILD" ]]
+        then
+            continue
+        fi
+        cp "$file" "$SRCDEST"
+    done
+fi
+makepkg -sL --noconfirm

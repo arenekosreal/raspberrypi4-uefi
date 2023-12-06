@@ -4,6 +4,8 @@ skip
 tmp
 src
 pkg
+log
+status
 
 # ACT
 .actrc
