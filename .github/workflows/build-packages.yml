@@ -25,7 +25,7 @@ jobs:
           do
               interpreter=$(grep interpreter "$file" | sed 's/interpreter //')
               flags=$(grep flags "$file" | sed 's/flags: //')
-              if [[ "$interpreter" =~ qemu-aarch64-static ]] && [[ "$flags" != "OCF" ]]
+              if [[ "$interpreter" =~ aarch64 ]] && [[ "$flags" != "OCF" ]]
               then
                   result=false
                   break
