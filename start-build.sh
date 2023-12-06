@@ -95,21 +95,16 @@ function check_depends() {
 # check_qemu_flags
 function check_qemu_flags() {
     result=0
-    find /proc/sys/fs/binfmt_misc -mindepth 1 -maxdepth 1 ! -name register ! -name status | while read -r file
+    while read -r file
     do
         interpreter=$(grep interpreter "$file" | sed 's/interpreter //')
         flags=$(grep flags "$file" | sed 's/flags: //')
-        log debug "interpreter and flags of $file: $interpreter and $flags"
-        [[ "$interpreter" =~ qemu-aarch64-static ]]
-        log debug "$interpreter match qemu-aarch64-static: $?"
-        [[ "$flags" != "OCF" ]]
-        log debug "flags is not OCF: $?"
-        if [[ "$interpreter" =~ qemu-aarch64-static ]] && [[ "$flags" != "OCF" ]]
+        if [[ "$interpreter" =~ aarch64 ]] && [[ "$flags" != "OCF" ]]
         then
             result=1
             break
         fi
-    done
+    done < <(find /proc/sys/fs/binfmt_misc -mindepth 1 -maxdepth 1 ! -name register ! -name status)
     return $result
 }
 
