@@ -10,7 +10,7 @@ on:
 jobs:
   package-build:
     name: Build and Upload Packages for PKGBUILD in this repository
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Install QEMU-User-Static
         run: |
@@ -25,6 +25,7 @@ jobs:
           do
               interpreter=$(grep interpreter "$file" | sed 's/interpreter //')
               flags=$(grep flags "$file" | sed 's/flags: //')
+              echo "$interpreter's flags is $flags"
               if [[ "$interpreter" =~ aarch64- ]] && [[ "$flags" != "OCF" ]]
               then
                   result=false
