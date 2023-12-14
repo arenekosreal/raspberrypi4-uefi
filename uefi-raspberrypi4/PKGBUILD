@@ -4,7 +4,7 @@ buildarch=8 # aarch64
 
 pkgname="uefi-raspberrypi4" 
 pkgver=1.35.r0.g218b601
-pkgrel=2
+pkgrel=3
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
 url="https://github.com/pftf/RPi4"
@@ -130,7 +130,8 @@ package(){
     depends=("raspberrypi-overlays" "linux-aarch64>=5.8" "raspberrypi-bootloader")
     optdepends=(
         "firmware-raspberrypi: firmware for RaspberryPi 4B"
-        "linux-firmware: firmware for RaspberryPi 4B")
+        "linux-firmware: firmware for RaspberryPi 4B"
+        "virt-firmware: for editing EFI variables")
 
     install -Dm644 "${srcdir}/RPi4/Build/RPi4/RELEASE_GCC/FV/RPI_EFI.fd" "${pkgdir}/boot/RPI_EFI.fd"
     install -Dm644 "${srcdir}/RPi4/config.txt" "${pkgdir}/boot/config.txt"
