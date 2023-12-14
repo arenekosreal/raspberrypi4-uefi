@@ -99,7 +99,8 @@ function check_qemu_flags() {
     do
         interpreter=$(grep interpreter "$file" | sed 's/interpreter //')
         flags=$(grep flags "$file" | sed 's/flags: //')
-        if [[ "$interpreter" =~ aarch64 ]] && [[ "$flags" != "OCF" ]]
+        # aarch64_be matches aarch64
+        if [[ "$interpreter" =~ aarch64- ]] && [[ "$flags" != "OCF" ]]
         then
             result=1
             break
