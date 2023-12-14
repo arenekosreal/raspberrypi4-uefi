@@ -21,16 +21,16 @@ jobs:
         id: check-qemu
         run: |
           result=true
-          find /proc/sys/fs/binfmt_misc -mindepth 1 -maxdepth 1 ! -name register ! -name status | while read -r file
+          while read -r file
           do
               interpreter=$(grep interpreter "$file" | sed 's/interpreter //')
               flags=$(grep flags "$file" | sed 's/flags: //')
-              if [[ "$interpreter" =~ aarch64 ]] && [[ "$flags" != "OCF" ]]
+              if [[ "$interpreter" =~ aarch64- ]] && [[ "$flags" != "OCF" ]]
               then
                   result=false
                   break
               fi
-          done
+          done < <(find /proc/sys/fs/binfmt_misc -mindepth 1 -maxdepth 1 ! -name register ! -name status)
           echo result=$result >> $GITHUB_OUTPUT
 
       - name: Fix QEMU User Static Flag
