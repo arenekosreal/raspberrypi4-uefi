@@ -1,0 +1,18 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Path
+Target = boot/overlays/
+Target = boot/*.elf
+Target = boot/bootcode.bin
+Target = boot/config.txt
+Target = boot/*.dat
+Target = boot/dtbs/broadcom/bcm2711-rpi-4-b.dtb
+Target = boot/RPI_EFI.fd
+
+[Action]
+Description = Syncing required files in /boot to /efi...
+Depends = coreutils
+When = PostTransaction
+Exec = /etc/pacman.d/scripts/sync-boot-to-efi
+NeedsTargets

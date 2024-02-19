@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+declare -r target=efi
+while read -r path
+do
+    if [ -n "$path" ]
+    then
+        target_path=$target/$(basename "$path")
+        echo "Syncing $path to $target_path..."
+        case "$path" in
+            *config.txt|*RPI_EFI.fd)
+                echo "We are syncing $path to $target_path.pacnew to prevent conflicts, you need to merge them manually."
+                cp "$path" "$target_path.pacnew"
+                ;;
+            *)
+                cp "$path" "$target_path"
+                ;;
+        esac
+    fi
+done
