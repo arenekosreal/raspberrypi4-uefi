@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+declare -ri _NORMAL_EXIT=0
+declare -ri _ERR_NO_MOUNTPOINT=2
+
+function _find_esp() {
+    declare -ar _possible_points=(
+        "efi"
+        "boot"
+        "boot/efi"
+    )
+    for _point in "${_possible_points[@]}"
+    do
+        if [[ -d "$_point/EFI" ]]
+        then
+            echo "$_point"
+            return $_NORMAL_EXIT
+        fi
+    done
+    return $_ERR_NO_MOUNTPOINT
+}
+
+function _install() {
+    target=$(_find_esp)
+    find_esp_result=$?
+    [[ "$find_esp_result" == "$_NORMAL_EXIT" ]] || return "$find_esp_result"
+    declare -r target=$target
+
+    while read -r file
+    do
+        if [[ -n "$file" ]] && [[ -f "$file" ]]
+        then
+            case "$file" in
+                boot/overlays/*)
+                    target_path=$target/overlays/$(basename "$file")
+                    ;;
+                boot/config.txt|boot/RPI_EFI.fd)
+                    target_path=$target/$(basename "$file").pacnew
+                    ;;
+                *)
+                    target_path=$target/$(basename "$file")
+                    ;;
+            esac
+
+            if [[ "$file" != "$target_path" ]]
+            then
+                echo "Syncing $file to $target_path..."
+                [[ "$target_path" =~ \.pacnew$ ]] && \
+                    echo -e "\tWe are syncing $file to $target_path to prevent conflicts, you need to merge them manually."
+                [[ $* =~ --dry-run ]] || install -Dm644 "$file" "$target_path"
+            fi
+        fi
+    done
+}
+
+function _uninstall() {
+    target=$(_find_esp)
+    find_esp_result=$?
+    [[ "$find_esp_result" == "$_NORMAL_EXIT" ]] || return "$find_esp_result"
+    declare -r target=$target
+
+    while read -r file
+    do
+        if [[ -n "$file" ]] && [[ -f "$file" ]]
+        then
+            case "$file" in
+                boot/overlays/*)
+                    target_path=$target/overlays/$(basename "$file")
+                    ;;
+                boot/config.txt|boot/RPI_EFI.fd)
+                    target_path=$target/$(basename "$file").pacnew
+                    ;;
+                *)
+                    target_path=$target/$(basename "$file")
+                    ;;
+            esac
+
+            if [[ "$file" != "$target_path" ]]
+            then
+                echo "Removing $target_path..."
+                [[ $* =~ --dry-run  ]] || rm "$target_path"
+            fi
+        fi
+    done
+}
+
+case $1 in
+    --install)
+        shift
+        # shellcheck disable=SC2068
+        _install $@
+        ;;
+    --uninstall)
+        shift
+        # shellcheck disable=SC2068
+        _uninstall $@
+        ;;
+    *)
+        ;;
+esac
