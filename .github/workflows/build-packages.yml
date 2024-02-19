@@ -3,10 +3,23 @@ on:
   push:
     branches: 
       - main
+    paths:
+      - '!pacman-hooks'
+      - '!LICENSE'
+      - '!README.md'
+      - '!.gitignore'
+
   pull_request:
     branches: 
       - main
+    paths:
+      - '!pacman-hooks'
+      - '!LICENSE'
+      - '!README.md'
+      - '!.gitignore'
+
   workflow_dispatch:
+
 jobs:
   package-build:
     name: Build and Upload Packages for PKGBUILD in this repository
