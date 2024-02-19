@@ -4,7 +4,7 @@ Sync required contents to boot RaspberryPi 4B in UEFI mode from `/boot` to where
 
 ## Usage
 
-2. Put [hooks](./hooks) and [scripts](./scripts) into `/etc/pacman.d`.
+1. Put [hooks](./hooks) and [scripts](./scripts) into `/etc/pacman.d`.
 
 ## FAQ
 
