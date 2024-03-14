@@ -3,25 +3,23 @@
 buildarch=1 # any
 
 pkgname="uefi-raspberrypi4-bin" 
-pkgver=1.35
-pkgrel=2
+pkgver=1.36
+pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B (bin version)"
 url="https://github.com/pftf/RPi4"
 arch=("aarch64")
-license=("custom:edk2" "custom:broadcom")
+license=("BSD-2-Clause-Patent")
 source=(
-    "LICENCE.EDK2::https://raw.githubusercontent.com/tianocore/edk2/master/License.txt"
-    "LICENCE.broadcom::https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/LICENCE.broadcom"
+    "https://github.com/pftf/RPi4/raw/v${pkgver}/License.txt"
     "https://github.com/pftf/RPi4/releases/download/v${pkgver}/RPi4_UEFI_Firmware_v${pkgver}.zip"
     "70-post-install-uefi.hook"
     "80-pre-remove-uefi.hook"
     "post-install-uefi"
     "pre-remove-uefi"
 )
-sha256sums=('50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
-            'c7283ff51f863d93a275c66e3b4cb08021a5dd4d8c1e7acc47d872fbe52d3d6b'
-            '3ea16d6bc4f8f122527ad6a84c0fe84ad80d85fd43a868d99c360ad9e93d3f6e'
+sha256sums=('f5c8f78f51f9ccf36e4e4cda4d9d70cb37b8161145eb0434e983ce91c3c17087'
+            '328cd55f7f18a912d201ef362846cd43055b415fd46c91ba798b1a118cf7b04a'
             '8e55eb4afdd6b572d2413e87b64219d2f9d3bd033de2dfd37e176e92d25d5821'
             'caa86b22a1452d8974e7bbecbb6d9fb591a58da928a06d5e13cee9592e785b12'
             'aed9dfd4c1e7c6092179e8bec63be3fc7b5d958c94063d60a7d1fe4a36f460ef'
@@ -30,18 +28,18 @@ sha256sums=('50ce20c9cfdb0e19ee34fe0a51fc0afe961f743697b068359ab2f862b494df80'
 package(){
     provides=("uefi-raspberrypi4")
     conflicts=("uefi-raspberrypi4" "uboot-raspberrypi")
-    depends=("raspberrypi-overlays" "linux-aarch64" "raspberrypi-bootloader")
+    depends=("raspberrypi-overlays" "linux-aarch64" "raspberrypi-bootloader" "bash")
     optdepends=(
         "firmware-raspberrypi: firmware for RaspberryPi 4B"
         "linux-firmware: firmware for RaspberryPi 4B"
-        "virt-firmware: for editing EFI variables")
+        "virt-firmware: for editing EFI variables"
+    )
 
-    install -Dm644 ${srcdir}/RPI_EFI.fd ${pkgdir}/boot/RPI_EFI.fd
-    install -Dm644 ${srcdir}/config.txt ${pkgdir}/boot/config.txt
-    install -Dm644 ${srcdir}/70-post-install-uefi.hook ${pkgdir}/usr/share/libalpm/hooks/70-post-install-uefi.hook
-    install -Dm644 ${srcdir}/80-pre-remove-uefi.hook ${pkgdir}/usr/share/libalpm/hooks/80-pre-remove-uefi.hook
-    install -Dm755 ${srcdir}/post-install-uefi ${pkgdir}/usr/share/libalpm/scripts/post-install-uefi
-    install -Dm755 ${srcdir}/pre-remove-uefi ${pkgdir}/usr/share/libalpm/scripts/pre-remove-uefi
-    install -Dm644 ${srcdir}/LICENCE.EDK2 ${pkgdir}/usr/share/licenses/${pkgname}/LICENCE.EDK2
-    install -Dm644 ${srcdir}/LICENCE.broadcom ${pkgdir}/usr/share/licenses/${pkgname}/LICENCE.broadcom
+    install -Dm644 "${srcdir}/RPI_EFI.fd" "${pkgdir}/boot/RPI_EFI.fd"
+    install -Dm644 "${srcdir}/config.txt" "${pkgdir}/boot/config.txt"
+    install -Dm644 "${srcdir}/70-post-install-uefi.hook" "${pkgdir}/usr/share/libalpm/hooks/70-post-install-uefi.hook"
+    install -Dm644 "${srcdir}/80-pre-remove-uefi.hook" "${pkgdir}/usr/share/libalpm/hooks/80-pre-remove-uefi.hook"
+    install -Dm755 "${srcdir}/post-install-uefi" "${pkgdir}/usr/share/libalpm/scripts/post-install-uefi"
+    install -Dm755 "${srcdir}/pre-remove-uefi" "${pkgdir}/usr/share/libalpm/scripts/pre-remove-uefi"
+    install -Dm644 "${srcdir}/License.txt" "${pkgdir}/usr/share/licenses/${pkgname}/License.txt"
 }
