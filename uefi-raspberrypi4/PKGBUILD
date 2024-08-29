@@ -3,14 +3,14 @@
 buildarch=8 # aarch64
 
 declare -rAg _modules_name_map=(
-    [edk2]=https://github.com/tianocore/edk2/archive/963671d3801a6992d1aa06f05d86e32efa6b205e.tar.gz
+    [edk2]=https://github.com/tianocore/edk2/archive/b158dad150bf02879668f72ce306445250838201.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl]=https://github.com/openssl/openssl/archive/de90e54bbe82e5be4fb9608b6f5c308bb837d355.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/gost-engine]=https://github.com/gost-engine/engine/archive/b2b4d629f100eaee9f5942a106b1ccefe85b8808.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/libprov]=https://github.com/provider-corner/libprov/archive/8a126e09547630ef900177625626b6156052f0ee.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/krb5]=https://github.com/krb5/krb5/archive/aa9b4a2a64046afd2fab7cb49c346295874a5fb6.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/pyca-cryptography]=https://github.com/pyca/cryptography/archive/c18d0567386414efa3caef7ed586c4ca75bf3a8b.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/wycheproof]=https://github.com/google/wycheproof/archive/2196000605e45d91097147c9c71f26b72af58003.tar.gz
-    [edk2/ArmPkg/Library/ArmSoftFloatLib/berkeley-softfloat-3/berkeley-softfloat-3]=https://github.com/ucb-bar/berkeley-softfloat-3/archive/b64af41c3276f97f0e181920400ee056b9c88037.tar.gz
+    [edk2/ArmPkg/Library/ArmSoftFloatLib/berkeley-softfloat-3]=https://github.com/ucb-bar/berkeley-softfloat-3/archive/b64af41c3276f97f0e181920400ee056b9c88037.tar.gz
     [edk2/UnitTestFrameworkPkg/Library/CmockaLib/cmocka]=https://github.com/tianocore/edk2-cmocka/archive/1cc9cde3448cdd2e000886a26acf1caac2db7cf1.tar.gz
     [edk2/MdeModulePkg/Universal/RegularExpressionDxe/oniguruma]=https://github.com/kkos/oniguruma/archive/abfc8ff81df4067f309032467785e06975678f0d.tar.gz
     [edk2/MdeModulePkg/Library/BrotliCustomDecompressLib/brotli]=https://github.com/google/brotli/archive/f4153a09f87cbb9c826d8fc12c74642bb2d879ea.tar.gz
@@ -23,15 +23,71 @@ declare -rAg _modules_name_map=(
     [edk2/MdePkg/Library/MipiSysTLib/mipisyst/external/pugixml]=https://github.com/zeux/pugixml/archive/c53fdab93af76106b963216d85897614b996f8b6.tar.gz
     [edk2/MdePkg/Library/MipiSysTLib/mipisyst/external/googletest]=https://github.com/google/googletest/archive/a6f06bf2fd3b832822cd4e9e554b7d47f32ec084.tar.gz
     [edk2/CryptoPkg/Library/MbedTlsLib/mbedtls]=https://github.com/Mbed-TLS/mbedtls/archive/8c89224991adff88d53cd380f42a2baa36f91454.tar.gz
+    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm]=https://github.com/DMTF/libspdm/archive/50924a4c8145fc721e17208f55814d2b38766fe6.tar.gz
+    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/openssllib/openssl]=https://github.com/openssl/openssl/archive/de90e54bbe82e5be4fb9608b6f5c308bb837d355.tar.gz
+    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/openssllib/openssl/gost-engine]=https://github.com/gost-engine/engine/archive/b2b4d629f100eaee9f5942a106b1ccefe85b8808.tar.gz
+    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/openssllib/openssl/gost-engine/libprov]=https://github.com/provider-corner/libprov/archive/8a126e09547630ef900177625626b6156052f0ee.tar.gz
+    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/openssllib/openssl/krb5]=https://github.com/krb5/krb5/archive/aa9b4a2a64046afd2fab7cb49c346295874a5fb6.tar.gz
+    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/openssllib/openssl/pyca-cryptography]=https://github.com/pyca/cryptography/archive/c18d0567386414efa3caef7ed586c4ca75bf3a8b.tar.gz
+    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/openssllib/openssl/wycheproof]=https://github.com/C2SP/wycheproof/archive/2196000605e45d91097147c9c71f26b72af58003.tar.gz
+    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/mbedtlslib/mbedtls]=https://github.com/Mbed-TLS/mbedtls/archive/dd79db10014d85b26d11fe57218431f2e5ede6f2.tar.gz
+    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/unit_test/cmockalib/cmocka]=https://gitlab.com/cmocka/cmocka/-/archive/a01cc69ee9536f90e57c61a198f2d1944d3d4313/cmocka-a01cc69ee9536f90e57c61a198f2d1944d3d4313.tar.gz
 
     [edk2-non-osi]=https://github.com/tianocore/edk2-non-osi/archive/0544808c623bb73252310b1e5ef887caaf08c34b.tar.gz
 
-    [edk2-platforms]=https://github.com/tianocore/edk2-platforms/archive/45f9683253f3a9eca341ff5a8b4c8d8e4ca59430.tar.gz
+    [edk2-platforms]=https://github.com/tianocore/edk2-platforms/archive/6146fd7abcf6bfa083d33d1dfdc750694fc040a7.tar.gz
     [edk2-platforms/Silicon/RISC-V/ProcessorPkg/Library/RiscVOpensbiLib/opensbi]=https://github.com/riscv-software-src/opensbi/archive/a731c7e36988c3308e1978ecde491f2f6182d490.tar.gz
 )
 
+_get_source_name_string() {
+    local host filename name commit
+    host=$(echo "$1" | cut -d / -f 3)
+    name=$(echo "$1" | cut -d / -f 5)
+    filename=${1##*/}
+    commit=${filename%%.*}
+    case "$host" in
+        gitlab.com)
+            # It contains $name in $commit
+            echo "$commit"
+            ;;
+        *)
+            echo "$name-$commit"
+            ;;
+    esac
+}
+
+_fill_gitmodules_recursively() {
+    local gitmodule
+    find "${1:-.}" -type f -name .gitmodules | while read -r gitmodule
+    do
+        local prefix
+        prefix=$(dirname "$gitmodule")"/"
+        if [[ "$gitmodule" =~ ^\.\/ ]]
+        then
+            gitmodule=${gitmodule#*\.\/}
+            prefix=${prefix#*\.\/}
+        fi
+        echo "Parsing $gitmodule to fill submodules..."
+        local p
+        grep path "$gitmodule" | awk '{print $3}' | while read -r p
+        do
+            p=${p%$'\r'} # Remove control characters
+            if [[ -n "$p" ]]
+            then
+                local target url name commit fname
+                target="$prefix$p"
+                url="${_modules_name_map[$target]}"
+                fname=$(_get_source_name_string "$url")
+                echo "Filling $target with $srcdir/$fname..."
+                cp -r "$srcdir/$fname/." "$target"
+                _fill_gitmodules_recursively "$target"
+            fi
+        done
+    done
+}
+
 pkgname="uefi-raspberrypi4" 
-pkgver=1.37
+pkgver=1.38
 pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
@@ -40,23 +96,6 @@ arch=("aarch64")
 license=("BSD-2-Clause-Patent")
 makedepends=("acpica" "openssl" "util-linux" "python")
 source=(
-    "RPi4-${pkgver}.tar.gz::https://github.com/pftf/RPi4/archive/refs/tags/v${pkgver}.tar.gz"
-)
-
-declare name commit source_str uri
-for uri in "${_modules_name_map[@]}"
-do
-    name=$(echo "${uri}" | cut -d / -f 5)
-    commit=${uri##*/}
-    source_str="${name}-${commit}::${uri}"
-    if [[ "${source[*]/${source_str}/}" == "${source[*]}" ]]
-    then
-        source+=("${source_str}")
-    fi
-done
-unset name commit source_str uri
-
-source+=(
     "ms_kek1.cer::https://go.microsoft.com/fwlink/?LinkId=321185"
     "ms_kek2.cer::https://go.microsoft.com/fwlink/?linkid=2239775"
     "ms_db1.cer::https://go.microsoft.com/fwlink/?linkid=321192"
@@ -68,31 +107,21 @@ source+=(
     "80-pre-remove-uefi.hook"
     "post-install-uefi"
     "pre-remove-uefi"
+    "RPi4-${pkgver}.tar.gz::https://github.com/pftf/RPi4/archive/refs/tags/v${pkgver}.tar.gz"
 )
-sha256sums=('d1941f5449870143d201903fedf9905133ff7234d8d13d9693f84258de4a0503'
-            'eea977380ebb1871d5de38c4f7f15442ee690c90bdf790590d930a6bbf347f28'
-            '59cd4b81abafae35d94ac5d91cf4ae5b05122e688713cd6db51e5e4cef471d8f'
-            '50a9a0f08839c0e659c4f614b0c3cb93a2a4eb9013b94deb272a1d3f0c47d7dc'
-            'e1e1d75109315cbd0610b65295a081ccb4ec1886076241820ce5d61b44b87a91'
-            'b5c7e7c54e013c168f4aae036e59912785f11b4aeebd57f6165a14e879b9a82c'
-            '1193910f475fde07f3cd4fe1c1a353d69b8cedb574967134838fcdc8208d224e'
-            '6d6cacce05086b7debe75127415ff9c3661849f564fe2f5f3b0383d48aa4ed77'
-            '7bc0838c78542d6aaa9dac79a3ef397be12b49d33078dd47820b1f91402d5e4b'
-            '981ab3e9634cb7c041b484cc1876f22a743dc0ae53a970117ca1b5700670a964'
-            '9fda3b9a78343ab2be6f06ce6396536e7e065abac29b47c8eb2e42cbb4c4f00b'
-            '2075508b22375e4c608b88f79d934860ba38c46cd8f5121af9b1f6f96e880236'
-            '1f5f3eb67cccd4498940bb71c456c07c385eefeda645fa49ef2c432b5723b875'
-            '4049ab4cdfae20c376c33b139c34a805a0074dc0d6fe8f47491cd2ab3c3eba98'
-            '3c3095488b936b14538dca64d7e68bcde09a8a18d2a32a47b59877eff0340403'
-            'f8dd06309075e36882c10d84fe4e0bb67f70fe2df86bffcf30e65524e078cdd3'
-            '042dea86b76568e1cbc430475c9fa0e7c433515d2d9e7b4e0a1c08b32f52ed15'
-            'e7935c0d91d6d22f6dee710a26b23e228ecc4fe8ef7e8f756558c3599f68c3b4'
-            'faae889814ea6a292f7ca03d9b36e6c7e95bab2a64777804883cc822b8d48757'
-            '3c98b0abda3175c1f3a081796fae9f5081d2a6e21d1b8b29a5e5b90d690eee2f'
-            'dbfc74f14091d66b95edab229cff9ef8f1f0ab40da30efec36ca3546a3482b76'
-            '6467f52b39f5954d6fd242487140c459001b650e1df7511392397e099894a2a1'
-            '28d89f42da17357f4292574e1ba8780f4f233c6324993d4885f25b8699c75938'
-            'a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
+
+declare source_str uri
+for uri in "${_modules_name_map[@]}"
+do
+    source_str="$(_get_source_name_string "$uri").tar.gz::${uri}"
+    if [[ "${source[*]/${source_str}/}" == "${source[*]}" ]]
+    then
+        source+=("${source_str}")
+    fi
+done
+unset source_str uri
+
+sha256sums=('a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
             '3cd3f0309edae228767a976dd40d9f4affc4fbd5218f2e8cc3c9dd97e8ac6f9d'
             'e8e95f0733a55e8bad7be0a1413ee23c51fcea64b3c8fa6a786935fddcc71961'
             '48e99b991f57fc52f76149599bff0a58c47154229b9f8d603ac40d3500248507'
@@ -102,56 +131,39 @@ sha256sums=('d1941f5449870143d201903fedf9905133ff7234d8d13d9693f84258de4a0503'
             '8e55eb4afdd6b572d2413e87b64219d2f9d3bd033de2dfd37e176e92d25d5821'
             'caa86b22a1452d8974e7bbecbb6d9fb591a58da928a06d5e13cee9592e785b12'
             'aed9dfd4c1e7c6092179e8bec63be3fc7b5d958c94063d60a7d1fe4a36f460ef'
-            'e7db4c6150688a4aa6922435f531e5fa6e95d39380bb67ddb5a3554335eb419d')
+            'e7db4c6150688a4aa6922435f531e5fa6e95d39380bb67ddb5a3554335eb419d'
+            '0f0d68e180d7b16f8febb88cac358dd32a2596c82fb448849e7a159945a2f988'
+            'eea977380ebb1871d5de38c4f7f15442ee690c90bdf790590d930a6bbf347f28'
+            'f8dd06309075e36882c10d84fe4e0bb67f70fe2df86bffcf30e65524e078cdd3'
+            '59cd4b81abafae35d94ac5d91cf4ae5b05122e688713cd6db51e5e4cef471d8f'
+            '50a9a0f08839c0e659c4f614b0c3cb93a2a4eb9013b94deb272a1d3f0c47d7dc'
+            'e1e1d75109315cbd0610b65295a081ccb4ec1886076241820ce5d61b44b87a91'
+            '962aefeeddb130deeb68c6c60c4848ddedd09d7715ed1ba8a8dadabd032d6232'
+            'b5c7e7c54e013c168f4aae036e59912785f11b4aeebd57f6165a14e879b9a82c'
+            '1193910f475fde07f3cd4fe1c1a353d69b8cedb574967134838fcdc8208d224e'
+            '6d6cacce05086b7debe75127415ff9c3661849f564fe2f5f3b0383d48aa4ed77'
+            'cc29dd6141afdddf14e9b770d5ab2839f769eee19628d31c7cb6187d0c321e9c'
+            'dbfc74f14091d66b95edab229cff9ef8f1f0ab40da30efec36ca3546a3482b76'
+            '981ab3e9634cb7c041b484cc1876f22a743dc0ae53a970117ca1b5700670a964'
+            '6467f52b39f5954d6fd242487140c459001b650e1df7511392397e099894a2a1'
+            '9fda3b9a78343ab2be6f06ce6396536e7e065abac29b47c8eb2e42cbb4c4f00b'
+            '34005d1062f73d1142ac4ca29b9f456fae99a89f0acc01edf4ff4117d59b7583'
+            '28d89f42da17357f4292574e1ba8780f4f233c6324993d4885f25b8699c75938'
+            '1f5f3eb67cccd4498940bb71c456c07c385eefeda645fa49ef2c432b5723b875'
+            '4049ab4cdfae20c376c33b139c34a805a0074dc0d6fe8f47491cd2ab3c3eba98'
+            '3c3095488b936b14538dca64d7e68bcde09a8a18d2a32a47b59877eff0340403'
+            'faae889814ea6a292f7ca03d9b36e6c7e95bab2a64777804883cc822b8d48757'
+            '1f5f3eb67cccd4498940bb71c456c07c385eefeda645fa49ef2c432b5723b875'
+            '042dea86b76568e1cbc430475c9fa0e7c433515d2d9e7b4e0a1c08b32f52ed15'
+            'e7935c0d91d6d22f6dee710a26b23e228ecc4fe8ef7e8f756558c3599f68c3b4'
+            '3c98b0abda3175c1f3a081796fae9f5081d2a6e21d1b8b29a5e5b90d690eee2f'
+            '97a0e47ae225fe45090925125eb711943bf66584ac5fd9c831d14014443124cb'
+            '5c13b8a73163617e9d985243f0ecb49a97db8fa2d2f76d9ded249aacd3e00113')
 
 
 prepare(){
     cd "${srcdir}/RPi4-${pkgver}"
-    declare -ra paths=(
-        edk2
-        edk2/CryptoPkg/Library/OpensslLib/openssl
-        edk2/CryptoPkg/Library/OpensslLib/openssl/gost-engine
-        edk2/CryptoPkg/Library/OpensslLib/openssl/libprov
-        edk2/CryptoPkg/Library/OpensslLib/openssl/krb5
-        edk2/CryptoPkg/Library/OpensslLib/openssl/pyca-cryptography
-        edk2/CryptoPkg/Library/OpensslLib/openssl/wycheproof
-        edk2/ArmPkg/Library/ArmSoftFloatLib/berkeley-softfloat-3/berkeley-softfloat-3
-        edk2/UnitTestFrameworkPkg/Library/CmockaLib/cmocka
-        edk2/MdeModulePkg/Universal/RegularExpressionDxe/oniguruma
-        edk2/MdeModulePkg/Library/BrotliCustomDecompressLib/brotli
-        edk2/BaseTools/Source/C/BrotliCompress/brotli
-        edk2/RedfishPkg/Library/JsonLib/jansson
-        edk2/UnitTestFrameworkPkg/Library/GoogleTestLib/googletest
-        edk2/UnitTestFrameworkPkg/Library/SubhookLib/subhook
-        edk2/MdePkg/Library/BaseFdtLib/libfdt
-        edk2/MdePkg/Library/MipiSysTLib/mipisyst
-        edk2/MdePkg/Library/MipiSysTLib/mipisyst/external/pugixml
-        edk2/MdePkg/Library/MipiSysTLib/mipisyst/external/googletest
-        edk2/CryptoPkg/Library/MbedTlsLib/mbedtls
-
-        edk2-non-osi
-
-        edk2-platforms
-        edk2-platforms/Silicon/RISC-V/ProcessorPkg/Library/RiscVOpensbiLib/opensbi
-    )
-    local path
-    for path in "${paths[@]}"
-    do
-        msg2 "Processing ${path}"
-        local uri commit name fname
-        uri=${_modules_name_map[$path]}
-        name=$(echo "${uri}" | cut -d / -f 5)
-        commit=${uri##*/}
-        commit=${commit%%.*}
-        fname="${name}-${commit}"
-        echo "Filling ${path} with ${srcdir}/${fname}"
-        if [[ -d "${path}" ]]
-        then
-            cp -a "${srcdir}/${fname}/"* "${path}"
-        else
-            cp -a "${srcdir}/${fname}" "${path}"
-        fi
-    done
+    _fill_gitmodules_recursively
     mkdir -p keys
     cp "${srcdir}"/{ms_kek1.cer,ms_kek2.cer,ms_db1.cer,ms_db2.cer,ms_db3.cer,ms_db4.cer,arm64_dbx.bin} keys/
     openssl req -new -x509 -newkey rsa:2048 -subj "/CN=Raspberry Pi Platform Key/" -keyout /dev/null -outform DER -out keys/pk.cer -days 7300 -nodes -sha256
