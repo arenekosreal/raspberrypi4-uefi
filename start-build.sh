@@ -142,7 +142,12 @@ function create_base_image() {
         buildah run --user=root "$bootstrap_container" apk upgrade --no-cache
         buildah run --user=root "$bootstrap_container" apk add libarchive-tools
         buildah run --user=root "$bootstrap_container" mkdir /alarm
-        buildah run --user=root "$bootstrap_container" curl -LO "$ALARM_URL/os/ArchLinuxARM-aarch64-latest.tar.gz"
+        if [[ -f ArchLinuxARM-aarch64-latest.tar.gz ]]
+        then
+            buildah copy "$bootstrap_container" ArchLinuxARM-aarch64-latest.tar.gz
+        else
+            buildah run --user=root "$bootstrap_container" curl -LO "$ALARM_URL/os/ArchLinuxARM-aarch64-latest.tar.gz"
+        fi
         buildah run --user=root "$bootstrap_container" bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C /alarm
         container=$(buildah from --arch=arm64 scratch)
         buildah copy --from="$bootstrap_container" "$container" /alarm/ /
@@ -169,6 +174,8 @@ function create_base_image() {
         log info "There is no need to create basic runtime image."
     fi
 }
+
+set -e
 
 # main
 check_depends || log_and_exit "No required executable found." $_ERR_NO_BINARY

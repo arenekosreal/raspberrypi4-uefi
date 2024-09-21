@@ -15,3 +15,6 @@ status
 before-build
 on-package-build
 after-build
+
+# tar.gz
+*.tar.gz
