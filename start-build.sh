@@ -148,7 +148,8 @@ function create_base_image() {
         else
             buildah run --user=root "$bootstrap_container" curl -LO "$ALARM_URL/os/ArchLinuxARM-aarch64-latest.tar.gz"
         fi
-        buildah run --user=root "$bootstrap_container" bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C /alarm
+        # TODO: Use bsdtar once `Path contains '..' is fixed.`
+        buildah run --user=root "$bootstrap_container" tar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C /alarm
         container=$(buildah from --arch=arm64 scratch)
         buildah copy --from="$bootstrap_container" "$container" /alarm/ /
         buildah run "$container" bash -c "echo Server = $ALARM_URL/\\\$arch/\\\$repo > /etc/pacman.d/mirrorlist"
