@@ -1,7 +1,7 @@
 buildarch=1 # any
 
 pkgname="raspberrypi-overlays"
-pkgver=20240926
+pkgver=20241001
 pkgrel=1
 pkgdesc="/boot/overlays for RaspberryPi"
 url="https://github.com/raspberrypi/firmware"
@@ -10,7 +10,7 @@ license=("GPL2")
 conflicts=("linux-rpi" "raspberrypi-devicetree")
 replaces=("raspberrypi4-overlays" "raspberrypi4-dtbs")
 source=("https://github.com/raspberrypi/firmware/archive/refs/tags/1.${pkgver}.tar.gz")
-sha256sums=('2839f7822d4c43326f929682e1622383e1c2efff21c5b9d4bbba2f3c0d588cfb')
+sha256sums=('49a92ef49f625818147b046cd3aa5f8d6e326c9dd429dd3cb75ded91b9b10fb0')
 
 package(){
     cd "${srcdir}/firmware-1.${pkgver}"
