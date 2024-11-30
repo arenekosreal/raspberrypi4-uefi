@@ -6,7 +6,7 @@ declare -r LOG=${LOG:-2} # 0=error 1=warn 2=info 3=debug
 declare -r ALARM_URL="${ALARM_URL:-http://os.archlinuxarm.org}"
 
 #shellcheck disable=SC2155
-declare -r _root=$(realpath "$(dirname "$0")")
+declare -r _root="$(realpath "$(dirname "$0")")"
 declare -r _depends=("buildah" "$PODMAN")
 declare -r _pkgdest="$_root/out"
 declare -r _logdest="$_root/log"
@@ -223,6 +223,7 @@ do
         $CONTAINER_ARGS \
         $_base_image_tag \
         start-build
+    $PODMAN wait "alarmbuilder-$package"
     $PODMAN cp "alarmbuilder-$package:/pkgdest" "$_pkgdest"
     $PODMAN cp "alarmbuilder-$package:/logdest" "$_logdest"
     $PODMAN container rm "alarmbuilder-$package"
