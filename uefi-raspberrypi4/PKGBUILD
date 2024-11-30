@@ -3,12 +3,12 @@
 buildarch=8 # aarch64
 
 declare -rAg _modules_name_map=(
-    [edk2]=https://github.com/tianocore/edk2/archive/b158dad150bf02879668f72ce306445250838201.tar.gz
-    [edk2/CryptoPkg/Library/OpensslLib/openssl]=https://github.com/openssl/openssl/archive/de90e54bbe82e5be4fb9608b6f5c308bb837d355.tar.gz
-    [edk2/CryptoPkg/Library/OpensslLib/openssl/gost-engine]=https://github.com/gost-engine/engine/archive/b2b4d629f100eaee9f5942a106b1ccefe85b8808.tar.gz
+    [edk2]=https://github.com/tianocore/edk2/archive/0f3867fa6ef0553e26c42f7d71ff6bdb98429742.tar.gz
+    [edk2/CryptoPkg/Library/OpensslLib/openssl]=https://github.com/openssl/openssl/archive/c523121f902fde2929909dc7f76b13ceb4961efe.tar.gz
+    [edk2/CryptoPkg/Library/OpensslLib/openssl/gost-engine]=https://github.com/gost-engine/engine/archive/2a8a5e0ecaa3e3d6f4ec722a49aa72476755c2b7.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/libprov]=https://github.com/provider-corner/libprov/archive/8a126e09547630ef900177625626b6156052f0ee.tar.gz
-    [edk2/CryptoPkg/Library/OpensslLib/openssl/krb5]=https://github.com/krb5/krb5/archive/aa9b4a2a64046afd2fab7cb49c346295874a5fb6.tar.gz
-    [edk2/CryptoPkg/Library/OpensslLib/openssl/pyca-cryptography]=https://github.com/pyca/cryptography/archive/c18d0567386414efa3caef7ed586c4ca75bf3a8b.tar.gz
+    [edk2/CryptoPkg/Library/OpensslLib/openssl/krb5]=https://github.com/krb5/krb5/archive/784c38f50e70a739400cdd3f2620bac2e2788e6c.tar.gz
+    [edk2/CryptoPkg/Library/OpensslLib/openssl/pyca-cryptography]=https://github.com/pyca/cryptography/archive/7e33b0e7739d633c77b8c478620167f693ed13f4.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/wycheproof]=https://github.com/google/wycheproof/archive/2196000605e45d91097147c9c71f26b72af58003.tar.gz
     [edk2/ArmPkg/Library/ArmSoftFloatLib/berkeley-softfloat-3]=https://github.com/ucb-bar/berkeley-softfloat-3/archive/b64af41c3276f97f0e181920400ee056b9c88037.tar.gz
     [edk2/UnitTestFrameworkPkg/Library/CmockaLib/cmocka]=https://github.com/tianocore/edk2-cmocka/archive/1cc9cde3448cdd2e000886a26acf1caac2db7cf1.tar.gz
@@ -17,7 +17,7 @@ declare -rAg _modules_name_map=(
     [edk2/BaseTools/Source/C/BrotliCompress/brotli]=https://github.com/google/brotli/archive/f4153a09f87cbb9c826d8fc12c74642bb2d879ea.tar.gz
     [edk2/RedfishPkg/Library/JsonLib/jansson]=https://github.com/akheron/jansson/archive/e9ebfa7e77a6bee77df44e096b100e7131044059.tar.gz
     [edk2/UnitTestFrameworkPkg/Library/GoogleTestLib/googletest]=https://github.com/google/googletest/archive/86add13493e5c881d7e4ba77fb91c1f57752b3a4.tar.gz
-    [edk2/UnitTestFrameworkPkg/Library/SubhookLib/subhook]=https://github.com/Zeex/subhook/archive/83d4e1ebef3588fae48b69a7352cc21801cb70bc.tar.gz
+    [edk2/UnitTestFrameworkPkg/Library/SubhookLib/subhook]=https://github.com/tianocore/edk2-subhook/archive/83d4e1ebef3588fae48b69a7352cc21801cb70bc.tar.gz
     [edk2/MdePkg/Library/BaseFdtLib/libfdt]=https://github.com/devicetree-org/pylibfdt/archive/cfff805481bdea27f900c32698171286542b8d3c.tar.gz
     [edk2/MdePkg/Library/MipiSysTLib/mipisyst]=https://github.com/MIPI-Alliance/public-mipi-sys-t/archive/370b5944c046bab043dd8b133727b2135af7747a.tar.gz
     [edk2/MdePkg/Library/MipiSysTLib/mipisyst/external/pugixml]=https://github.com/zeux/pugixml/archive/c53fdab93af76106b963216d85897614b996f8b6.tar.gz
@@ -35,7 +35,7 @@ declare -rAg _modules_name_map=(
 
     [edk2-non-osi]=https://github.com/tianocore/edk2-non-osi/archive/0544808c623bb73252310b1e5ef887caaf08c34b.tar.gz
 
-    [edk2-platforms]=https://github.com/tianocore/edk2-platforms/archive/6146fd7abcf6bfa083d33d1dfdc750694fc040a7.tar.gz
+    [edk2-platforms]=https://github.com/tianocore/edk2-platforms/archive/65e64c0bc4000e3d4dcc6d302895857fbee31f3e.tar.gz
     [edk2-platforms/Silicon/RISC-V/ProcessorPkg/Library/RiscVOpensbiLib/opensbi]=https://github.com/riscv-software-src/opensbi/archive/a731c7e36988c3308e1978ecde491f2f6182d490.tar.gz
 )
 
@@ -87,7 +87,7 @@ _fill_gitmodules_recursively() {
 }
 
 pkgname="uefi-raspberrypi4" 
-pkgver=1.38
+pkgver=1.39
 pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
@@ -132,7 +132,7 @@ sha256sums=('a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
             'caa86b22a1452d8974e7bbecbb6d9fb591a58da928a06d5e13cee9592e785b12'
             'aed9dfd4c1e7c6092179e8bec63be3fc7b5d958c94063d60a7d1fe4a36f460ef'
             'e7db4c6150688a4aa6922435f531e5fa6e95d39380bb67ddb5a3554335eb419d'
-            '0f0d68e180d7b16f8febb88cac358dd32a2596c82fb448849e7a159945a2f988'
+            'c33c189b84b6342f151d82d41db40528e5698d73b0c612ad534628fcff1bd71d'
             'eea977380ebb1871d5de38c4f7f15442ee690c90bdf790590d930a6bbf347f28'
             'f8dd06309075e36882c10d84fe4e0bb67f70fe2df86bffcf30e65524e078cdd3'
             '59cd4b81abafae35d94ac5d91cf4ae5b05122e688713cd6db51e5e4cef471d8f'
@@ -142,21 +142,25 @@ sha256sums=('a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
             'b5c7e7c54e013c168f4aae036e59912785f11b4aeebd57f6165a14e879b9a82c'
             '1193910f475fde07f3cd4fe1c1a353d69b8cedb574967134838fcdc8208d224e'
             '6d6cacce05086b7debe75127415ff9c3661849f564fe2f5f3b0383d48aa4ed77'
-            'cc29dd6141afdddf14e9b770d5ab2839f769eee19628d31c7cb6187d0c321e9c'
+            '822a9ff4e57345165ba4fa854b7e6ab96919b60c34831731333e1d25cce7aa33'
             'dbfc74f14091d66b95edab229cff9ef8f1f0ab40da30efec36ca3546a3482b76'
             '981ab3e9634cb7c041b484cc1876f22a743dc0ae53a970117ca1b5700670a964'
             '6467f52b39f5954d6fd242487140c459001b650e1df7511392397e099894a2a1'
             '9fda3b9a78343ab2be6f06ce6396536e7e065abac29b47c8eb2e42cbb4c4f00b'
-            '34005d1062f73d1142ac4ca29b9f456fae99a89f0acc01edf4ff4117d59b7583'
+            'f579bd39d3ae4c1c8a94ffead28668dc391b94f6dd51c41ac96fed05d2675b7c'
             '28d89f42da17357f4292574e1ba8780f4f233c6324993d4885f25b8699c75938'
             '1f5f3eb67cccd4498940bb71c456c07c385eefeda645fa49ef2c432b5723b875'
             '4049ab4cdfae20c376c33b139c34a805a0074dc0d6fe8f47491cd2ab3c3eba98'
             '3c3095488b936b14538dca64d7e68bcde09a8a18d2a32a47b59877eff0340403'
             'faae889814ea6a292f7ca03d9b36e6c7e95bab2a64777804883cc822b8d48757'
             '1f5f3eb67cccd4498940bb71c456c07c385eefeda645fa49ef2c432b5723b875'
-            '042dea86b76568e1cbc430475c9fa0e7c433515d2d9e7b4e0a1c08b32f52ed15'
+            'f0dd242a9b088bd144144a9ca374dc89a8499c98014e33554b3d84f11f22df3e'
+            'f65b2e6dd304e19185d751652bd5ebc72a81d503bf542037acb3450e43abc095'
             'e7935c0d91d6d22f6dee710a26b23e228ecc4fe8ef7e8f756558c3599f68c3b4'
             '3c98b0abda3175c1f3a081796fae9f5081d2a6e21d1b8b29a5e5b90d690eee2f'
+            '83e45faac780fc54fad5572e2cea2ef1f92154a99c6ee74d6a7f138cb50de8b4'
+            'ad8dc05136712d2c90608c5a10c3323c52bc086bb439f0013ae8efffb67b0085'
+            'ff312c45dda6fd7f901f107f948fbd79fbe67e0bb6a704359cc8289cf1d89052'
             '97a0e47ae225fe45090925125eb711943bf66584ac5fd9c831d14014443124cb'
             '5c13b8a73163617e9d985243f0ecb49a97db8fa2d2f76d9ded249aacd3e00113')
 
