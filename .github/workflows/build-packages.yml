@@ -31,8 +31,10 @@ jobs:
       - name: Install depends
         run: |
           sudo apt-get update -y
-          sudo apt-get upgrade -y
           sudo apt-get install -y podman buildah
+          mkdir -p /etc/containers/registries.conf.d
+          echo 'unqualified-search-registries = [ "docker.io" ]' | sudo tee /etc/containers/registries.conf.d/00-unqualified-search-registries.conf
+          echo -e '[[registry]]\nlocation = "docker.io"' | sudo tee /etc/containers/registries.conf.d/01-registries.conf 
       
       - name: Build
         run: bash start-build.sh
