@@ -23,34 +23,8 @@ on:
 jobs:
   package-build:
     name: Build and Upload Packages for PKGBUILD in this repository
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install QEMU-User-Static
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y qemu-user-static
-
-      - name: Check QEMU User Static Flag
-        id: check-qemu
-        run: |
-          result=true
-          while read -r file
-          do
-              interpreter=$(grep interpreter "$file" | sed 's/interpreter //')
-              flags=$(grep flags "$file" | sed 's/flags: //')
-              echo "$interpreter's flags is $flags"
-              if [[ "$interpreter" =~ aarch64- ]] && ! [[ "$flags" =~ OCF ]]
-              then
-                  result=false
-                  break
-              fi
-          done < <(find /proc/sys/fs/binfmt_misc -mindepth 1 -maxdepth 1 ! -name register ! -name status)
-          echo result=$result >> $GITHUB_OUTPUT
-
-      - name: Fix QEMU User Static Flag
-        if: steps.check-qemu.result == 'false'
-        run: sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-      
+    runs-on: ubuntu-24.04-arm
+    steps: 
       - name: Checkout
         uses: actions/checkout@v4
       
