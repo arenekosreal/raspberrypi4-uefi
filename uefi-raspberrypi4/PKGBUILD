@@ -2,7 +2,7 @@
 
 buildarch=8 # aarch64
 
-declare -rAg _modules_name_map=(
+declare -Ag _modules_name_map=(
     [edk2]=https://github.com/tianocore/edk2/archive/0f3867fa6ef0553e26c42f7d71ff6bdb98429742.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl]=https://github.com/openssl/openssl/archive/c523121f902fde2929909dc7f76b13ceb4961efe.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/gost-engine]=https://github.com/gost-engine/engine/archive/2a8a5e0ecaa3e3d6f4ec722a49aa72476755c2b7.tar.gz
@@ -35,7 +35,7 @@ declare -rAg _modules_name_map=(
 
     [edk2-non-osi]=https://github.com/tianocore/edk2-non-osi/archive/0544808c623bb73252310b1e5ef887caaf08c34b.tar.gz
 
-    [edk2-platforms]=https://github.com/tianocore/edk2-platforms/archive/65e64c0bc4000e3d4dcc6d302895857fbee31f3e.tar.gz
+    [edk2-platforms]=https://github.com/tianocore/edk2-platforms/archive/2acbdde292d0502358d47e3b9525705ddff91e71.tar.gz
     [edk2-platforms/Silicon/RISC-V/ProcessorPkg/Library/RiscVOpensbiLib/opensbi]=https://github.com/riscv-software-src/opensbi/archive/a731c7e36988c3308e1978ecde491f2f6182d490.tar.gz
 )
 
@@ -87,7 +87,7 @@ _fill_gitmodules_recursively() {
 }
 
 pkgname="uefi-raspberrypi4" 
-pkgver=1.39
+pkgver=1.40
 pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
@@ -132,7 +132,7 @@ sha256sums=('a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
             'caa86b22a1452d8974e7bbecbb6d9fb591a58da928a06d5e13cee9592e785b12'
             'aed9dfd4c1e7c6092179e8bec63be3fc7b5d958c94063d60a7d1fe4a36f460ef'
             'e7db4c6150688a4aa6922435f531e5fa6e95d39380bb67ddb5a3554335eb419d'
-            'c33c189b84b6342f151d82d41db40528e5698d73b0c612ad534628fcff1bd71d'
+            '6e7c8894b5de528fd97b3498a6fe1a1648e172b14b051af42cf392ec3b589acb'
             'eea977380ebb1871d5de38c4f7f15442ee690c90bdf790590d930a6bbf347f28'
             'f8dd06309075e36882c10d84fe4e0bb67f70fe2df86bffcf30e65524e078cdd3'
             '59cd4b81abafae35d94ac5d91cf4ae5b05122e688713cd6db51e5e4cef471d8f'
@@ -142,7 +142,7 @@ sha256sums=('a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
             'b5c7e7c54e013c168f4aae036e59912785f11b4aeebd57f6165a14e879b9a82c'
             '1193910f475fde07f3cd4fe1c1a353d69b8cedb574967134838fcdc8208d224e'
             '6d6cacce05086b7debe75127415ff9c3661849f564fe2f5f3b0383d48aa4ed77'
-            '822a9ff4e57345165ba4fa854b7e6ab96919b60c34831731333e1d25cce7aa33'
+            '8e26adc4321cb114b0a7e9064facefeca0a0cade020b21458d4e8f7b25b3c2ee'
             'dbfc74f14091d66b95edab229cff9ef8f1f0ab40da30efec36ca3546a3482b76'
             '981ab3e9634cb7c041b484cc1876f22a743dc0ae53a970117ca1b5700670a964'
             '6467f52b39f5954d6fd242487140c459001b650e1df7511392397e099894a2a1'

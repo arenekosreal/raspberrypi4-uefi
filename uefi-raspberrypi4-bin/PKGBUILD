@@ -3,7 +3,7 @@
 buildarch=1 # any
 
 pkgname="uefi-raspberrypi4-bin" 
-pkgver=1.39
+pkgver=1.40
 pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B (bin version)"
@@ -19,7 +19,7 @@ source=(
     "pre-remove-uefi"
 )
 sha256sums=('f5c8f78f51f9ccf36e4e4cda4d9d70cb37b8161145eb0434e983ce91c3c17087'
-            'f07d8c5f1e86ac33830ebb45ebf849fd253d013d634824773d89ec41eb0a6624'
+            '2fe99b68fff95bd420bd7c8b24a3ef3c76aac2b523046d5742befdc239475844'
             '8e55eb4afdd6b572d2413e87b64219d2f9d3bd033de2dfd37e176e92d25d5821'
             'caa86b22a1452d8974e7bbecbb6d9fb591a58da928a06d5e13cee9592e785b12'
             'aed9dfd4c1e7c6092179e8bec63be3fc7b5d958c94063d60a7d1fe4a36f460ef'
