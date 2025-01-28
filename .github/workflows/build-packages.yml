@@ -125,7 +125,7 @@ jobs:
       - name: Generate artifact name
         id: artifact-name
         run: |
-          printf "artifact-name=%s %s-%d %s" \
+          printf "artifact-name=%s %s-%d %s\n" \
             "${{ steps.pkgbase.outputs.value }}" \
             "${{ steps.pkgver.outputs.value }}" \
             "${{ steps.final-pkgrel.outputs.value }}" \
