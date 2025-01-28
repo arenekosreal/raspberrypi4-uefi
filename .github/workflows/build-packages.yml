@@ -106,6 +106,7 @@ jobs:
 
       - name: Setup cache
         id: cache
+        if: ${{ !github.event.act.local }}
         uses: actions/cache@v4
         with:
           path: srcdest
@@ -114,7 +115,7 @@ jobs:
       # This file will return 403 if downloads directly.
       # Original url: https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin
       - name: Place static file
-        if: matrix.package == 'uefi-raspberrypi4' && steps.cache.cache-hit != 'true'
+        if: matrix.package == 'uefi-raspberrypi4' && steps.cache.cache-hit != 'true' && !github.event.act.local
         run: |
           mkdir -p srcdest
           base64 -d dbxupdate_arm64.bin.base64.txt | sudo tee srcdest/arm64_dbx.bin > /dev/null
@@ -151,12 +152,12 @@ jobs:
               mv "$base/$name" "$base/$validname"
             fi
             echo "$validname" >> "$GITHUB_OUTPUT"
-          done < <(find "pkgdest" -maxdepth 1 -mindepth 1 -type f -regex '.+\.pkg\.tar\.[0-9a-zA-Z]+$')
+          done < <(find "$base" -maxdepth 1 -mindepth 1 -type f -regex '.+\.pkg\.tar\.[0-9a-zA-Z]+$')
           echo "$EOF" >> "$GITHUB_OUTPUT"
 
 
       - name: Upload artifacts
-        if: ${{ ! github.event.act.local }}
+        if: ${{ !github.event.act.local }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.artifact-name.outputs.artifact-name }}
@@ -169,10 +170,29 @@ jobs:
     needs: package-build
     if: ${{ !github.event.act.local && github.event_name != 'pull_request' }}
     steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: pkgdest
+          merge-multiple: true
+
+      - name: Recover encoded filename
+        run: |
+          declare f base="pkgdest"
+          while read -r f
+          do
+            declare name original
+            name="$(basename -s ".original.txt" "$f")"
+            original="$(< "$f")"
+            echo "Recovering $original from $name..."
+            mv "$base/$name" "$base/$original"
+            rm "$f"
+          done < <(find "$base" -maxdepth 1 -mindepth 1 -type f -regex '.+\.pkg\.tar\.[0-9a-zA-Z]+\.original.txt')
+
       - name: Generare Release info
         id: release-info
         run: |
-          cd out
+          cd pkgdest
           EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
           echo "sums<<$EOF" >> "$GITHUB_OUTPUT"
           sha256sum *.pkg.tar.* >> "$GITHUB_OUTPUT"
