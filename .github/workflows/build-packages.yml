@@ -68,7 +68,7 @@ jobs:
         if: matrix.package == 'uefi-raspberrypi4' && steps.cache.cache-hit != 'true'
         run: |
           mkdir -p srcdest
-          base64 -d dbxupdate_arm64.bin.base64.txt > srcdest/dbxupdate_arm64.bin
+          base64 -d dbxupdate_arm64.bin.base64.txt > srcdest/arm64_dbx.bin
 
       - name: Get pkgbase
         id: pkgbase
