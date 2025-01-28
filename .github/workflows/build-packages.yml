@@ -45,11 +45,15 @@ jobs:
       - name: Generate cache key
         id: cache-key
         run: |
-          sum="$(grep -oP '^.+sums' "${{ matrix.package }}/PKGBUILD")"
-          (
-            source "${{ matrix.package }}/PKGBUILD"
-            eval echo \${$sum[@]} | sha256sum
-          ) | sha256sum | awk '{print "key=" $1}' >> "$GITHUB_OUTPUT"
+          if sum="$(grep -oP '^.+sums' "${{ matrix.package }}/PKGBUILD")"
+          then
+            (
+              source "${{ matrix.package }}/PKGBUILD"
+              eval echo \${$sum[@]} | sha256sum
+            ) | sha256sum | awk '{print "key=" $1}' >> "$GITHUB_OUTPUT"
+          else
+            sha256sum "${{ matrix.package }}/PKGBUILD" | awk '{print "key=" $1}' >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Setup cache
         id: cache
