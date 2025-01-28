@@ -30,6 +30,7 @@ on:
         description: If bump pkgrel by adding 1 to existing
         required: false
         default: false
+        type: boolean
 
 jobs:
   package-build:
