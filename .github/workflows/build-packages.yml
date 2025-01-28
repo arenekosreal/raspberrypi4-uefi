@@ -33,18 +33,36 @@ on:
         type: boolean
 
 jobs:
+  scan-package:
+    name: Scan packages needs to build
+    runs-on: ubuntu-24.04-arm
+    outputs:
+      package: ${{ steps.scan-package.outputs.package }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan package
+        id: scan-package
+        run: |
+          declare d 
+          declare -a items
+          while read -r d
+          do
+            items+=("$d")
+          done < <(find . -maxdepth 2 -mindepth 2 -type f -name "PKGBUILD" -printf "%h\n" | rev | cut -d / -f 1 | rev)
+          echo -n "package=" >> "$GITHUB_OUTPUT"
+          jq --compact-output --null-input --raw-output '$ARGS.positional' --args "${items[@]}" >> "$GITHUB_OUTPUT"
+  
   package-build:
     name: Build and Upload Packages for PKGBUILD in this repository
     runs-on: ubuntu-24.04-arm
+    needs: scan-package
     outputs:
       artifact-name: ${{ steps.artifact-name.outputs.artifact-name }}
     strategy:
       matrix:
-        package:
-          - raspberrypi-overlays
-          - uefi-raspberrypi4
-          - uefi-raspberrypi4-bin
-          - raspberrypi4-uefi-devel-meta
+        package: ${{ fromJson(needs.scan-package.outputs.package) }}
     steps: 
       - name: Checkout
         uses: actions/checkout@v4
