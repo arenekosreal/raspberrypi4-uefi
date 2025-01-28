@@ -134,7 +134,7 @@ jobs:
 
       - name: Ensure pkgdest permission
         if: ${{ !github.event.act.local }}
-        run: sudo chown -R "$(id -u):$(id -g)" pkgdest
+        run: sudo chown -R "$(id -u):$(id -g)" pkgdest srcdest
 
       - name: Ensure filename suitable for uploading
         if: ${{ !github.event.act.local }}
@@ -214,7 +214,7 @@ jobs:
           generate_release_notes: true
           prerelease: false
           tag_name: ${{ steps.release-info.outputs.date }}
-          files: "out/*.pkg.tar.*"
+          files: "pkgdest/*.pkg.tar.*"
           name: Raspberry Pi 4 UEFI Boot Packages for Arch Based Linux Distribution
           body: |
             CI Build for commit ${{ github.sha }}
