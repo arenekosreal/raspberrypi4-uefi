@@ -180,7 +180,7 @@ jobs:
     name: Grab built packages and release
     runs-on: ubuntu-24.04-arm
     needs: package-build
-    if: ${{ !github.event.act.local && github.event_name == 'pull_request' }}
+    if: ${{ !github.event.act.local && github.event_name != 'pull_request' }}
     steps:
       - name: Generare Release info
         id: release-info
