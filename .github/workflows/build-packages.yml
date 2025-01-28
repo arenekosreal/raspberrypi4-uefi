@@ -117,7 +117,7 @@ jobs:
         if: matrix.package == 'uefi-raspberrypi4' && steps.cache.cache-hit != 'true'
         run: |
           mkdir -p srcdest
-          base64 -d dbxupdate_arm64.bin.base64.txt > | sudo tee srcdest/arm64_dbx.bin > /dev/null
+          base64 -d dbxupdate_arm64.bin.base64.txt | sudo tee srcdest/arm64_dbx.bin > /dev/null
 
       - name: Build
         uses: arenekosreal/pkgbuild-actions/build@v0.2.6
