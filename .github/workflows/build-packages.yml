@@ -129,7 +129,7 @@ jobs:
             "${{ steps.pkgbase.outputs.value }}" \
             "${{ steps.pkgver.outputs.value }}" \
             "${{ steps.final-pkgrel.outputs.value }}" \
-            "${{ steps.target-arch.outputs.arch }}"
+            "${{ steps.target-arch.outputs.arch }}" \
           >> "$GITHUB_OUTPUT"
 
       - name: Build
