@@ -1,20 +1,7 @@
 # Temp files
-out
-skip
-tmp
+srcdest
+pkgdest
 src
 pkg
-log
-status
-
-# ACT
-.actrc
-*.env
-
-# Hooks
-before-build
-on-package-build
-after-build
-
-# tar.gz
+*.log
 *.tar.gz

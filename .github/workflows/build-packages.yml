@@ -19,28 +19,157 @@ on:
       - '.gitignore'
 
   workflow_dispatch:
+    inputs:
+      bump-pkgrel:
+        description: If bump pkgrel by adding 1 to existing
+        required: false
+        default: false
 
 jobs:
   package-build:
     name: Build and Upload Packages for PKGBUILD in this repository
     runs-on: ubuntu-24.04-arm
+    outputs:
+      artifact-name: ${{ steps.artifact-name.outputs.artifact-name }}
+    strategy:
+      matrix:
+        package:
+          - raspberrypi-overlays
+          - uefi-raspberrypi4
+          - uefi-raspberrypi4-bin
+          - raspberrypi4-uefi-devel-meta
     steps: 
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install depends
+      - name: Get pkgbase
+        id: pkgbase
+        uses: arenekosreal/pkgbuild-actions/get-global-variable@v0.2.6
+        with:
+          directory: ${{ matrix.package }}
+          name: pkgbase
+
+      - name: Analyze
+        id: analyze
         run: |
-          sudo apt-get update -y
-          sudo apt-get install -y podman buildah
-          mkdir -p /etc/containers/registries.conf.d
-          echo 'unqualified-search-registries = [ "docker.io" ]' | sudo tee /etc/containers/registries.conf.d/00-unqualified-search-registries.conf
-          echo -e '[[registry]]\nlocation = "docker.io"' | sudo tee /etc/containers/registries.conf.d/01-registries.conf 
-      
+          case "${{ steps.pkgbase.outputs.value }}" in
+            uefi-raspberrypi4)
+              echo "download-sources=true" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "download-sources=false" >> "$GITHUB_OUTPUT"
+
+      - name: Get pkgver
+        id: pkgver
+        uses: arenekosreal/pkgbuild-actions/get-global-variable@v0.2.6
+        with:
+          directory: ${{ matrix.package }}
+          name: pkgver
+
+      - name: Get pkgrel
+        id: pkgrel
+        if: inputs.bump-pkgrel
+        uses: arenekosreal/pkgbuild-actions/get-global-variable@v0.2.6
+        with:
+          directory: ${{ matrix.package }}
+          name: pkgrel
+
+      - name: Bump pkgrel
+        if: inputs.bump-pkgrel
+        run: |
+          pkgrel="${{ steps.pkgrel.outputs.value }}"
+          new="$(( pkgrel + 1 ))"
+          sed -i "s/pkgrel=.*/pkgrel=$new/" "${{ matrix.package }}/PKGBUILD"
+
+      - name: Get updated pkgrel
+        id: final-pkgrel
+        uses: arenekosreal/pkgbuild-actions/get-global-variable@v0.2.6
+        with:
+          directory: ${{ matrix.package }}
+          name: pkgrel
+
+      - name: Generate target architecture
+        id: target-arch
+        run: |
+          case "${{ runner.arch }}" in
+            X64)
+              echo "arch=x86_64" >> "$GITHUB_OUTPUT"
+              ;;
+            ARM64)
+              echo "arch=aarch64" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::error::Unsupported runner arch ${{ runner.arch }}"
+              exit 1
+              ;;
+          esac
+
+      - name: Generate artifact name
+        id: artifact-name
+        run: |
+          printf "artifact-name=%s %s-%d %s" \
+            "${{ steps.pkgbase.outputs.value }}" \
+            "${{ steps.pkgver.outputs.value }}" \
+            "${{ steps.final-pkgrel.outputs.value }}" \
+          >> "$GITHUB_OUTPUT"
+
+      - name: Download sources
+        if: steps.analyze.outputs.download-sources == 'true'
+        uses: arenekosreal/pkgbuild-actions/download-sources@v0.2.6
+        with:
+          directory: ${{ matrix.package }}
+
       - name: Build
-        run: bash start-build.sh
-      
+        uses: arenekosreal/pkgbuild-actions/build@v0.2.6
+        with:
+          directory: ${{ matrix.package }}
+
+      - name: Ensure pkgdest permission
+        if: ${{ !github.event.act.local }}
+        run: sudo chown -R "$(id -u):$(id -g)" pkgdest
+
+      - name: Ensure filename suitable for uploading
+        if: ${{ !github.event.act.local }}
+        run: |
+          EOF="$(dd if=/dev/urandom bs=15 count=1 status=none | base64)"
+          echo "packages<<$EOF" >> "$GITHUB_OUTPUT"
+          declare f base="pkgdest"
+          while read -r f
+          do
+            local -a invalid_chars=('\:' '\"' '\<' '\>' '\|' '\*' '\?' "$(printf '\r')" "$(printf '\n')")
+            local name validname char
+            name="$(basename "$f")"
+            validname="$name"
+            for char in "${invalid_chars[@]}"
+            do
+              validname="${validname//$char/#}"
+            done
+            if [[ "$name" != "$validname" ]]
+            then
+              echo "::notice::Rewriting $name to $validname..."
+              echo "$name" > "$base/$validname.original.txt"
+              mv "$base/$name" "$base/$validname"
+            fi
+            echo "$validname" >> "$GITHUB_OUTPUT"
+          done < <(find "pkgdest" -maxdepth 1 -mindepth 1 -type f -regex '.+\.pkg\.tar\.[0-9a-zA-Z]+$')
+          echo "$EOF" >> "$GITHUB_OUTPUT"
+
+
+      - name: Upload artifacts
+        if: ${{ ! github.event.act.local }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.artifact-name.outputs.artifact-name }}
+          path: pkgdest/*.pkg.tar.*
+          if-no-files-found: error
+
+  release:
+    name: Grab built packages and release
+    runs-on: ubuntu-24.04-arm
+    needs: package-build
+    if: ${{ !github.event.act.local && github.event_name == 'pull_request' }}
+    steps:
       - name: Generare Release info
-        if: ${{ github.event_name == 'push' }}
         id: release-info
         run: |
           cd out
@@ -52,7 +181,6 @@ jobs:
           
       
       - name: Push to GitHub Releases
-        if: github.event_name == 'push'
         uses: softprops/action-gh-release@v2
         with: 
           draft: false
