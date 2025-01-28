@@ -35,7 +35,12 @@ Howewer, this means that you may not build packages as easy as old days. But we 
 > [!NOTE]
 > You can always build packages on archlinuxarm by running commands like `makepkg` `makechrootpkg` in the `PKGBUILD` directory.
 > Using act can allow building packages on non-archlinuxarm distributions. But built packages are still only available to archlinuxarm.
+
+> [!TIP]
 > If sometimes there is a network error to mirror.archlinuxarm.org, you can simply retry after a cup of cola.
+
+> [!IMPORTANT]
+> If you use qemu-user-static to emulate aarch64 on x86_64, you have to ensure `C` in its flags. Or you will fail to install dependencies.
 
 ## Install
 
