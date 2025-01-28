@@ -58,6 +58,8 @@ jobs:
               ;;
             *)
               echo "download-sources=false" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
 
       - name: Get pkgver
         id: pkgver
