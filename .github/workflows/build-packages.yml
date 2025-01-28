@@ -8,6 +8,9 @@ on:
       - 'LICENSE'
       - 'README.md'
       - '.gitignore'
+      - '.actrc'
+      - '.env'
+      - '.vars'
 
   pull_request:
     branches: 
@@ -17,6 +20,9 @@ on:
       - 'LICENSE'
       - 'README.md'
       - '.gitignore'
+      - '.actrc'
+      - '.env'
+      - '.vars'
 
   workflow_dispatch:
     inputs:
