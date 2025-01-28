@@ -138,8 +138,8 @@ jobs:
           declare f base="pkgdest"
           while read -r f
           do
-            local -a invalid_chars=('\:' '\"' '\<' '\>' '\|' '\*' '\?' "$(printf '\r')" "$(printf '\n')")
-            local name validname char
+            declare -a invalid_chars=('\:' '\"' '\<' '\>' '\|' '\*' '\?' "$(printf '\r')" "$(printf '\n')")
+            declare name validname char
             name="$(basename "$f")"
             validname="$name"
             for char in "${invalid_chars[@]}"
