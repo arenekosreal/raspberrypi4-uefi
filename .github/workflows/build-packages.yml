@@ -42,24 +42,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Generate cache key
+        id: cache-key
+        run: |
+          sum="$(grep -oP '^.+sums' "${{ matrix.package }}/PKGBUILD")"
+          (
+            source "${{ matrix.package }}/PKGBUILD"
+            eval echo \${$sum[@]} | sha256sum
+          ) | sha256sum | awk '{print "key=" $1}' >> "$GITHUB_OUTPUT"
+
+      - name: Setup cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: srcdest
+          key: ${{ steps.cache-key.outputs.key }}
+
+      # This file will return 403 if downloads directly.
+      # Original url: https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin
+      - name: Place static file
+        if: matrix.package == 'uefi-raspberrypi4' && steps.cache.cache-hit != 'true'
+        run: |
+          mkdir -p srcdest
+          base64 -d dbxupdate_arm64.bin.base64.txt > srcdest/dbxupdate_arm64.bin
+
       - name: Get pkgbase
         id: pkgbase
         uses: arenekosreal/pkgbuild-actions/get-global-variable@v0.2.6
         with:
           directory: ${{ matrix.package }}
           name: pkgbase
-
-      - name: Analyze
-        id: analyze
-        run: |
-          case "${{ steps.pkgbase.outputs.value }}" in
-            uefi-raspberrypi4)
-              echo "download-sources=true" >> "$GITHUB_OUTPUT"
-              ;;
-            *)
-              echo "download-sources=false" >> "$GITHUB_OUTPUT"
-              ;;
-          esac
 
       - name: Get pkgver
         id: pkgver
@@ -113,13 +125,8 @@ jobs:
             "${{ steps.pkgbase.outputs.value }}" \
             "${{ steps.pkgver.outputs.value }}" \
             "${{ steps.final-pkgrel.outputs.value }}" \
+            "${{ stepps.target-arch.outputs.arch }}"
           >> "$GITHUB_OUTPUT"
-
-      - name: Download sources
-        if: steps.analyze.outputs.download-sources == 'true'
-        uses: arenekosreal/pkgbuild-actions/download-sources@v0.2.6
-        with:
-          directory: ${{ matrix.package }}
 
       - name: Build
         uses: arenekosreal/pkgbuild-actions/build@v0.2.6
