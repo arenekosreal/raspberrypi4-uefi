@@ -67,27 +67,43 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Generate .SRCINFO
+        uses: arenekosreal/makepkg-action@v0.1.0
+        with:
+          builddir: ${{ matrix.package }}
+          args: --printsrcinfo
+          stdout: ${{ matrix.package }}/.SRCINFO
+
+      - name: Print .SRCINFO
+        run: cat "${{ matrix.package }}/.SRCINFO"
+
       - name: Get pkgbase
         id: pkgbase
-        uses: arenekosreal/pkgbuild-actions/get-global-variable@v0.2.6
-        with:
-          directory: ${{ matrix.package }}
-          name: pkgbase
+        run: |
+          {
+            echo -n value= 
+            grep pkgbase "${{ matrix.package }}/.SRCINFO" | \
+            cut -d = -f 2- | xargs
+          } >> "$GITHUB_OUTPUT"
 
       - name: Get pkgver
         id: pkgver
-        uses: arenekosreal/pkgbuild-actions/get-global-variable@v0.2.6
-        with:
-          directory: ${{ matrix.package }}
-          name: pkgver
+        run: |
+          {
+            echo -n value=
+            grep pkgver "${{ matrix.package }}/.SRCINFO" | \
+            cut -d = -f 2- | xargs
+          } >> "$GITHUB_OUTPUT"
 
       - name: Get pkgrel
         id: pkgrel
         if: inputs.bump-pkgrel
-        uses: arenekosreal/pkgbuild-actions/get-global-variable@v0.2.6
-        with:
-          directory: ${{ matrix.package }}
-          name: pkgrel
+        run: |
+          {
+            echo -n value=
+            grep pkgrel "${{ matrix.package }}/.SRCINFO" | \
+            cut -d = -f 2- | xargs
+          } >> "$GITHUB_OUTPUT"
 
       - name: Bump pkgrel
         if: inputs.bump-pkgrel
@@ -96,12 +112,24 @@ jobs:
           new="$(( pkgrel + 1 ))"
           sed -i "s/pkgrel=.*/pkgrel=$new/" "${{ matrix.package }}/PKGBUILD"
 
+      - name: Generate updated .SRCINFO
+        uses: arenekosreal/makepkg-action@v0.1.0
+        with:
+          builddir: ${{ matrix.package }}
+          args: --printsrcinfo
+          stdout: ${{ matrix.package }}/.SRCINFO
+
+      - name: Print updated .SRCINFO
+        run: cat "${{ matrix.package }}/.SRCINFO"
+
       - name: Get updated pkgrel
         id: final-pkgrel
-        uses: arenekosreal/pkgbuild-actions/get-global-variable@v0.2.6
-        with:
-          directory: ${{ matrix.package }}
-          name: pkgrel
+        run: |
+          {
+            echo -n value=
+            grep pkgrel "${{ matrix.package }}/.SRCINFO" | \
+            cut -d = -f 2- | xargs
+          } >> "$GITHUB_OUTPUT"
 
       - name: Generate target architecture
         id: target-arch
@@ -146,9 +174,9 @@ jobs:
           base64 -d dbxupdate_arm64.bin.base64.txt | sudo tee srcdest/arm64_dbx.bin > /dev/null
 
       - name: Build
-        uses: arenekosreal/pkgbuild-actions/build@v0.2.6
+        uses: arenekosreal/makepkg-action@v0.1.0
         with:
-          directory: ${{ matrix.package }}
+          builddir: ${{ matrix.package }}
 
       - name: Ensure pkgdest permission
         if: ${{ !github.event.act.local }}
