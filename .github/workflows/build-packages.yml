@@ -112,7 +112,7 @@ jobs:
     needs: package-build
     permissions:
       contents: write
-    if: github.event.act.local || github.ref_type == 'tag'
+    if: github.event.act.local || github.event_name == 'push'
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
