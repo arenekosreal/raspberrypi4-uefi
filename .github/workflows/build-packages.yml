@@ -122,7 +122,7 @@ jobs:
           mkdir -p pkgdest
           find . -mindepth 2 -maxdepth 2 -type f -name 'repo.tar' -exec tar -x -p -C pkgdest -k -f {} \;
 
-      - name: Generare Release info
+      - name: Generate Release info
         id: release-info
         run: |
           cd pkgdest
@@ -145,7 +145,11 @@ jobs:
             --target '${{ github.sha }}' \
             --title 'Raspberry Pi 4 UEFI Boot Packages for Arch Based Linux Distribution' \
             --notes-file notes.md \
+            --repo '${{ github.repository }}' \
             --draft --generate-notes
           gh release upload '${{ steps.release-info.outputs.date }}' ./pkgdest/*.pkg.tar.* \
+            --repo '${{ github.repository }}' \
             --clobber
-          gh release edit '${{ steps.release-info.outputs.date }}' --draft=false
+          gh release edit '${{ steps.release-info.outputs.date }}' \
+            --repo '${{ github.repository }}' \
+            --draft=false
