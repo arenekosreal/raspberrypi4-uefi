@@ -12,7 +12,7 @@ on:
       - main
     paths:
       - '**/PKGBUILD'
-      - '/.github/workflows/*'
+      - '.github/workflows/*'
 
   workflow_dispatch:
 
