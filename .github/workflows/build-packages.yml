@@ -3,34 +3,18 @@ on:
   push:
     branches: 
       - main
-    paths-ignore:
-      - 'pacman-hooks'
-      - 'LICENSE'
-      - 'README.md'
-      - '.gitignore'
-      - '.actrc'
-      - '.env'
-      - '.vars'
+    paths:
+      - '**/PKGBUILD'
+      - '/.github/workflows/*'
 
   pull_request:
     branches: 
       - main
-    paths-ignore:
-      - 'pacman-hooks'
-      - 'LICENSE'
-      - 'README.md'
-      - '.gitignore'
-      - '.actrc'
-      - '.env'
-      - '.vars'
+    paths:
+      - '**/PKGBUILD'
+      - '/.github/workflows/*'
 
   workflow_dispatch:
-    inputs:
-      bump-pkgrel:
-        description: If bump pkgrel by adding 1 to existing
-        required: false
-        default: false
-        type: boolean
 
 jobs:
   scan-package:
@@ -58,8 +42,6 @@ jobs:
     name: Build and Upload Packages for PKGBUILD in this repository
     runs-on: ubuntu-24.04-arm
     needs: scan-package
-    outputs:
-      artifact-name: ${{ steps.artifact-name.outputs.artifact-name }}
     strategy:
       matrix:
         package: ${{ fromJson(needs.scan-package.outputs.package) }}
@@ -77,89 +59,18 @@ jobs:
       - name: Print .SRCINFO
         run: cat "${{ matrix.package }}/.SRCINFO"
 
-      - name: Get pkgbase
-        id: pkgbase
-        run: |
-          {
-            echo -n value= 
-            grep pkgbase "${{ matrix.package }}/.SRCINFO" | \
-            cut -d = -f 2- | xargs
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Get pkgver
-        id: pkgver
-        run: |
-          {
-            echo -n value=
-            grep pkgver "${{ matrix.package }}/.SRCINFO" | \
-            cut -d = -f 2- | xargs
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Get pkgrel
-        id: pkgrel
-        if: inputs.bump-pkgrel
-        run: |
-          {
-            echo -n value=
-            grep pkgrel "${{ matrix.package }}/.SRCINFO" | \
-            cut -d = -f 2- | xargs
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Bump pkgrel
-        if: inputs.bump-pkgrel
-        run: |
-          pkgrel="${{ steps.pkgrel.outputs.value }}"
-          new="$(( pkgrel + 1 ))"
-          sed -i "s/pkgrel=.*/pkgrel=$new/" "${{ matrix.package }}/PKGBUILD"
-
-      - name: Generate updated .SRCINFO
-        uses: arenekosreal/makepkg-action@v0.2.3
-        with:
-          builddir: ${{ matrix.package }}
-          args: --printsrcinfo
-          stdout: ${{ matrix.package }}/.SRCINFO
-
-      - name: Print updated .SRCINFO
-        run: cat "${{ matrix.package }}/.SRCINFO"
-
-      - name: Get updated pkgrel
-        id: final-pkgrel
-        run: |
-          {
-            echo -n value=
-            grep pkgrel "${{ matrix.package }}/.SRCINFO" | \
-            cut -d = -f 2- | xargs
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Generate target architecture
-        id: target-arch
-        run: |
-          case "${{ runner.arch }}" in
-            X64)
-              echo "arch=x86_64" >> "$GITHUB_OUTPUT"
-              ;;
-            ARM64)
-              echo "arch=aarch64" >> "$GITHUB_OUTPUT"
-              ;;
-            *)
-              echo "::error::Unsupported runner arch ${{ runner.arch }}"
-              exit 1
-              ;;
-          esac
-
       - name: Generate artifact name
         id: artifact-name
         run: |
           printf "artifact-name=%s %s-%d %s\n" \
-            "${{ steps.pkgbase.outputs.value }}" \
-            "${{ steps.pkgver.outputs.value }}" \
-            "${{ steps.final-pkgrel.outputs.value }}" \
-            "${{ steps.target-arch.outputs.arch }}" \
+            "$(grep pkgbase '${{ matrix.package }}/.SRCINFO' | cut -d = -f 2- | xargs)" \
+            "$(grep pkgver '${{ matrix.package }}/.SRCINFO' | cut -d = -f 2- | xargs)" \
+            "$(grep pkgrel '${{ matrix.package }}/.SRCINFO' | cut -d = -f 2- | xargs)" \
+            "$(uname -m)" \
           >> "$GITHUB_OUTPUT"
 
       - name: Setup cache
         id: cache
-        if: ${{ !github.event.act.local }}
         uses: actions/cache@v4
         with:
           path: srcdest
@@ -168,7 +79,7 @@ jobs:
       # This file will return 403 if downloads directly.
       # Original url: https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin
       - name: Place static file
-        if: matrix.package == 'uefi-raspberrypi4' && steps.cache.cache-hit != 'true' && !github.event.act.local
+        if: matrix.package == 'uefi-raspberrypi4' && steps.cache.cache-hit != 'true'
         run: |
           mkdir -p srcdest
           base64 -d dbxupdate_arm64.bin.base64.txt | sudo tee srcdest/arm64_dbx.bin > /dev/null
@@ -178,94 +89,63 @@ jobs:
         with:
           builddir: ${{ matrix.package }}
 
-      - name: Ensure pkgdest permission
-        if: ${{ !github.event.act.local }}
-        run: sudo chown -R "$(id -u):$(id -g)" pkgdest srcdest
-
-      - name: Ensure filename suitable for uploading
-        if: ${{ !github.event.act.local }}
+      - name: Ensure permission
         run: |
-          EOF="$(dd if=/dev/urandom bs=15 count=1 status=none | base64)"
-          echo "packages<<$EOF" >> "$GITHUB_OUTPUT"
-          declare f base="pkgdest"
-          while read -r f
-          do
-            declare -a invalid_chars=('\:' '\"' '\<' '\>' '\|' '\*' '\?' "$(printf '\r')" "$(printf '\n')")
-            declare name validname char
-            name="$(basename "$f")"
-            validname="$name"
-            for char in "${invalid_chars[@]}"
-            do
-              validname="${validname//$char/#}"
-            done
-            if [[ "$name" != "$validname" ]]
-            then
-              echo "::notice::Rewriting $name to $validname..."
-              echo "$name" > "$base/$validname.original.txt"
-              mv "$base/$name" "$base/$validname"
-            fi
-            echo "$validname" >> "$GITHUB_OUTPUT"
-          done < <(find "$base" -maxdepth 1 -mindepth 1 -type f -regex '.+\.pkg\.tar\.[0-9a-zA-Z]+$')
-          echo "$EOF" >> "$GITHUB_OUTPUT"
+          sudo chown -R --reference . pkgdest srcdest
+          ls -l pkgdest srcdest
 
+      - name: Create archive to avoid illegal char in name
+        run: |
+          find pkgdest -maxdepth 1 -type f -name '*.pkg.tar.*' -printf "%f\n" | \
+            xargs tar -c -f repo.tar -p -C pkgdest
 
       - name: Upload artifacts
-        if: ${{ !github.event.act.local }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.artifact-name.outputs.artifact-name }}
-          path: pkgdest/*.pkg.tar.*
+          path: repo.tar
           if-no-files-found: error
 
   release:
     name: Grab built packages and release
     runs-on: ubuntu-24.04-arm
     needs: package-build
-    if: ${{ !github.event.act.local && github.event_name != 'pull_request' }}
+    permissions:
+      contents: write
+    if: github.event.act.local || github.ref_type == 'tag'
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
-        with:
-          path: pkgdest
-          merge-multiple: true
 
-      - name: Recover encoded filename
+      - name: Unpack artifacts
         run: |
-          declare f base="pkgdest"
-          while read -r f
-          do
-            declare name original
-            name="$(basename -s ".original.txt" "$f")"
-            original="$(< "$f")"
-            echo "Recovering $original from $name..."
-            mv "$base/$name" "$base/$original"
-            rm "$f"
-          done < <(find "$base" -maxdepth 1 -mindepth 1 -type f -regex '.+\.pkg\.tar\.[0-9a-zA-Z]+\.original.txt')
+          mkdir -p pkgdest
+          find . -mindepth 2 -maxdepth 2 -type f -name 'repo.tar' -exec tar -x -p -C pkgdest -k -f {} \;
 
       - name: Generare Release info
         id: release-info
         run: |
           cd pkgdest
-          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-          echo "sums<<$EOF" >> "$GITHUB_OUTPUT"
-          sha256sum *.pkg.tar.* >> "$GITHUB_OUTPUT"
-          echo "$EOF" >> "$GITHUB_OUTPUT"
+          {
+            echo 'CI Build for commit ${{ github.sha }}'
+            echo
+            echo 'sha256sums:'
+            echo '```'
+            sha256sum *.pkg.tar.*
+            echo '```'
+          } > ../notes.md
           echo date=$(date -I | sed s/-//g) >> "$GITHUB_OUTPUT"
           
-      
       - name: Push to GitHub Releases
-        uses: softprops/action-gh-release@v2
-        with: 
-          draft: false
-          generate_release_notes: true
-          prerelease: false
-          tag_name: ${{ steps.release-info.outputs.date }}
-          files: "pkgdest/*.pkg.tar.*"
-          name: Raspberry Pi 4 UEFI Boot Packages for Arch Based Linux Distribution
-          body: |
-            CI Build for commit ${{ github.sha }}
-            
-            sha256sums:
-            ```
-            ${{ steps.release-info.outputs.sums }}
-            ```
+        if: ${{ ! github.event.act.local }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create '${{ steps.release-info.outputs.date }}' \
+            --target '${{ github.sha }}' \
+            --title 'Raspberry Pi 4 UEFI Boot Packages for Arch Based Linux Distribution' \
+            --notes-file notes.md \
+            --draft --generate-notes
+          gh release upload '${{ steps.release-info.outputs.date }}' ./pkgdest/*.pkg.tar.* \
+            --clobber
+          gh release edit '${{ steps.release-info.outputs.date }}' --draft=false
