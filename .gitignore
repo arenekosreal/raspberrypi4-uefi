@@ -5,5 +5,7 @@ src
 pkg
 *.log
 *.tar.gz
-.artifacts
+/act/artifacts
+/act/out
+/act/caches
 .secrets

@@ -1,5 +1,7 @@
 --platform ubuntu-24.04-arm=catthehacker/ubuntu:act-24.04
 --container-architecture=linux/arm64
---artifact-server-path=.artifacts
+--artifact-server-path=./act/artifacts
+--cache-server-path=./act/caches
 --eventpath ./act/events/build.json
+--container-options="--volume=./act/out:/act/out"
 --rm

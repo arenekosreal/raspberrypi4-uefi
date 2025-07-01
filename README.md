@@ -30,7 +30,7 @@ Howewer, this means that you may not build packages as easy as old days. But we 
 
 1. Install [act](https://github.com/nektos/act), which is the magic to let GitHub Action run locally.
 
-2. Simply run `act -e ./act/events/build.json` and everything should be fine. If everything works correctly, you will find packages at `pkgdest` directory in the repository.
+2. Simply run `act` and everything should be fine. If everything works correctly, you will find packages at `./act/out` directory in the repository.
 
 > [!NOTE]
 > You can always build packages on archlinuxarm by running commands like `makepkg` `makechrootpkg` in the `PKGBUILD` directory.

@@ -113,7 +113,7 @@ jobs:
       - name: Unpack artifacts
         run: |
           mkdir -p pkgdest
-          find . -mindepth 2 -maxdepth 2 -type f -name 'repo.tar' -exec tar -x -p -C pkgdest -k -f {} \;
+          find . -mindepth 2 -maxdepth 2 -type f -name 'repo.tar' -exec tar -x -p -C ./pkgdest -f {} \;
 
       - name: Generate Release info
         id: release-info
@@ -146,3 +146,8 @@ jobs:
           gh release edit '${{ steps.release-info.outputs.date }}' \
             --repo '${{ github.repository }}' \
             --draft=false
+
+      - name: Save to volume
+        if: github.event.act.local
+        run: |
+          cp --target-directory /act/out ./pkgdest/*.pkg.tar.*
