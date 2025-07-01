@@ -81,6 +81,8 @@ jobs:
         uses: arenekosreal/makepkg-action@v0.2.3
         with:
           builddir: ${{ matrix.package }}
+          env: |
+            PACKAGER=${{ vars.PACKAGER }}
 
       - name: Ensure permission
         run: |
