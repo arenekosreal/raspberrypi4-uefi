@@ -72,10 +72,10 @@ jobs:
       # This file will return 403 if downloads directly.
       # Original url: https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin
       - name: Place static file
-        if: matrix.package == 'uefi-raspberrypi4'
+        if: matrix.package == 'uefi-raspberrypi4' && ! github.event.act.local
         run: |
           mkdir -p srcdest
-          base64 -d dbxupdate_arm64.bin.base64.txt | sudo tee srcdest/arm64_dbx.bin > /dev/null
+          echo '${{ vars.DBXUPDATE_ARM64_BIN_BASE64 }}' | base64 -d > srcdest/arm64_dbx.bin
 
       - name: Build
         uses: arenekosreal/makepkg-action@v0.2.3
