@@ -55,7 +55,7 @@ jobs:
         if: matrix.package == 'uefi-raspberrypi4' && ! github.event.act.local
         run: |
           mkdir -p srcdest
-          echo '${{ vars.DBXUPDATE_ARM64_BIN_BASE64 }}' | base64 -d > srcdest/arm64_dbx.bin
+          echo '${{ vars.DBXUPDATE_ARM64_BIN_BASE64 }}' | tr -d "\n" | tr -d " " | base64 -d > srcdest/arm64_dbx.bin
 
       - name: Generate .SRCINFO
         uses: arenekosreal/makepkg-action@v0.2.3
