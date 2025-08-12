@@ -110,7 +110,7 @@ jobs:
     if: github.event.act.local || github.event_name == 'push'
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
 
       - name: Unpack artifacts
         run: |
