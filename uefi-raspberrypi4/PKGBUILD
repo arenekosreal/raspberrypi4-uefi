@@ -3,20 +3,24 @@
 buildarch=8 # aarch64
 
 declare -Ag _modules_name_map=(
-    [edk2]=https://github.com/tianocore/edk2/archive/6951dfe7d59d144a3a980bd7eda699db2d8554ac.tar.gz
-    [edk2/CryptoPkg/Library/OpensslLib/openssl]=https://github.com/openssl/openssl/archive/a26d85337dbdcd33c971f38eb3fa5150e75cea87.tar.gz
+    [edk2]=https://github.com/tianocore/edk2/archive/3d244c3b364bd4e21261380662186d064659161c.tar.gz
+    [edk2/CryptoPkg/Library/OpensslLib/openssl]=https://github.com/openssl/openssl/archive/aea7aaf2abb04789f5868cbabec406ea43aa84bf.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/cloudflare-quiche]=https://github.com/cloudflare/quiche/archive/7ab6a55cfe471267d61e4d28ba43d41defcd87e0.tar.gz
-    [edk2/CryptoPkg/Library/OpensslLib/openssl/gost-engine]=https://github.com/gost-engine/engine/archive/ede3886cc5507c2ba000ab9b057f198da03e8766.tar.gz
-    [edk2/CryptoPkg/Library/OpensslLib/openssl/gost-engine/libprov]=https://github.com/provider-corner/libprov/archive/8a126e09547630ef900177625626b6156052f0ee.tar.gz
+    [edk2/CryptoPkg/Library/OpensslLib/openssl/gost-engine]=https://github.com/gost-engine/engine/archive/74b1f4fddbc2d6de969815b1992ddc1ae7c643fe.tar.gz
+    [edk2/CryptoPkg/Library/OpensslLib/openssl/gost-engine/libprov]=https://github.com/provider-corner/libprov/archive/0b445c73ae1e87577430c6884cdeeca1afa36dbd.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/krb5]=https://github.com/krb5/krb5/archive/784c38f50e70a739400cdd3f2620bac2e2788e6c.tar.gz
-    [edk2/CryptoPkg/Library/OpensslLib/openssl/oqs-provider]=https://github.com/open-quantum-safe/oqs-provider/archive/c0ee292723fa1b37f86a42ddfdd804c35cc49ff3.tar.gz
+    [edk2/CryptoPkg/Library/OpensslLib/openssl/oqs-provider]=https://github.com/open-quantum-safe/oqs-provider/archive/7bc597c04b534ddea9b6654481deb31ded8e1bbc.tar.gz
+    [edk2/CryptoPkg/Library/OpensslLib/openssl/pkcs11-provider]=https://github.com/latchset/pkcs11-provider/archive/898b1079d95453dc5d0f378dd15a75b99252caf3.tar.gz
+    [edk2/CryptoPkg/Library/OpensslLib/openssl/pkcs11-provider/python-ecdsa]=https://github.com/tlsfuzzer/python-ecdsa/archive/ea9666903c109a8e88a37eb1c60d4e98f01f0299.tar.gz
+    [edk2/CryptoPkg/Library/OpensslLib/openssl/pkcs11-provider/tlsfuzzer]=https://github.com/tlsfuzzer/tlsfuzzer/archive/32fcb0d8e78fd9ffc4568d11ba5916936a46af8c.tar.gz
+    [edk2/CryptoPkg/Library/OpensslLib/openssl/pkcs11-provider/tlslite-ng]=https://github.com/tlsfuzzer/tlslite-ng/archive/4e16574d7c52f17c81c3f5e0aa547776a67fdf8e.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/pyca-cryptography]=https://github.com/pyca/cryptography/archive/7e33b0e7739d633c77b8c478620167f693ed13f4.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/python-ecdsa]=https://github.com/tlsfuzzer/python-ecdsa/archive/4096fa01715929e08b97e73f3173aee9d57f2a3f.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/tlsfuzzer]=https://github.com/tlsfuzzer/tlsfuzzer/archive/61f45d9701294fd87ef92d2a7e3dfb076653a562.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/tlslite-ng]=https://github.com/tlsfuzzer/tlslite-ng/archive/77ef321dde1a9e6bcf94d73c80f8789a770d8031.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/wycheproof]=https://github.com/google/wycheproof/archive/2196000605e45d91097147c9c71f26b72af58003.tar.gz
     [edk2/UnitTestFrameworkPkg/Library/CmockaLib/cmocka]=https://github.com/tianocore/edk2-cmocka/archive/1cc9cde3448cdd2e000886a26acf1caac2db7cf1.tar.gz
-    [edk2/MdeModulePkg/Universal/RegularExpressionDxe/oniguruma]=https://github.com/kkos/oniguruma/archive/abfc8ff81df4067f309032467785e06975678f0d.tar.gz
+    [edk2/MdeModulePkg/Universal/RegularExpressionDxe/oniguruma]=https://github.com/kkos/oniguruma/archive/4ef89209a239c1aea328cf13c05a2807e5c146d1.tar.gz
     [edk2/MdeModulePkg/Library/BrotliCustomDecompressLib/brotli]=https://github.com/google/brotli/archive/f4153a09f87cbb9c826d8fc12c74642bb2d879ea.tar.gz
     [edk2/BaseTools/Source/C/BrotliCompress/brotli]=https://github.com/google/brotli/archive/f4153a09f87cbb9c826d8fc12c74642bb2d879ea.tar.gz
     [edk2/RedfishPkg/Library/JsonLib/jansson]=https://github.com/akheron/jansson/archive/e9ebfa7e77a6bee77df44e096b100e7131044059.tar.gz
@@ -40,8 +44,7 @@ declare -Ag _modules_name_map=(
 
     [edk2-non-osi]=https://github.com/tianocore/edk2-non-osi/archive/0544808c623bb73252310b1e5ef887caaf08c34b.tar.gz
 
-    [edk2-platforms]=https://github.com/tianocore/edk2-platforms/archive/6153891ee3b4e80e0340236f0eec0228746bacc0.tar.gz
-    [edk2-platforms/Silicon/RISC-V/ProcessorPkg/Library/RiscVOpensbiLib/opensbi]=https://github.com/riscv-software-src/opensbi/archive/a731c7e36988c3308e1978ecde491f2f6182d490.tar.gz
+    [edk2-platforms]=https://github.com/tianocore/edk2-platforms/archive/2afb181e5e3d72b7d1ae1dc3703a71e98eb68171.tar.gz
 )
 
 _get_source_name_string() {
@@ -92,8 +95,8 @@ _fill_gitmodules_recursively() {
 }
 
 pkgname="uefi-raspberrypi4" 
-pkgver=1.42
-pkgrel=2
+pkgver=1.43
+pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
 url="https://github.com/pftf/RPi4"
@@ -135,8 +138,8 @@ sha256sums=('a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
             'caa86b22a1452d8974e7bbecbb6d9fb591a58da928a06d5e13cee9592e785b12'
             'aed9dfd4c1e7c6092179e8bec63be3fc7b5d958c94063d60a7d1fe4a36f460ef'
             'e7db4c6150688a4aa6922435f531e5fa6e95d39380bb67ddb5a3554335eb419d'
-            '664e755c042e76fb50d1b26c11da32bee90f6a2dc5751ae7d7ca50635a659dce'
-            'eea977380ebb1871d5de38c4f7f15442ee690c90bdf790590d930a6bbf347f28'
+            '45f25be3aa404bdca2acbf7e99f2696f8815ff0099efbae3b25884beabca7a9a'
+            '70bfed97ee8390f5ac08fea28e3e930a3b33df871c6fc1888c8d436c6c6b755d'
             'f8dd06309075e36882c10d84fe4e0bb67f70fe2df86bffcf30e65524e078cdd3'
             '59cd4b81abafae35d94ac5d91cf4ae5b05122e688713cd6db51e5e4cef471d8f'
             '50a9a0f08839c0e659c4f614b0c3cb93a2a4eb9013b94deb272a1d3f0c47d7dc'
@@ -145,31 +148,35 @@ sha256sums=('a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
             '1193910f475fde07f3cd4fe1c1a353d69b8cedb574967134838fcdc8208d224e'
             '6d6cacce05086b7debe75127415ff9c3661849f564fe2f5f3b0383d48aa4ed77'
             '632d5aa4dd2e4179f9d648be12af9a9c3158d7f503a93e70e651751b5f31257c'
-            'f1312d0decb8bb189c3e35aab1b7dbadda135394675b1feb36cc3d7a4774cdba'
+            '7f7f30f17483b032eb75d9785fba9c414d081c9251b4223de8a3c883f08d60bc'
             'dbfc74f14091d66b95edab229cff9ef8f1f0ab40da30efec36ca3546a3482b76'
             '981ab3e9634cb7c041b484cc1876f22a743dc0ae53a970117ca1b5700670a964'
             '6467f52b39f5954d6fd242487140c459001b650e1df7511392397e099894a2a1'
             '9fda3b9a78343ab2be6f06ce6396536e7e065abac29b47c8eb2e42cbb4c4f00b'
-            '31b94a2104a533e09db0d245e92a1e9edc4d1e8cfe749a852381eed38423485e'
-            'f86f4baf6dab8edffa80fb37d88e33c22d05c356e61e49e126425efa04d04a68'
+            '134233b0cace8877561dfc453be3d416d432aa3481d153ed667e15f456bbc63b'
+            '62ad36b0f06b1397b9c24de65ecb9e13959c681e9f504292ec91b234a93f167f'
             '28d89f42da17357f4292574e1ba8780f4f233c6324993d4885f25b8699c75938'
-            'e1e1d75109315cbd0610b65295a081ccb4ec1886076241820ce5d61b44b87a91'
+            '0b9d90b380f791708d79b630a3926e38e04a77cd60dfc5233ab895ccea51080d'
             'a75ebf216e9880952b697ed10a5f7ff599039202d0bab3e83bbfec8cc4eb1570'
             '1f5f3eb67cccd4498940bb71c456c07c385eefeda645fa49ef2c432b5723b875'
             '4049ab4cdfae20c376c33b139c34a805a0074dc0d6fe8f47491cd2ab3c3eba98'
             'e47657b9c502e51399bf7d5c5f7911cc934c7f9105e46884cace118d6a9b49b7'
             '3c3095488b936b14538dca64d7e68bcde09a8a18d2a32a47b59877eff0340403'
+            'cbe119373d1aed5b296dad8c98ce43627b064be6ef37f8df73eac4c695e6f9ea'
             '1f5f3eb67cccd4498940bb71c456c07c385eefeda645fa49ef2c432b5723b875'
             'f0dd242a9b088bd144144a9ca374dc89a8499c98014e33554b3d84f11f22df3e'
             'f65b2e6dd304e19185d751652bd5ebc72a81d503bf542037acb3450e43abc095'
+            'c26e1ac50c105305f081db63ae0f8e7e26f802b123f34d1edc3baabaf691254c'
             'e7935c0d91d6d22f6dee710a26b23e228ecc4fe8ef7e8f756558c3599f68c3b4'
-            '3c98b0abda3175c1f3a081796fae9f5081d2a6e21d1b8b29a5e5b90d690eee2f'
-            '41ff751b3577061c4f2cde2e9270d24181461a696c9fa7b2729c2d6b103f0520'
+            '6bc7b58f5f66d86309ab0bc21e47f67a23b97e94c15dccffe9bd965cc50c616e'
+            '0db2c5888e78b3ee10df5991c9bd049a2ca0eb693b3c44a05f3078a90add349a'
             'ad8dc05136712d2c90608c5a10c3323c52bc086bb439f0013ae8efffb67b0085'
-            '734a254324af8cc326d34d74818f32298a31940969e4d1a7d5e8535b3259b2e1'
+            '0331f1c74a632fee5e6053db7ea2363f3e63ec125fab7d9aac84370ee51f1bf8'
+            'b4259eb34b7fbd263a464c52266214a9f53fdbcfe0c45749cd0e955f44d9ed6d'
             '9763dbccf925a180d0520b31ffa35da70840e9bb8d0ff82ec72217bf01bcbd1e'
             '97a0e47ae225fe45090925125eb711943bf66584ac5fd9c831d14014443124cb'
             '7dc3219b00ab2d33d5108a6cfb1b6d11c1476f882493acdf0be5bcc9a181336b'
+            'e1e1d75109315cbd0610b65295a081ccb4ec1886076241820ce5d61b44b87a91'
             'b143caef3c5cf4d85f691b56a46eeed3cf9ce08c53c2a62c9d701e60f5dc8cdc')
 
 
