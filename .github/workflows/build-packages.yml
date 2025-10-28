@@ -95,7 +95,7 @@ jobs:
             xargs tar -c -f repo.tar -p -C pkgdest
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ steps.artifact-name.outputs.artifact-name }}
           path: repo.tar
