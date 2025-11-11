@@ -58,7 +58,7 @@ jobs:
           echo '${{ vars.DBXUPDATE_ARM64_BIN_BASE64 }}' | base64 -d > srcdest/arm64_dbx.bin
 
       - name: Generate .SRCINFO
-        uses: arenekosreal/makepkg-action@v0.2.3
+        uses: arenekosreal/makepkg-action@v0.3.0
         with:
           builddir: ${{ matrix.package }}
           args: --printsrcinfo
@@ -78,7 +78,7 @@ jobs:
           >> "$GITHUB_OUTPUT"
 
       - name: Build
-        uses: arenekosreal/makepkg-action@v0.2.3
+        uses: arenekosreal/makepkg-action@v0.3.0
         with:
           builddir: ${{ matrix.package }}
           env: |
