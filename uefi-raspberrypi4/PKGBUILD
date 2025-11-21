@@ -3,7 +3,7 @@
 buildarch=8 # aarch64
 
 declare -Ag _modules_name_map=(
-    [edk2]=https://github.com/tianocore/edk2/archive/3d244c3b364bd4e21261380662186d064659161c.tar.gz
+    [edk2]=https://github.com/tianocore/edk2/archive/46548b1adac82211d8d11da12dd914f41e7aa775.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl]=https://github.com/openssl/openssl/archive/aea7aaf2abb04789f5868cbabec406ea43aa84bf.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/cloudflare-quiche]=https://github.com/cloudflare/quiche/archive/7ab6a55cfe471267d61e4d28ba43d41defcd87e0.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/gost-engine]=https://github.com/gost-engine/engine/archive/74b1f4fddbc2d6de969815b1992ddc1ae7c643fe.tar.gz
@@ -21,8 +21,8 @@ declare -Ag _modules_name_map=(
     [edk2/CryptoPkg/Library/OpensslLib/openssl/wycheproof]=https://github.com/google/wycheproof/archive/2196000605e45d91097147c9c71f26b72af58003.tar.gz
     [edk2/UnitTestFrameworkPkg/Library/CmockaLib/cmocka]=https://github.com/tianocore/edk2-cmocka/archive/1cc9cde3448cdd2e000886a26acf1caac2db7cf1.tar.gz
     [edk2/MdeModulePkg/Universal/RegularExpressionDxe/oniguruma]=https://github.com/kkos/oniguruma/archive/4ef89209a239c1aea328cf13c05a2807e5c146d1.tar.gz
-    [edk2/MdeModulePkg/Library/BrotliCustomDecompressLib/brotli]=https://github.com/google/brotli/archive/f4153a09f87cbb9c826d8fc12c74642bb2d879ea.tar.gz
-    [edk2/BaseTools/Source/C/BrotliCompress/brotli]=https://github.com/google/brotli/archive/f4153a09f87cbb9c826d8fc12c74642bb2d879ea.tar.gz
+    [edk2/MdeModulePkg/Library/BrotliCustomDecompressLib/brotli]=https://github.com/google/brotli/archive/e230f474b87134e8c6c85b630084c612057f253e.tar.gz
+    [edk2/BaseTools/Source/C/BrotliCompress/brotli]=https://github.com/google/brotli/archive/e230f474b87134e8c6c85b630084c612057f253e.tar.gz
     [edk2/RedfishPkg/Library/JsonLib/jansson]=https://github.com/akheron/jansson/archive/e9ebfa7e77a6bee77df44e096b100e7131044059.tar.gz
     [edk2/UnitTestFrameworkPkg/Library/GoogleTestLib/googletest]=https://github.com/google/googletest/archive/86add13493e5c881d7e4ba77fb91c1f57752b3a4.tar.gz
     [edk2/UnitTestFrameworkPkg/Library/SubhookLib/subhook]=https://github.com/tianocore/edk2-subhook/archive/83d4e1ebef3588fae48b69a7352cc21801cb70bc.tar.gz
@@ -42,9 +42,9 @@ declare -Ag _modules_name_map=(
     [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/mbedtlslib/mbedtls/framework]=https://github.com/Mbed-TLS/mbedtls-framework/archive/94599c0e3b5036e086446a51a3f79640f70f22f6.tar.gz
     [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/unit_test/cmockalib/cmocka]=https://gitlab.com/cmocka/cmocka/-/archive/a01cc69ee9536f90e57c61a198f2d1944d3d4313/cmocka-a01cc69ee9536f90e57c61a198f2d1944d3d4313.tar.gz
 
-    [edk2-non-osi]=https://github.com/tianocore/edk2-non-osi/archive/0544808c623bb73252310b1e5ef887caaf08c34b.tar.gz
+    [edk2-non-osi]=https://github.com/tianocore/edk2-non-osi/archive/94d048981116e2e3eda52dad1a89958ee404098d.tar.gz
 
-    [edk2-platforms]=https://github.com/tianocore/edk2-platforms/archive/2afb181e5e3d72b7d1ae1dc3703a71e98eb68171.tar.gz
+    [edk2-platforms]=https://github.com/tianocore/edk2-platforms/archive/1e64c1109ae2ac0185351e8d0c19732970d4fecf.tar.gz
 )
 
 _get_source_name_string() {
@@ -95,7 +95,7 @@ _fill_gitmodules_recursively() {
 }
 
 pkgname="uefi-raspberrypi4" 
-pkgver=1.43
+pkgver=1.50
 pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
@@ -138,22 +138,22 @@ sha256sums=('a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
             'caa86b22a1452d8974e7bbecbb6d9fb591a58da928a06d5e13cee9592e785b12'
             'aed9dfd4c1e7c6092179e8bec63be3fc7b5d958c94063d60a7d1fe4a36f460ef'
             'e7db4c6150688a4aa6922435f531e5fa6e95d39380bb67ddb5a3554335eb419d'
-            '45f25be3aa404bdca2acbf7e99f2696f8815ff0099efbae3b25884beabca7a9a'
+            'd9a7294bf306c5c79bf16145b5d7560cc323dd57be03995575cddce59f5d9efe'
             '70bfed97ee8390f5ac08fea28e3e930a3b33df871c6fc1888c8d436c6c6b755d'
             'f8dd06309075e36882c10d84fe4e0bb67f70fe2df86bffcf30e65524e078cdd3'
             '59cd4b81abafae35d94ac5d91cf4ae5b05122e688713cd6db51e5e4cef471d8f'
-            '50a9a0f08839c0e659c4f614b0c3cb93a2a4eb9013b94deb272a1d3f0c47d7dc'
+            '922e72db9e3930907d27ca49dc762e6cb9236d4fba8a90b0f3a321bee9efed52'
             '634cbdf10bcaf32f3446b1bf8be7e8a60cecd1e9500e512f01e3c15b74cbcfd3'
             'b5c7e7c54e013c168f4aae036e59912785f11b4aeebd57f6165a14e879b9a82c'
             '1193910f475fde07f3cd4fe1c1a353d69b8cedb574967134838fcdc8208d224e'
-            '6d6cacce05086b7debe75127415ff9c3661849f564fe2f5f3b0383d48aa4ed77'
+            'a9ba3940267de5dd73581a47c2e81b3eb1e1df6a704138c599020d66f3677a92'
             '632d5aa4dd2e4179f9d648be12af9a9c3158d7f503a93e70e651751b5f31257c'
-            '7f7f30f17483b032eb75d9785fba9c414d081c9251b4223de8a3c883f08d60bc'
+            '96bb0d16d76285190663e15367d0c022a3a47230e5361d80b8549f546ad93fbe'
             'dbfc74f14091d66b95edab229cff9ef8f1f0ab40da30efec36ca3546a3482b76'
             '981ab3e9634cb7c041b484cc1876f22a743dc0ae53a970117ca1b5700670a964'
             '6467f52b39f5954d6fd242487140c459001b650e1df7511392397e099894a2a1'
             '9fda3b9a78343ab2be6f06ce6396536e7e065abac29b47c8eb2e42cbb4c4f00b'
-            '134233b0cace8877561dfc453be3d416d432aa3481d153ed667e15f456bbc63b'
+            '6e72019ddb0b8f716648db43186ef7beccae3a07743264c1b5e583bec82b4bc9'
             '62ad36b0f06b1397b9c24de65ecb9e13959c681e9f504292ec91b234a93f167f'
             '28d89f42da17357f4292574e1ba8780f4f233c6324993d4885f25b8699c75938'
             '0b9d90b380f791708d79b630a3926e38e04a77cd60dfc5233ab895ccea51080d'
