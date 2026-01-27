@@ -55,49 +55,31 @@ jobs:
         if: matrix.package == 'uefi-raspberrypi4' && ! github.event.act.local
         run: |
           mkdir -p srcdest
-          echo '${{ vars.DBXUPDATE_ARM64_BIN_BASE64 }}' | base64 -d > srcdest/arm64_dbx.bin
-
-      - name: Generate .SRCINFO
-        uses: arenekosreal/makepkg-action@v0.3.1
-        with:
-          builddir: ${{ matrix.package }}
-          args: --printsrcinfo
-          stdout: ${{ matrix.package }}/.SRCINFO
-
-      - name: Print .SRCINFO
-        run: cat "${{ matrix.package }}/.SRCINFO"
-
-      - name: Generate artifact name
-        id: artifact-name
-        run: |
-          printf "artifact-name=%s %s-%d %s\n" \
-            "$(grep pkgbase '${{ matrix.package }}/.SRCINFO' | cut -d = -f 2- | xargs)" \
-            "$(grep pkgver '${{ matrix.package }}/.SRCINFO' | cut -d = -f 2- | xargs)" \
-            "$(grep pkgrel '${{ matrix.package }}/.SRCINFO' | cut -d = -f 2- | xargs)" \
-            "$(uname -m)" \
-          >> "$GITHUB_OUTPUT"
+          base64 -d << 'EOF' > srcdest/arm64_dbx.bin
+          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JsBsuL/vK5StNTg1h3LRk/gu0coRvZr6d1kDMk29YCj05494S4v0NLSeAMz3FQKizZAIZcsB7Ds9oDw1vlBf33vVY/UhvZr6d1kDMk29YCj05494S6a1FR82VdOirw1HJ1l5a+SkIA5UlafYaXVMSEiFdAinvZr6d1kDMk29YCj05494S6/iAwr7fSzaE/n6MzoC409nUa/sEbAQ281EH99MQAKzvZr6d1kDMk29YCj05494S7jweNmDokrEMyFjk4g1FM2TLDOvGOfdcIhMgjX0J1c2vZr6d1kDMk29YCj05494S7yHpmjoGWZInLUI7oBRg8Geas0kzxd5nKBi0uOE2g6nvZr6d1kDMk29YCj05494S8trhYtA06CYdlgVtZLBUUpJYE+v1ggZ2ojXp26XeP73vZr6d1kDMk29YCj05494S847+r5Z1nzorI39Shb3xD75wiRRP7xlWVfXNfop9UDOvZr6d1kDMk29YCj05494S3fdGQ+jDYj/XjsBGgrmHmIJeAwTC1Ney4fm8IiKC2svvZr6d1kDMk29YCj05494S8g8sTkirZn1YHRGdd03zJTcrVofy6ZHL+40EXHZOeiEvZr6d1kDMk29YCj05494S2K3n7SgQFL8tJipfyKjVnZC1LxH0cL/mgYxHIxhSOkHvZr6d1kDMk29YCj05494SzOcK88ERbqnNFoCzeUF4XLSTMnOopqS6+4/OQFpP9LIvZr6d1kDMk29YCj05494S6SLXjFHfaJIaAqJNdHl5jDm/eIid/ljXafW9/mqF+NKvZr6d1kDMk29YCj05494Sz6CjvXogP5isz02t48iNfGjFBU4mayARpWXKXuandItvZr6d1kDMk29YCj05494S7Ez3kKjc3b12RQ5rz1h04IB8QN3w22s2cJhD1KqEkqR
+          EOF
 
       - name: Build
         uses: arenekosreal/makepkg-action@v0.3.1
+        env:
+          PACKAGER: ${{ vars.PACKAGER }}
         with:
-          builddir: ${{ matrix.package }}
-          env: |
-            PACKAGER=${{ vars.PACKAGER }}
+          startdir: ${{ matrix.package }}
 
       - name: Ensure permission
         run: |
-          sudo chown -R --reference ~ pkgdest
+          sudo chown -R --reference . pkgdest srcdest logdest
           ls -l pkgdest
 
       - name: Create archive to avoid illegal char in name
         run: |
           find pkgdest -maxdepth 1 -type f -name '*.pkg.tar.*' -printf "%f\n" | \
-            xargs tar -c -f repo.tar -p -C pkgdest
+            xargs tar -c -f 'pkgdest-${{ matrix.package }}-aarch64.tar' -p -C pkgdest
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ steps.artifact-name.outputs.artifact-name }}
+          name: pkgdest-${{ matrix.package }}-aarch64
           path: repo.tar
           if-no-files-found: error
 
@@ -111,11 +93,13 @@ jobs:
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v7
+        with:
+          pattern: pkgdest-*-aarch64
 
       - name: Unpack artifacts
         run: |
           mkdir -p pkgdest
-          find . -mindepth 2 -maxdepth 2 -type f -name 'repo.tar' -exec tar -x -p -C ./pkgdest -f {} \;
+          find . -mindepth 2 -maxdepth 2 -type f -name 'pkgdest-*-aarch64.tar' -exec tar -x -p -C ./pkgdest -f {} \;
 
       - name: Generate Release info
         id: release-info
