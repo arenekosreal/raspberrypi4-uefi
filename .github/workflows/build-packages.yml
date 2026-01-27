@@ -80,7 +80,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: pkgdest-${{ matrix.package }}-aarch64
-          path: repo.tar
+          path: pkgdest-${{ matrix.package }}-aarch64.tar
           if-no-files-found: error
 
   release:
