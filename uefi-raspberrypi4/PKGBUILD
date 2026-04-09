@@ -188,7 +188,7 @@ prepare(){
     mkdir -p keys
     cp "${srcdir}"/{ms_kek1.cer,ms_kek2.cer,ms_db1.cer,ms_db2.cer,ms_db3.cer,ms_db4.cer,arm64_dbx.bin} keys/
     openssl req -new -x509 -newkey rsa:2048 -subj "/CN=Raspberry Pi Platform Key/" -keyout /dev/null -outform DER -out keys/pk.cer -days 7300 -nodes -sha256
-    patch -Np1 -i ../0001-fix-compiler-warning.diff
+    patch -Np1 0-d edk2 -i "$srcdir/0001-fix-compiler-warning.diff"
 }
 build(){
     cd "${srcdir}/RPi4-${pkgver}"
