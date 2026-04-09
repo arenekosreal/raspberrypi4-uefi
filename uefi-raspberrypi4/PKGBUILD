@@ -114,7 +114,8 @@ source=("ms_kek1.cer::https://go.microsoft.com/fwlink/?LinkId=321185"
         "80-pre-remove-uefi.hook"
         "post-install-uefi"
         "pre-remove-uefi"
-        "RPi4-${pkgver}.tar.gz::https://github.com/pftf/RPi4/archive/refs/tags/v${pkgver}.tar.gz")
+        "RPi4-${pkgver}.tar.gz::https://github.com/pftf/RPi4/archive/refs/tags/v${pkgver}.tar.gz"
+        "0001-fix-compiler-warning.diff::https://github.com/tianocore/edk2/commit/9af06ef3cbb052b142f9660c2c01e7aeb401300c.diff")
 
 declare source_str uri
 for uri in "${_modules_name_map[@]}"
@@ -139,6 +140,7 @@ sha256sums=('a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
             'aed9dfd4c1e7c6092179e8bec63be3fc7b5d958c94063d60a7d1fe4a36f460ef'
             'e7db4c6150688a4aa6922435f531e5fa6e95d39380bb67ddb5a3554335eb419d'
             'd9a7294bf306c5c79bf16145b5d7560cc323dd57be03995575cddce59f5d9efe'
+            '8c399ee6f07fb25828a3077cb66e2ffca7c8b549bcbf4e2b3ba2b52ed86e1e28'
             '70bfed97ee8390f5ac08fea28e3e930a3b33df871c6fc1888c8d436c6c6b755d'
             'f8dd06309075e36882c10d84fe4e0bb67f70fe2df86bffcf30e65524e078cdd3'
             '59cd4b81abafae35d94ac5d91cf4ae5b05122e688713cd6db51e5e4cef471d8f'
@@ -186,10 +188,10 @@ prepare(){
     mkdir -p keys
     cp "${srcdir}"/{ms_kek1.cer,ms_kek2.cer,ms_db1.cer,ms_db2.cer,ms_db3.cer,ms_db4.cer,arm64_dbx.bin} keys/
     openssl req -new -x509 -newkey rsa:2048 -subj "/CN=Raspberry Pi Platform Key/" -keyout /dev/null -outform DER -out keys/pk.cer -days 7300 -nodes -sha256
+    patch -Np1 -i ../0001-fix-compiler-warning.diff
 }
 build(){
     cd "${srcdir}/RPi4-${pkgver}"
-    CFLAGS+=" -Wno-werror"
     make -C edk2/BaseTools -j1
     bash -c \
         "#!/usr/bin/env bash
