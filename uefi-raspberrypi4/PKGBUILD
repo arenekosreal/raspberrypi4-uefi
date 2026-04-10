@@ -3,7 +3,7 @@
 buildarch=8 # aarch64
 
 declare -Ag _modules_name_map=(
-    [edk2]=https://github.com/tianocore/edk2/archive/46548b1adac82211d8d11da12dd914f41e7aa775.tar.gz
+    [edk2]=https://github.com/tianocore/edk2/archive/b7a715f7c03c45c6b4575bf88596bfd79658b8ce.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl]=https://github.com/openssl/openssl/archive/aea7aaf2abb04789f5868cbabec406ea43aa84bf.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/cloudflare-quiche]=https://github.com/cloudflare/quiche/archive/7ab6a55cfe471267d61e4d28ba43d41defcd87e0.tar.gz
     [edk2/CryptoPkg/Library/OpensslLib/openssl/gost-engine]=https://github.com/gost-engine/engine/archive/74b1f4fddbc2d6de969815b1992ddc1ae7c643fe.tar.gz
@@ -30,13 +30,14 @@ declare -Ag _modules_name_map=(
     [edk2/MdePkg/Library/MipiSysTLib/mipisyst]=https://github.com/MIPI-Alliance/public-mipi-sys-t/archive/370b5944c046bab043dd8b133727b2135af7747a.tar.gz
     [edk2/MdePkg/Library/MipiSysTLib/mipisyst/external/pugixml]=https://github.com/zeux/pugixml/archive/c53fdab93af76106b963216d85897614b996f8b6.tar.gz
     [edk2/MdePkg/Library/MipiSysTLib/mipisyst/external/googletest]=https://github.com/google/googletest/archive/a6f06bf2fd3b832822cd4e9e554b7d47f32ec084.tar.gz
-    [edk2/CryptoPkg/Library/MbedTlsLib/mbedtls]=https://github.com/Mbed-TLS/mbedtls/archive/8c89224991adff88d53cd380f42a2baa36f91454.tar.gz
-    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm]=https://github.com/DMTF/libspdm/archive/98ef964e1e9a0c39c7efb67143d3a13a819432e0.tar.gz
-    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/openssllib/openssl]=https://github.com/openssl/openssl/archive/de90e54bbe82e5be4fb9608b6f5c308bb837d355.tar.gz
-    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/openssllib/openssl/gost-engine]=https://github.com/gost-engine/engine/archive/b2b4d629f100eaee9f5942a106b1ccefe85b8808.tar.gz
+    [edk2/CryptoPkg/Library/MbedTlsLib/mbedtls]=https://github.com/Mbed-TLS/mbedtls/archive/e185d7fd85499c8ce5ca2a54f5cf8fe7dbe3f8df.tar.gz
+    [edk2/CryptoPkg/Library/MbedTlsLib/mbedtls/framework]=https://github.com/Mbed-TLS/mbedtls-framework/archive/457996474728cb8e968ed21953b72f74d2f536b2.tar.gz
+    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm]=https://github.com/DMTF/libspdm/archive/1be116c7b7713fa9003e1bd53b53a34758549eb9.tar.gz
+    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/openssllib/openssl]=https://github.com/openssl/openssl/archive/9cff14fd97814baf8a9a07d8447960a64d616ada.tar.gz
+    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/openssllib/openssl/gost-engine]=https://github.com/gost-engine/engine/archive/2a8a5e0ecaa3e3d6f4ec722a49aa72476755c2b7.tar.gz
     [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/openssllib/openssl/gost-engine/libprov]=https://github.com/provider-corner/libprov/archive/8a126e09547630ef900177625626b6156052f0ee.tar.gz
     [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/openssllib/openssl/krb5]=https://github.com/krb5/krb5/archive/aa9b4a2a64046afd2fab7cb49c346295874a5fb6.tar.gz
-    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/openssllib/openssl/pyca-cryptography]=https://github.com/pyca/cryptography/archive/c18d0567386414efa3caef7ed586c4ca75bf3a8b.tar.gz
+    [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/openssllib/openssl/pyca-cryptography]=https://github.com/pyca/cryptography/archive/7e33b0e7739d633c77b8c478620167f693ed13f4.tar.gz
     [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/openssllib/openssl/wycheproof]=https://github.com/C2SP/wycheproof/archive/2196000605e45d91097147c9c71f26b72af58003.tar.gz
     [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/mbedtlslib/mbedtls]=https://github.com/Mbed-TLS/mbedtls/archive/107ea89daaefb9867ea9121002fbbdf926780e98.tar.gz
     [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/mbedtlslib/mbedtls/framework]=https://github.com/Mbed-TLS/mbedtls-framework/archive/94599c0e3b5036e086446a51a3f79640f70f22f6.tar.gz
@@ -44,7 +45,7 @@ declare -Ag _modules_name_map=(
 
     [edk2-non-osi]=https://github.com/tianocore/edk2-non-osi/archive/94d048981116e2e3eda52dad1a89958ee404098d.tar.gz
 
-    [edk2-platforms]=https://github.com/tianocore/edk2-platforms/archive/1e64c1109ae2ac0185351e8d0c19732970d4fecf.tar.gz
+    [edk2-platforms]=https://github.com/tianocore/edk2-platforms/archive/a243e267429b9f961632ff8a0a1c64ef9fc82ebd.tar.gz
 )
 
 _get_source_name_string() {
@@ -95,8 +96,8 @@ _fill_gitmodules_recursively() {
 }
 
 pkgname="uefi-raspberrypi4" 
-pkgver=1.50
-pkgrel=2
+pkgver=1.51
+pkgrel=1
 backup=("boot/config.txt")
 pkgdesc="UEFI firmware for RaspberryPi 4B"
 url="https://github.com/pftf/RPi4"
@@ -114,8 +115,7 @@ source=("ms_kek1.cer::https://go.microsoft.com/fwlink/?LinkId=321185"
         "80-pre-remove-uefi.hook"
         "post-install-uefi"
         "pre-remove-uefi"
-        "RPi4-${pkgver}.tar.gz::https://github.com/pftf/RPi4/archive/refs/tags/v${pkgver}.tar.gz"
-        "0001-fix-compiler-warning.diff::https://github.com/tianocore/edk2/commit/9af06ef3cbb052b142f9660c2c01e7aeb401300c.diff")
+        "RPi4-${pkgver}.tar.gz::https://github.com/pftf/RPi4/archive/refs/tags/v${pkgver}.tar.gz")
 
 declare source_str uri
 for uri in "${_modules_name_map[@]}"
@@ -139,27 +139,27 @@ sha256sums=('a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
             'caa86b22a1452d8974e7bbecbb6d9fb591a58da928a06d5e13cee9592e785b12'
             'aed9dfd4c1e7c6092179e8bec63be3fc7b5d958c94063d60a7d1fe4a36f460ef'
             'e7db4c6150688a4aa6922435f531e5fa6e95d39380bb67ddb5a3554335eb419d'
-            'd9a7294bf306c5c79bf16145b5d7560cc323dd57be03995575cddce59f5d9efe'
-            '8c399ee6f07fb25828a3077cb66e2ffca7c8b549bcbf4e2b3ba2b52ed86e1e28'
+            'be9a2d94e588adb455060281244d0bcfc36525a773608fb337e690998efd048d'
             '70bfed97ee8390f5ac08fea28e3e930a3b33df871c6fc1888c8d436c6c6b755d'
             'f8dd06309075e36882c10d84fe4e0bb67f70fe2df86bffcf30e65524e078cdd3'
             '59cd4b81abafae35d94ac5d91cf4ae5b05122e688713cd6db51e5e4cef471d8f'
             '922e72db9e3930907d27ca49dc762e6cb9236d4fba8a90b0f3a321bee9efed52'
-            '634cbdf10bcaf32f3446b1bf8be7e8a60cecd1e9500e512f01e3c15b74cbcfd3'
-            'b5c7e7c54e013c168f4aae036e59912785f11b4aeebd57f6165a14e879b9a82c'
+            '59275edc6fb56c629305e6f01fe173ddf9f065cde995f18b89a64e128eae8604'
+            '052dccf3a404dce25a467c6fe044b0c858d609ace8e883b59e9dfd479fdd4528'
             '1193910f475fde07f3cd4fe1c1a353d69b8cedb574967134838fcdc8208d224e'
             'a9ba3940267de5dd73581a47c2e81b3eb1e1df6a704138c599020d66f3677a92'
             '632d5aa4dd2e4179f9d648be12af9a9c3158d7f503a93e70e651751b5f31257c'
-            '96bb0d16d76285190663e15367d0c022a3a47230e5361d80b8549f546ad93fbe'
-            'dbfc74f14091d66b95edab229cff9ef8f1f0ab40da30efec36ca3546a3482b76'
+            'adb9a88638b2f2224f7cb84030c0e1be69d5b88800da6745769040756d3a79cd'
+            '7375e6200ccd1540245a39c01bc8e37750d9aad5f747ad10a168a520e95dba43'
             '981ab3e9634cb7c041b484cc1876f22a743dc0ae53a970117ca1b5700670a964'
-            '6467f52b39f5954d6fd242487140c459001b650e1df7511392397e099894a2a1'
+            'ad8dc05136712d2c90608c5a10c3323c52bc086bb439f0013ae8efffb67b0085'
             '9fda3b9a78343ab2be6f06ce6396536e7e065abac29b47c8eb2e42cbb4c4f00b'
-            '6e72019ddb0b8f716648db43186ef7beccae3a07743264c1b5e583bec82b4bc9'
+            'a5df9c1be9b17de3d8318fd28003780cf679eb2ba3cae33a6a1890d7f60d27dd'
             '62ad36b0f06b1397b9c24de65ecb9e13959c681e9f504292ec91b234a93f167f'
-            '28d89f42da17357f4292574e1ba8780f4f233c6324993d4885f25b8699c75938'
+            'ff312c45dda6fd7f901f107f948fbd79fbe67e0bb6a704359cc8289cf1d89052'
             '0b9d90b380f791708d79b630a3926e38e04a77cd60dfc5233ab895ccea51080d'
             'a75ebf216e9880952b697ed10a5f7ff599039202d0bab3e83bbfec8cc4eb1570'
+            'c15bcc24fc43bdf325b0e04fa63270daf6e9488167b94b46547d8134efa9c906'
             '1f5f3eb67cccd4498940bb71c456c07c385eefeda645fa49ef2c432b5723b875'
             '4049ab4cdfae20c376c33b139c34a805a0074dc0d6fe8f47491cd2ab3c3eba98'
             'e47657b9c502e51399bf7d5c5f7911cc934c7f9105e46884cace118d6a9b49b7'
@@ -172,7 +172,6 @@ sha256sums=('a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
             'e7935c0d91d6d22f6dee710a26b23e228ecc4fe8ef7e8f756558c3599f68c3b4'
             '6bc7b58f5f66d86309ab0bc21e47f67a23b97e94c15dccffe9bd965cc50c616e'
             '0db2c5888e78b3ee10df5991c9bd049a2ca0eb693b3c44a05f3078a90add349a'
-            'ad8dc05136712d2c90608c5a10c3323c52bc086bb439f0013ae8efffb67b0085'
             '0331f1c74a632fee5e6053db7ea2363f3e63ec125fab7d9aac84370ee51f1bf8'
             'b4259eb34b7fbd263a464c52266214a9f53fdbcfe0c45749cd0e955f44d9ed6d'
             '9763dbccf925a180d0520b31ffa35da70840e9bb8d0ff82ec72217bf01bcbd1e'
@@ -188,7 +187,6 @@ prepare(){
     mkdir -p keys
     cp "${srcdir}"/{ms_kek1.cer,ms_kek2.cer,ms_db1.cer,ms_db2.cer,ms_db3.cer,ms_db4.cer,arm64_dbx.bin} keys/
     openssl req -new -x509 -newkey rsa:2048 -subj "/CN=Raspberry Pi Platform Key/" -keyout /dev/null -outform DER -out keys/pk.cer -days 7300 -nodes -sha256
-    patch -Np1 -d edk2 -i "$srcdir/0001-fix-compiler-warning.diff"
 }
 build(){
     cd "${srcdir}/RPi4-${pkgver}"
