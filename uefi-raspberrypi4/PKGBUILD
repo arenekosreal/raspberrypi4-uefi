@@ -42,6 +42,8 @@ declare -Ag _modules_name_map=(
     [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/mbedtlslib/mbedtls]=https://github.com/Mbed-TLS/mbedtls/archive/107ea89daaefb9867ea9121002fbbdf926780e98.tar.gz
     [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/os_stub/mbedtlslib/mbedtls/framework]=https://github.com/Mbed-TLS/mbedtls-framework/archive/94599c0e3b5036e086446a51a3f79640f70f22f6.tar.gz
     [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/unit_test/cmockalib/cmocka]=https://gitlab.com/cmocka/cmocka/-/archive/a01cc69ee9536f90e57c61a198f2d1944d3d4313/cmocka-a01cc69ee9536f90e57c61a198f2d1944d3d4313.tar.gz
+    [edk2/TcgTpmPkg/Library/TpmLib/TPM]=https://github.com/TrustedComputingGroup/TPM/archive/bc29a21d44b01396223c152a4834e52318591770.tar.gz
+    [edk2/TcgTpmPkg/Library/TpmLib/TPM/external/wolfssl]=https://github.com/wolfSSL/wolfssl/archive/9c87f979a7f1d3a6d786b260653d566c1d31a1c4.tar.gz
 
     [edk2-non-osi]=https://github.com/tianocore/edk2-non-osi/archive/7ac12d81e02b323bffdf1ef3c188ea33c2185c91.tar.gz
 
@@ -164,10 +166,12 @@ sha256sums=('a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
             '4049ab4cdfae20c376c33b139c34a805a0074dc0d6fe8f47491cd2ab3c3eba98'
             'e47657b9c502e51399bf7d5c5f7911cc934c7f9105e46884cace118d6a9b49b7'
             '3c3095488b936b14538dca64d7e68bcde09a8a18d2a32a47b59877eff0340403'
+            'e634a4a3834d069e327da44d151d77915d3bd6e2ee8763c35f291b450a863083'
             'cbe119373d1aed5b296dad8c98ce43627b064be6ef37f8df73eac4c695e6f9ea'
             '1f5f3eb67cccd4498940bb71c456c07c385eefeda645fa49ef2c432b5723b875'
             'f0dd242a9b088bd144144a9ca374dc89a8499c98014e33554b3d84f11f22df3e'
             'f65b2e6dd304e19185d751652bd5ebc72a81d503bf542037acb3450e43abc095'
+            'a68c301fa0ee6197158912d808c4258605a2d001e458fd958257cafba17bfd14'
             'c26e1ac50c105305f081db63ae0f8e7e26f802b123f34d1edc3baabaf691254c'
             'e7935c0d91d6d22f6dee710a26b23e228ecc4fe8ef7e8f756558c3599f68c3b4'
             '6bc7b58f5f66d86309ab0bc21e47f67a23b97e94c15dccffe9bd965cc50c616e'
