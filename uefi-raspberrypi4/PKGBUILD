@@ -44,6 +44,7 @@ declare -Ag _modules_name_map=(
     [edk2/SecurityPkg/DeviceSecurity/SpdmLib/libspdm/unit_test/cmockalib/cmocka]=https://gitlab.com/cmocka/cmocka/-/archive/a01cc69ee9536f90e57c61a198f2d1944d3d4313/cmocka-a01cc69ee9536f90e57c61a198f2d1944d3d4313.tar.gz
     [edk2/TcgTpmPkg/Library/TpmLib/TPM]=https://github.com/TrustedComputingGroup/TPM/archive/bc29a21d44b01396223c152a4834e52318591770.tar.gz
     [edk2/TcgTpmPkg/Library/TpmLib/TPM/external/wolfssl]=https://github.com/wolfSSL/wolfssl/archive/9c87f979a7f1d3a6d786b260653d566c1d31a1c4.tar.gz
+    [edk2/TcgTpmPkg/Library/TpmLib/TPM/external/googletest]=https://github.com/google/googletest/archive/86add13493e5c881d7e4ba77fb91c1f57752b3a4.tar.gz
 
     [edk2-non-osi]=https://github.com/tianocore/edk2-non-osi/archive/7ac12d81e02b323bffdf1ef3c188ea33c2185c91.tar.gz
 
