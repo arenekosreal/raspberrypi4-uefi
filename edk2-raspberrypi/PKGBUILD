@@ -1,0 +1,168 @@
+# Based on edk2 pkgbase in extra repo of vanilla archlinux.
+
+# No tags, use the latest commit when we update the package
+_edk2_non_osi_commit=7ac12d81e02b323bffdf1ef3c188ea33c2185c91
+_edk2_platforms_commit=f37b334aad56fff58bbc1169983657a3167377ce
+
+_raspberrypi_firmware_tag=1.20260521
+
+buildarch=8 # aarch64
+
+pkgbase=edk2-raspberrypi
+pkgname=(edk2-rpi4 edk2-bootloader-rpi4)
+pkgver=202605
+pkgrel=1
+pkgdesc="Modern, feature-rich firmware development environment for the UEFI specifications"
+arch=(any)
+url="https://github.com/tianocore/edk2-platforms/tree/$_edk2_platforms_commit/Platform/RaspberryPi"
+license=("BSD-2-Clause-Patent")
+makedepends=(acpica git openssl python)
+makedepends_x86_64=(aarch64-linux-gnu-gcc)
+source=("git+https://github.com/tianocore/edk2.git#tag=edk2-stable$pkgver"
+        "git+https://github.com/tianocore/edk2-non-osi.git#commit=$_edk2_non_osi_commit"
+        "git+https://github.com/tianocore/edk2-platforms.git#commit=$_edk2_platforms_commit"
+        "git+https://github.com/openssl/openssl.git"
+        "git+https://github.com/tianocore/edk2-cmocka.git"
+        "git+https://github.com/kkos/oniguruma.git"
+        "git+https://github.com/google/brotli.git"
+        "git+https://github.com/akheron/jansson.git"
+        "git+https://github.com/google/googletest.git"
+        "git+https://github.com/tianocore/edk2-subhook.git"
+        "git+https://github.com/devicetree-org/pylibfdt.git"
+        "git+https://github.com/MIPI-Alliance/public-mipi-sys-t.git"
+        "git+https://github.com/ARMmbed/mbedtls.git"
+        "git+https://github.com/DMTF/libspdm.git"
+        "git+https://github.com/TrustedComputingGroup/TPM.git"
+        "ms_kek1.cer::https://go.microsoft.com/fwlink/?LinkId=321185"
+        "ms_kek2.cer::https://go.microsoft.com/fwlink/?linkid=2239775"
+        "ms_db1.cer::https://go.microsoft.com/fwlink/?linkid=321192"
+        "ms_db2.cer::https://go.microsoft.com/fwlink/?linkid=321194"
+        "ms_db3.cer::https://go.microsoft.com/fwlink/?linkid=2239776"
+        "ms_db4.cer::https://go.microsoft.com/fwlink/?linkid=2239872"
+        "arm64_dbx.bin::https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin"
+        "firmware-$_raspberrypi_firmware_tag.tar.gz::https://github.com/raspberrypi/firmware/archive/refs/tags/$_raspberrypi_firmware_tag.tar.gz"
+        "edk2-rpi4"
+        "70-sync-edk2-rpi4.hook"
+        "80-remove-edk2-rpi4.hook"
+        "60-edk2-rpi4.json")
+sha256sums=('2199d1a6f3d2afaf8658e69d2e68da3a5e047f9db24bc498b13eecb89eb5956e'
+            '8bd31168159be3b27cc79593856d3ab22a019a139b21a40c9001b35894282b7f'
+            '5fa5a4b9eeca0a36a62233908d3c7643eb6b695a496444ee1a07de954c443988'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
+            '3cd3f0309edae228767a976dd40d9f4affc4fbd5218f2e8cc3c9dd97e8ac6f9d'
+            'e8e95f0733a55e8bad7be0a1413ee23c51fcea64b3c8fa6a786935fddcc71961'
+            '48e99b991f57fc52f76149599bff0a58c47154229b9f8d603ac40d3500248507'
+            '076f1fea90ac29155ebf77c17682f75f1fdd1be196da302dc8461e350a9ae330'
+            'f6124e34125bee3fe6d79a574eaa7b91c0e7bd9d929c1a321178efd611dad901'
+            'f42c187f8b01b497f81fb0459164b27d16ca2af0b95c7331a82c1a27a731a885'
+            'b900de58571920a306ab2d1296500499d0744451dbefda0c76b79e652bb71cb7'
+            '0ac762ebd58f88c9249459e10460d722d2ddbe1a24149a9fd6832b5cc1bef41b'
+            'd21a4b3c5949f518fdc10e09e6b45580dfb216c9be6b89fe8848a72311be0747'
+            '4ed5ddc8bb5af041335036786afda80868da4a20ddb2220ba7cf9d150e267b01'
+            '8cb1ffe0c4bff487e27e3d7d561db9877c92416e4971a2a3c492f22ff7470bf4')
+
+prepare() {
+    local submodule=edk2
+    git -C "$submodule" submodule init
+    git -C "$submodule" config submodule.CryptoPkg/Library/OpensslLib/openssl.url "$srcdir/openssl"
+    git -C "$submodule" config submodule.UnitTestFrameworkPkg/Library/CmockaLib/cmocka.url "$srcdir/edk2-cmocka"
+    git -C "$submodule" config submodule.MdeModulePkg/Universal/RegularExpressionDxe/oniguruma.url "$srcdir/oniguruma"
+    git -C "$submodule" config submodule.MdeModulePkg/Library/BrotliCustomDecompressLib/brotli.url "$srcdir/brotli"
+    git -C "$submodule" config submodule.BaseTools/Source/C/BrotliCompress/brotli.url "$srcdir/brotli"
+    git -C "$submodule" config submodule.RedfishPkg/Library/JsonLib/jansson.url "$srcdir/jansson"
+    git -C "$submodule" config submodule.UnitTestFrameworkPkg/Library/GoogleTestLib/googletest.url "$srcdir/googletest"
+    git -C "$submodule" config submodule.UnitTestFrameworkPkg/Library/SubhookLib/subhook.url "$srcdir/edk2-subhook"
+    git -C "$submodule" config submodule.MdePkg/Library/BaseFdtLib/libfdt.url "$srcdir/pylibfdt"
+    git -C "$submodule" config submodule.MdePkg/Library/MipiSysTLib/mipisyst.url "$srcdir/public-mipi-sys-t"
+    git -C "$submodule" config submodule.CryptoPkg/Library/MbedTlsLib/mbedtls.url "$srcdir/mbedtls"
+    git -C "$submodule" config submodule.SecurityPkg/DeviceSecurity/SpdmLib/libspdm.url "$srcdir/libspdm"
+    git -C "$submodule" config submodule.TcgTpmPkg/Library/TpmLib/TPM.url "$srcdir/TPM"
+    git -C "$submodule" -c protocol.file.allow=always submodule update
+
+    openssl req -new -x509 -newkey rsa:2048 -subj "/CN=Raspberry Pi Platform Key/" -keyout /dev/null -outform DER -out pk.cer -days 7300 -nodes -sha256
+}
+
+build() {
+    export WORKSPACE="$PWD"
+    export PACKAGES_PATH="$WORKSPACE/edk2:$WORKSPACE/edk2-platforms:$WORKSPACE/edk2-non-osi"
+    export GCC_AARCH64_PREFIX="aarch64-linux-gnu-"
+
+    make -C edk2/BaseTools -j1
+    . edk2/edksetup.sh
+    edk2/BaseTools/BinWrappers/PosixLike/build -a AARCH64 -t GCC -b RELEASE -p edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc \
+        --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor=L"https://github.com/tianocore/edk2" \
+        --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"UEFI Firmware edk2-stable$pkgver-$pkgrel" \
+        --pcd gRaspberryPiTokenSpaceGuid.PcdRamLimitTo3GB="0" \
+        -D SECURE_BOOT_ENABLE=TRUE \
+        -D INCLUDE_TFTP_COMMAND=TRUE \
+        -D NETWORK_ISCSI_ENABLE=TRUE \
+        -D SMC_PCI_SUPPORT=1 \
+        -D DEFAULT_KEYS=TRUE \
+        -D PK_DEFAULT_FILE=./pk.cer \
+        -D KEK_DEFAULT_FILE1=./ms_kek1.cer \
+        -D KEK_DEFAULT_FILE2=./ms_kek2.cer \
+        -D DB_DEFAULT_FILE1=./ms_db1.cer \
+        -D DB_DEFAULT_FILE2=./ms_db2.cer \
+        -D DB_DEFAULT_FILE3=./ms_db3.cer \
+        -D DB_DEFAULT_FILE4=./ms_db4.cer \
+        -D DBX_DEFAULT_FILE1=./arm64_dbx.bin
+}
+
+package_edk2-rpi4() {
+    pkgdesc="Firmware for RPi4 (aarch64)"
+    url+="/RPi4"
+
+    install -Dvm644 Build/RPi4/RELEASE_GCC/FV/RPI_EFI.fd "$pkgdir/usr/share/edk2/aarch64/RPi4_EFI.fd"
+    install -Dvm644 -t "$pkgdir/usr/share/qemu/firmware/" -- *"$pkgname"*.json
+    install -Dvm644 edk2/License.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+    install -Dvm644 edk2-platforms/License.txt "$pkgdir/usr/share/licenses/$pkgname/License.platforms.txt"
+    install -Dvm644 edk2-non-osi/Platform/RaspberryPi/RPi4/TrustedFirmware/License.txt "$pkgdir/usr/share/licenses/$pkgname/License.tf-a.txt"
+}
+
+package_edk2-bootloader-rpi4() {
+    pkgdesc="Bootloader shim to let edk2-rpi4 bootable on real RaspberryPi 4"
+    url+="/RPi4"
+    license=("GPL-2.0-only AND LicenseRef-broadcom")
+    depends=("linux-aarch64>=5.8" raspberrypi-bootloader "edk2-rpi4=$pkgver" bash)
+    optdepends=("firmware-raspberrypi: firmware for RaspberryPi"
+                "linux-firmware-broadcom: firmware for RaspberryPi"
+                "virt-firmware: for editing EFI variables")
+    conflicts=(uboot-raspberrypi linux-rpi linux-rpi-16k)
+    backup=(boot/config.txt)
+
+    conflicts+=(uefi-raspberrypi raspberrypi-overlays)
+    replaces=(uefi-raspberrypi raspberrypi-overlays)
+    provides=(uefi-raspberrypi raspberrypi-overlays)
+
+    mkdir -p "$pkgdir/boot" "$pkgdir/usr/share/libalpm/hooks" "$pkgdir/usr/share/libalpm/scripts"
+    cat <<EOF > "$pkgdir/boot/config.txt"
+arm_64bit=1
+enable_uart=1
+enable_gic=1
+armstub=RPi4_EFI.fd
+disable_commandline_tags=2
+device_tree_address=0x3e0000
+device_tree_end=0x400000
+
+arm_boost=1
+uart_2ndstage=1
+dtoverlay=miniuart-bt
+dtoverlay=upstream-pi4
+EOF
+    cp -rv "firmware-$_raspberrypi_firmware_tag/boot/overlays" "$pkgdir/boot"
+    install -Dvm644 -t "$pkgdir/usr/share/libalpm/hooks/" -- *.hook
+    install -Dvm755 -t "$pkgdir/usr/share/libalpm/scripts/" edk2-rpi4
+    install -Dvm644 -t "$pkgdir/usr/share/licenses/$pkgname/" "firmware-$_raspberrypi_firmware_tag/boot/LICENCE.broadcom"
+}

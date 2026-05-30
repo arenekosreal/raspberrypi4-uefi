@@ -1,0 +1,96 @@
+#!/usr/bin/bash
+
+# Needs files list from stdin.
+# Should be triggered by pacman hook.
+# Arguments:
+# --install:    Sync files
+# --uninstall:  Remove files
+
+declare target
+for target in efi boot boot/efi
+do
+    if [[ -d "$target/EFI" ]]
+    then
+        break
+    fi
+done
+if [[ -z "$target" ]]
+then
+    echo "Unable to detect EFI mountpoint, using fallback value..."
+    target=boot
+fi
+readonly target
+
+declare file sync_target
+while read -r file
+do
+    case "$file" in
+        usr/share/edk2/aarch64/RPi4_EFI.fd)
+            if [[ "$target" != "$(cut -d / -f 1 <<< "$file")" ]]
+            then
+                sync_target="$target/$(basename "$file")"
+                if [[ "$1" == "--install" ]]
+                then
+                    if [[ ! -e "$sync_target" ]]
+                    then
+                        cp -r "$file" "$sync_target"
+                    else
+                        echo "Existing $sync_target is found, saving to pacnew..."
+                        cp -r "$file" "$sync_target.pacnew"
+                    fi
+                elif [[ "$1" == "--uninstall" ]]
+                then
+                    if [[ -e "$sync_target" ]]
+                    then
+                        echo "Saving $sync_target to pacsave..."
+                        mv "$sync_target" "$sync_target.pacsave"
+                    else
+                        echo "$sync_target is not found."
+                    fi
+                fi
+            fi
+            ;;
+        boot/config.txt|boot/dtbs/broadcom/bcm2711-rpi-4*.dtb)
+            if [[ "$target" != "$(cut -d / -f 1 <<< "$file")" ]]
+            then
+                sync_target="$target/$(basename "$file")"
+                if [[ "$1" == "--install" ]]
+                then
+                    if [[ ! -e "$sync_target" ]]
+                    then
+                        cp -r "$file" "$sync_target"
+                    else
+                        echo "Existing $sync_target is found, skipping..."
+                    fi
+                elif [[ "$1" == "--uninstall" ]]
+                then
+                    if [[ -e "$sync_target" ]]
+                    then
+                        rm -r "$sync_target"
+                    else
+                        echo "$sync_target is not found."
+                    fi
+                fi
+            fi
+            ;;
+        *)
+            if [[ "$target" != "$(cut -d / -f 1 <<< "$file")" ]]
+            then
+                sync_target="$target/$(cut -d / -f 2- <<< "$file")"
+                if [[ "$1" == "--install" ]]
+                then
+                    mkdir -p "$(dirname "$sync_target")"
+                    cp -r "$file" "$sync_target"
+                elif [[ "$1" == "--uninstall" ]]
+                then
+                    if [[ -e "$sync_target" ]]
+                    then
+                        rm -r "$sync_target"
+                    else
+                        echo "$sync_target is not found."
+                    fi
+                fi
+            fi
+            ;;
+    esac
+done
