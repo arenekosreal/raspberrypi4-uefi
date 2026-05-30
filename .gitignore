@@ -1,11 +1,10 @@
-# Temp files
-srcdest
-pkgdest
-src
-pkg
-*.log
-*.tar.gz
-/act/artifacts
-/act/out
-/act/caches
-.secrets
+/*/*
+!/*/PKGBUILD
+!/.github/**
+!/act/events/*.json
+!/pacman-hooks
+!/.actrc
+!/**/.gitignore
+!/.vars
+!/LICENSE
+!/README.md
