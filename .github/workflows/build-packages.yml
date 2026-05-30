@@ -60,7 +60,7 @@ jobs:
           EOF
 
       - name: Build
-        uses: arenekosreal/makepkg-action@v0.4.0
+        uses: arenekosreal/makepkg-action@v0.4.1
         env:
           PACKAGER: ${{ vars.PACKAGER }}
         with:
