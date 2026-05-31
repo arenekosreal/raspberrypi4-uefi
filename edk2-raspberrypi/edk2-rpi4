@@ -50,7 +50,7 @@ do
                 fi
             fi
             ;;
-        boot/config.txt|boot/dtbs/broadcom/bcm2711-rpi-4*.dtb)
+        boot/config.txt)
             if [[ "$target" != "$(cut -d / -f 1 <<< "$file")" ]]
             then
                 sync_target="$target/$(basename "$file")"
@@ -62,6 +62,24 @@ do
                     else
                         echo "Existing $sync_target is found, skipping..."
                     fi
+                elif [[ "$1" == "--uninstall" ]]
+                then
+                    if [[ -e "$sync_target" ]]
+                    then
+                        rm -r "$sync_target"
+                    else
+                        echo "$sync_target is not found."
+                    fi
+                fi
+            fi
+            ;;
+        boot/dtbs/broadcom/bcm2711-rpi-4*.dtb)
+            if [[ "$target" != "$(cut -d / -f 1 <<< "$file")" ]]
+            then
+                sync_target="$target/$(basename "$file")"
+                if [[ "$1" == "--install" ]]
+                then
+                    cp -r "$file" "$sync_target"
                 elif [[ "$1" == "--uninstall" ]]
                 then
                     if [[ -e "$sync_target" ]]
