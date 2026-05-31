@@ -18,6 +18,8 @@ url="https://github.com/tianocore/edk2-platforms/tree/$_edk2_platforms_commit/Pl
 license=("BSD-2-Clause-Patent")
 makedepends=(acpica git openssl python)
 makedepends_x86_64=(aarch64-linux-gnu-gcc)
+makedepends_riscv64=(aarch64-linux-gnu-gcc)
+makedepends_loong64=(aarch64-linux-gnu-gcc)
 source=("git+https://github.com/tianocore/edk2.git#tag=edk2-stable$pkgver"
         "git+https://github.com/tianocore/edk2-non-osi.git#commit=$_edk2_non_osi_commit"
         "git+https://github.com/tianocore/edk2-platforms.git#commit=$_edk2_platforms_commit"
@@ -68,7 +70,7 @@ sha256sums=('2199d1a6f3d2afaf8658e69d2e68da3a5e047f9db24bc498b13eecb89eb5956e'
             'f6124e34125bee3fe6d79a574eaa7b91c0e7bd9d929c1a321178efd611dad901'
             'f42c187f8b01b497f81fb0459164b27d16ca2af0b95c7331a82c1a27a731a885'
             'b900de58571920a306ab2d1296500499d0744451dbefda0c76b79e652bb71cb7'
-            '0ac762ebd58f88c9249459e10460d722d2ddbe1a24149a9fd6832b5cc1bef41b'
+            '99cee7812031d715811e4ff344963b4ca3a304a69353a084d23653e57ec893df'
             'd21a4b3c5949f518fdc10e09e6b45580dfb216c9be6b89fe8848a72311be0747'
             '4ed5ddc8bb5af041335036786afda80868da4a20ddb2220ba7cf9d150e267b01'
             '8cb1ffe0c4bff487e27e3d7d561db9877c92416e4971a2a3c492f22ff7470bf4')
