@@ -26,19 +26,19 @@ while read -r file
 do
     case "$file" in
         usr/share/edk2/aarch64/RPi3_EFI.fd)
-            sync_target="$target/RPi3_EFI.fd"
+            sync_target="$target/RPI_EFI.fd"
             if [[ "$1" == "--install" ]]
             then
-                if [[ ! -e "$sync_target" ]]
+                if [[ ! -f "$sync_target" ]]
                 then
-                    cp -r "$file" "$sync_target"
+                    cp "$file" "$sync_target"
                 else
                     echo "Existing $sync_target is found, saving to pacnew..."
-                    cp -r "$file" "$sync_target.pacnew"
+                    cp "$file" "$sync_target.pacnew"
                 fi
             elif [[ "$1" == "--uninstall" ]]
             then
-                if [[ -e "$sync_target" ]]
+                if [[ -f "$sync_target" ]]
                 then
                     echo "Saving $sync_target to pacsave..."
                     mv "$sync_target" "$sync_target.pacsave"
@@ -53,17 +53,17 @@ do
                 sync_target="$target/config.txt"
                 if [[ "$1" == "--install" ]]
                 then
-                    if [[ ! -e "$sync_target" ]]
+                    if [[ ! -f "$sync_target" ]]
                     then
-                        cp -r "$file" "$sync_target"
+                        cp "$file" "$sync_target"
                     else
                         echo "Existing $sync_target is found, skipping..."
                     fi
                 elif [[ "$1" == "--uninstall" ]]
                 then
-                    if [[ -e "$sync_target" ]]
+                    if [[ -f "$sync_target" ]]
                     then
-                        rm -r "$sync_target"
+                        rm "$sync_target"
                     else
                         echo "$sync_target is not found."
                     fi
@@ -74,19 +74,19 @@ do
             sync_target="$target/$(basename "$file")"
             if [[ "$1" == "--install" ]]
             then
-                cp -r "$file" "$sync_target"
+                cp "$file" "$sync_target"
             elif [[ "$1" == "--uninstall" ]]
             then
-                if [[ -e "$sync_target" ]]
+                if [[ -f "$sync_target" ]]
                 then
-                    rm -r "$sync_target"
+                    rm "$sync_target"
                 else
                     echo "$sync_target is not found."
                 fi
             fi
             ;;
-        *)
-            if [[ "$file" == boot/* ]] && [[ "$target" != "boot" ]]
+        boot/*/**)
+            if [[ "$target" != "boot" ]]
             then
                 sync_target="$target/$(cut -d / -f 2- <<< "$file")"
                 if [[ "$1" == "--install" ]]

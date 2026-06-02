@@ -74,8 +74,8 @@ sha256sums=('2199d1a6f3d2afaf8658e69d2e68da3a5e047f9db24bc498b13eecb89eb5956e'
             'f6124e34125bee3fe6d79a574eaa7b91c0e7bd9d929c1a321178efd611dad901'
             'f42c187f8b01b497f81fb0459164b27d16ca2af0b95c7331a82c1a27a731a885'
             'b900de58571920a306ab2d1296500499d0744451dbefda0c76b79e652bb71cb7'
-            'f7bc25e25dd5043b56b7ec9bb22c578df2f9dde8dbad8b9ac93671f626329493'
-            'a275e98b9bb0aae836f7e968c57e32d8810edce9c9854d52af22f0bf637b5026'
+            '5cab19101efdc9fea7e41e53e2bcb79881c0bea9e761420dd1506a6a0483c5df'
+            'd073fd33697df8ea122eacceaa175ee3af9dd5fae1f712d370405d90c96beccb'
             '19baf531a0d0790fd60db483f8e0963fa5da72badf419eea07a03f003ab61a72'
             'c631c5ddca3b646a834b8e519d99569bfa6f98890c8901d51e40fc315603ad88'
             '4ed5ddc8bb5af041335036786afda80868da4a20ddb2220ba7cf9d150e267b01'
@@ -178,7 +178,7 @@ package_edk2-bootloader-rpi4() {
 arm_64bit=1
 enable_uart=1
 enable_gic=1
-armstub=RPi4_EFI.fd
+armstub=RPI_EFI.fd
 disable_commandline_tags=2
 device_tree_address=0x3e0000
 device_tree_end=0x400000
@@ -189,7 +189,7 @@ dtoverlay=miniuart-bt
 dtoverlay=upstream-pi4
 # Required for disabling 3GB limit and booting through DeviceTree
 # https://github.com/pftf/RPi4/pull/279
-dtoverlay=pcie-32bit-dma
+#dtoverlay=pcie-32bit-dma
 EOF
     cp -rv "firmware-$_raspberrypi_firmware_tag/boot/overlays" "$pkgdir/boot"
     install -Dvm644 -t "$pkgdir/usr/share/libalpm/hooks/" -- *edk2-rpi4*.hook
@@ -205,7 +205,7 @@ package_edk2-rpi3() {
     install -Dvm644 -t "$pkgdir/usr/share/qemu/firmware/" -- *"$pkgname"*.json
     install -Dvm644 edk2/License.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
     install -Dvm644 edk2-platforms/License.txt "$pkgdir/usr/share/licenses/$pkgname/License.platforms.txt"
-    install -Dvm644 edk2-non-osi/Platform/RaspberryPi/RPi4/TrustedFirmware/License.txt "$pkgdir/usr/share/licenses/$pkgname/License.tf-a.txt"
+    install -Dvm644 edk2-non-osi/Platform/RaspberryPi/RPi3/TrustedFirmware/License.txt "$pkgdir/usr/share/licenses/$pkgname/License.tf-a.txt"
 }
 
 package_edk2-bootloader-rpi3() {
@@ -224,7 +224,7 @@ package_edk2-bootloader-rpi3() {
     cat <<EOF > "$pkgdir/boot/config.txt"
 arm_control=0x200
 enable_uart=1
-armstub=RPi3_EFI.fd
+armstub=RPI_EFI.fd
 disable_commandline_tags=2
 device_tree_address=0x1f0000
 device_tree_end=0x200000
