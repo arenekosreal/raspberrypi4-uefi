@@ -104,5 +104,23 @@ do
                 fi
             fi
             ;;
+        boot/*)
+            if [[ "$target" != "boot" ]]
+            then
+                sync_target="$target/$(cut -d / -f 2- <<< "$file")"
+                if [[ "$1" == "--install" ]]
+                then
+                    cp -r "$file" "$sync_target"
+                elif [[ "$1" == "--uninstall" ]]
+                then
+                    if [[ -e "$sync_target" ]]
+                    then
+                        rm -r "$sync_target"
+                    else
+                        echo "$sync_target is not found."
+                    fi
+                fi
+            fi
+            ;;
     esac
 done

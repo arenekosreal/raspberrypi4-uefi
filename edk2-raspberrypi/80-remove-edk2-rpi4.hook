@@ -2,10 +2,9 @@
 Operation = Remove
 Type = Path
 Target = boot/overlays/*
-Target = boot/*.elf
-Target = boot/bootcode.bin
+Target = boot/start4*.elf
 Target = boot/config.txt
-Target = boot/*.dat
+Target = boot/fixup4*.dat
 Target = boot/dtbs/broadcom/bcm2711-rpi-4*.dtb
 Target = usr/share/edk2/aarch64/RPi4_EFI.fd
 
