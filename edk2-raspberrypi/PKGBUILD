@@ -5,6 +5,7 @@ _edk2_non_osi_commit=7ac12d81e02b323bffdf1ef3c188ea33c2185c91
 _edk2_platforms_commit=f37b334aad56fff58bbc1169983657a3167377ce
 
 _raspberrypi_firmware_tag=1.20260521
+_secureboot_objects_version=1.6.4
 
 buildarch=8 # aarch64
 
@@ -16,7 +17,7 @@ pkgdesc="Modern, feature-rich firmware development environment for the UEFI spec
 arch=(any)
 url="https://github.com/tianocore/edk2-platforms/tree/$_edk2_platforms_commit/Platform/RaspberryPi"
 license=("BSD-2-Clause-Patent")
-makedepends=(acpica git openssl python)
+makedepends=(acpica git python)
 makedepends_x86_64=(aarch64-linux-gnu-gcc)
 makedepends_riscv64=(aarch64-linux-gnu-gcc)
 makedepends_loong64=(aarch64-linux-gnu-gcc)
@@ -35,13 +36,7 @@ source=("git+https://github.com/tianocore/edk2.git#tag=edk2-stable$pkgver"
         "git+https://github.com/ARMmbed/mbedtls.git"
         "git+https://github.com/DMTF/libspdm.git"
         "git+https://github.com/TrustedComputingGroup/TPM.git"
-        "ms_kek1.cer::https://go.microsoft.com/fwlink/?LinkId=321185"
-        "ms_kek2.cer::https://go.microsoft.com/fwlink/?linkid=2239775"
-        "ms_db1.cer::https://go.microsoft.com/fwlink/?linkid=321192"
-        "ms_db2.cer::https://go.microsoft.com/fwlink/?linkid=321194"
-        "ms_db3.cer::https://go.microsoft.com/fwlink/?linkid=2239776"
-        "ms_db4.cer::https://go.microsoft.com/fwlink/?linkid=2239872"
-        "arm64_dbx.bin::https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin"
+        "edk2-aarch64-secureboot-binaries-$_secureboot_objects_version.tar.gz::https://github.com/microsoft/secureboot_objects/releases/download/v$_secureboot_objects_version/edk2-aarch64-secureboot-binaries.tar.gz"
         "firmware-$_raspberrypi_firmware_tag.tar.gz::https://github.com/raspberrypi/firmware/archive/refs/tags/$_raspberrypi_firmware_tag.tar.gz"
         "edk2-rpi4"
         "edk2-rpi3"
@@ -66,13 +61,7 @@ sha256sums=('2199d1a6f3d2afaf8658e69d2e68da3a5e047f9db24bc498b13eecb89eb5956e'
             'SKIP'
             'SKIP'
             'SKIP'
-            'a1117f516a32cefcba3f2d1ace10a87972fd6bbe8fe0d0b996e09e65d802a503'
-            '3cd3f0309edae228767a976dd40d9f4affc4fbd5218f2e8cc3c9dd97e8ac6f9d'
-            'e8e95f0733a55e8bad7be0a1413ee23c51fcea64b3c8fa6a786935fddcc71961'
-            '48e99b991f57fc52f76149599bff0a58c47154229b9f8d603ac40d3500248507'
-            '076f1fea90ac29155ebf77c17682f75f1fdd1be196da302dc8461e350a9ae330'
-            'f6124e34125bee3fe6d79a574eaa7b91c0e7bd9d929c1a321178efd611dad901'
-            'f42c187f8b01b497f81fb0459164b27d16ca2af0b95c7331a82c1a27a731a885'
+            '8df53791b65a5b6b1a0c6c3b588b48a3fab46fb0d4321febdde956618d35f107'
             'b900de58571920a306ab2d1296500499d0744451dbefda0c76b79e652bb71cb7'
             '5cab19101efdc9fea7e41e53e2bcb79881c0bea9e761420dd1506a6a0483c5df'
             'd073fd33697df8ea122eacceaa175ee3af9dd5fae1f712d370405d90c96beccb'
@@ -100,11 +89,10 @@ prepare() {
     git -C "$submodule" config submodule.SecurityPkg/DeviceSecurity/SpdmLib/libspdm.url "$srcdir/libspdm"
     git -C "$submodule" config submodule.TcgTpmPkg/Library/TpmLib/TPM.url "$srcdir/TPM"
     git -C "$submodule" -c protocol.file.allow=always submodule update
-
-    openssl req -new -x509 -newkey rsa:2048 -subj "/CN=Raspberry Pi Platform Key/" -keyout /dev/null -outform DER -out pk.cer -days 7300 -nodes -sha256
 }
 
 build() {
+    local -r secureboot_type=MicrosoftAndThirdParty
     export WORKSPACE="$PWD"
     export PACKAGES_PATH="$WORKSPACE/edk2:$WORKSPACE/edk2-platforms:$WORKSPACE/edk2-non-osi"
     [[ "$(uname -m)" != "aarch64" ]] && export GCC_AARCH64_PREFIX="aarch64-linux-gnu-"
@@ -112,38 +100,28 @@ build() {
     make -C edk2/BaseTools -j1
     . edk2/edksetup.sh
     edk2/BaseTools/BinWrappers/PosixLike/build -a AARCH64 -t GCC -b RELEASE -p edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc \
-        --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor=L"https://github.com/tianocore/edk2" \
-        --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"UEFI Firmware edk2-stable$pkgver-$pkgrel" \
         --pcd gRaspberryPiTokenSpaceGuid.PcdRamLimitTo3GB="0" \
+        -D FIRMWARE_VER="UEFI Firmware RPi4 edk2-stable$pkgver-$pkgrel"\
         -D SECURE_BOOT_ENABLE=TRUE \
         -D INCLUDE_TFTP_COMMAND=TRUE \
         -D NETWORK_ISCSI_ENABLE=TRUE \
         -D SMC_PCI_SUPPORT=1 \
         -D DEFAULT_KEYS=TRUE \
-        -D PK_DEFAULT_FILE=./pk.cer \
-        -D KEK_DEFAULT_FILE1=./ms_kek1.cer \
-        -D KEK_DEFAULT_FILE2=./ms_kek2.cer \
-        -D DB_DEFAULT_FILE1=./ms_db1.cer \
-        -D DB_DEFAULT_FILE2=./ms_db2.cer \
-        -D DB_DEFAULT_FILE3=./ms_db3.cer \
-        -D DB_DEFAULT_FILE4=./ms_db4.cer \
-        -D DBX_DEFAULT_FILE1=./arm64_dbx.bin
+        -D PK_DEFAULT_FILE=./$secureboot_type/Firmware/PK.bin \
+        -D KEK_DEFAULT_FILE1=./$secureboot_type/Firmware/KEK.bin \
+        -D DB_DEFAULT_FILE1=./$secureboot_type/Firmware/DB.bin \
+        -D DBX_DEFAULT_FILE1=./$secureboot_type/Firmware/DBX.bin
     edk2/BaseTools/BinWrappers/PosixLike/build -a AARCH64 -t GCC -b RELEASE -p edk2-platforms/Platform/RaspberryPi/RPi3/RPi3.dsc \
-        --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor=L"https://github.com/tianocore/edk2" \
-        --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"UEFI Firmware edk2-stable$pkgver-$pkgrel" \
+        -D FIRMWARE_VER="UEFI Firmware RPi3 edk2-stable$pkgver-$pkgrel"\
         -D SECURE_BOOT_ENABLE=TRUE \
         -D INCLUDE_TFTP_COMMAND=TRUE \
         -D NETWORK_ISCSI_ENABLE=TRUE \
         -D SMC_PCI_SUPPORT=1 \
         -D DEFAULT_KEYS=TRUE \
-        -D PK_DEFAULT_FILE=./pk.cer \
-        -D KEK_DEFAULT_FILE1=./ms_kek1.cer \
-        -D KEK_DEFAULT_FILE2=./ms_kek2.cer \
-        -D DB_DEFAULT_FILE1=./ms_db1.cer \
-        -D DB_DEFAULT_FILE2=./ms_db2.cer \
-        -D DB_DEFAULT_FILE3=./ms_db3.cer \
-        -D DB_DEFAULT_FILE4=./ms_db4.cer \
-        -D DBX_DEFAULT_FILE1=./arm64_dbx.bin
+        -D PK_DEFAULT_FILE=./$secureboot_type/Firmware/PK.bin \
+        -D KEK_DEFAULT_FILE1=./$secureboot_type/Firmware/KEK.bin \
+        -D DB_DEFAULT_FILE1=./$secureboot_type/Firmware/DB.bin \
+        -D DBX_DEFAULT_FILE1=./$secureboot_type/Firmware/DBX.bin
 }
 
 package_edk2-rpi4() {
@@ -212,7 +190,7 @@ package_edk2-bootloader-rpi3() {
     pkgdesc="Bootloader shim to let edk2 image bootable on real machine."
     url+="/RPi3"
     license=("GPL-2.0-only AND LicenseRef-broadcom")
-    depends=("linux-aarch64>=5.8" raspberrypi-bootloader "edk2-rpi3=$pkgver" bash)
+    depends=(linux-aarch64 raspberrypi-bootloader "edk2-rpi3=$pkgver" bash)
     optdepends=("firmware-raspberrypi: firmware for RaspberryPi"
                 "linux-firmware-broadcom: firmware for RaspberryPi"
                 "virt-firmware: for editing EFI variables")
