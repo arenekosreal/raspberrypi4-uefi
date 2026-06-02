@@ -100,8 +100,8 @@ build() {
     make -C edk2/BaseTools -j1
     . edk2/edksetup.sh
     edk2/BaseTools/BinWrappers/PosixLike/build -a AARCH64 -t GCC -b RELEASE -p edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc \
+        --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"EDK2 $pkgver-$pkgrel" \
         --pcd gRaspberryPiTokenSpaceGuid.PcdRamLimitTo3GB="0" \
-        -D FIRMWARE_VER="UEFI Firmware RPi4 edk2-stable$pkgver-$pkgrel"\
         -D SECURE_BOOT_ENABLE=TRUE \
         -D INCLUDE_TFTP_COMMAND=TRUE \
         -D NETWORK_ISCSI_ENABLE=TRUE \
@@ -112,7 +112,7 @@ build() {
         -D DB_DEFAULT_FILE1=./$secureboot_type/Firmware/DB.bin \
         -D DBX_DEFAULT_FILE1=./$secureboot_type/Firmware/DBX.bin
     edk2/BaseTools/BinWrappers/PosixLike/build -a AARCH64 -t GCC -b RELEASE -p edk2-platforms/Platform/RaspberryPi/RPi3/RPi3.dsc \
-        -D FIRMWARE_VER="UEFI Firmware RPi3 edk2-stable$pkgver-$pkgrel"\
+        --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"EDK2 $pkgver-$pkgrel" \
         -D SECURE_BOOT_ENABLE=TRUE \
         -D INCLUDE_TFTP_COMMAND=TRUE \
         -D NETWORK_ISCSI_ENABLE=TRUE \
