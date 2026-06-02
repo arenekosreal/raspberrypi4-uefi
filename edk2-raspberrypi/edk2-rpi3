@@ -25,8 +25,8 @@ declare file sync_target
 while read -r file
 do
     case "$file" in
-        usr/share/edk2/aarch64/RPi4_EFI.fd)
-            sync_target="$target/RPi4_EFI.fd"
+        usr/share/edk2/aarch64/RPi3_EFI.fd)
+            sync_target="$target/RPi3_EFI.fd"
             if [[ "$1" == "--install" ]]
             then
                 if [[ ! -e "$sync_target" ]]
@@ -70,7 +70,7 @@ do
                 fi
             fi
             ;;
-        boot/dtbs/broadcom/bcm2711-rpi-4*.dtb)
+        boot/dtbs/broadcom/bcm2711-rpi-3*.dtb|boot/dtbs/broadcom/bcm2710-rpi-2-b.dtb|boot/dtbs/broadcom/bcm2710-rpi-cm3.dtb)
             sync_target="$target/$(basename "$file")"
             if [[ "$1" == "--install" ]]
             then

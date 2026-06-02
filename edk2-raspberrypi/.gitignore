@@ -1,3 +1,4 @@
 !/*.hook
-!/edk2-rpi4
+!/edk2-rpi*
+*.pkg.*
 !/*.json

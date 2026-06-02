@@ -9,7 +9,7 @@ _raspberrypi_firmware_tag=1.20260521
 buildarch=8 # aarch64
 
 pkgbase=edk2-raspberrypi
-pkgname=(edk2-rpi4 edk2-bootloader-rpi4)
+pkgname=(edk2-rpi4 edk2-bootloader-rpi4 edk2-rpi3 edk2-bootloader-rpi3)
 pkgver=202605
 pkgrel=1
 pkgdesc="Modern, feature-rich firmware development environment for the UEFI specifications"
@@ -44,9 +44,13 @@ source=("git+https://github.com/tianocore/edk2.git#tag=edk2-stable$pkgver"
         "arm64_dbx.bin::https://uefi.org/sites/default/files/resources/dbxupdate_arm64.bin"
         "firmware-$_raspberrypi_firmware_tag.tar.gz::https://github.com/raspberrypi/firmware/archive/refs/tags/$_raspberrypi_firmware_tag.tar.gz"
         "edk2-rpi4"
+        "edk2-rpi3"
         "70-sync-edk2-rpi4.hook"
+        "70-sync-edk2-rpi3.hook"
         "80-remove-edk2-rpi4.hook"
-        "60-edk2-rpi4.json")
+        "80-remove-edk2-rpi3.hook"
+        "60-edk2-rpi4.json"
+        "60-edk2-rpi3.json")
 sha256sums=('2199d1a6f3d2afaf8658e69d2e68da3a5e047f9db24bc498b13eecb89eb5956e'
             '8bd31168159be3b27cc79593856d3ab22a019a139b21a40c9001b35894282b7f'
             '5fa5a4b9eeca0a36a62233908d3c7643eb6b695a496444ee1a07de954c443988'
@@ -70,10 +74,14 @@ sha256sums=('2199d1a6f3d2afaf8658e69d2e68da3a5e047f9db24bc498b13eecb89eb5956e'
             'f6124e34125bee3fe6d79a574eaa7b91c0e7bd9d929c1a321178efd611dad901'
             'f42c187f8b01b497f81fb0459164b27d16ca2af0b95c7331a82c1a27a731a885'
             'b900de58571920a306ab2d1296500499d0744451dbefda0c76b79e652bb71cb7'
-            '99cee7812031d715811e4ff344963b4ca3a304a69353a084d23653e57ec893df'
-            'd21a4b3c5949f518fdc10e09e6b45580dfb216c9be6b89fe8848a72311be0747'
+            'f7bc25e25dd5043b56b7ec9bb22c578df2f9dde8dbad8b9ac93671f626329493'
+            'a275e98b9bb0aae836f7e968c57e32d8810edce9c9854d52af22f0bf637b5026'
+            '19baf531a0d0790fd60db483f8e0963fa5da72badf419eea07a03f003ab61a72'
+            'c631c5ddca3b646a834b8e519d99569bfa6f98890c8901d51e40fc315603ad88'
             '4ed5ddc8bb5af041335036786afda80868da4a20ddb2220ba7cf9d150e267b01'
-            '8cb1ffe0c4bff487e27e3d7d561db9877c92416e4971a2a3c492f22ff7470bf4')
+            '85170fdd917292bd3b0e0178afd58256b3231ce3fd3ba48c5729341c49a36a5a'
+            '8cb1ffe0c4bff487e27e3d7d561db9877c92416e4971a2a3c492f22ff7470bf4'
+            'c8e59269198bf595ba95a990bae65f30b31211be6023731256d9b8ec94b2222f')
 
 prepare() {
     local submodule=edk2
@@ -120,6 +128,22 @@ build() {
         -D DB_DEFAULT_FILE3=./ms_db3.cer \
         -D DB_DEFAULT_FILE4=./ms_db4.cer \
         -D DBX_DEFAULT_FILE1=./arm64_dbx.bin
+    edk2/BaseTools/BinWrappers/PosixLike/build -a AARCH64 -t GCC -b RELEASE -p edk2-platforms/Platform/RaspberryPi/RPi3/RPi3.dsc \
+        --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor=L"https://github.com/tianocore/edk2" \
+        --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"UEFI Firmware edk2-stable$pkgver-$pkgrel" \
+        -D SECURE_BOOT_ENABLE=TRUE \
+        -D INCLUDE_TFTP_COMMAND=TRUE \
+        -D NETWORK_ISCSI_ENABLE=TRUE \
+        -D SMC_PCI_SUPPORT=1 \
+        -D DEFAULT_KEYS=TRUE \
+        -D PK_DEFAULT_FILE=./pk.cer \
+        -D KEK_DEFAULT_FILE1=./ms_kek1.cer \
+        -D KEK_DEFAULT_FILE2=./ms_kek2.cer \
+        -D DB_DEFAULT_FILE1=./ms_db1.cer \
+        -D DB_DEFAULT_FILE2=./ms_db2.cer \
+        -D DB_DEFAULT_FILE3=./ms_db3.cer \
+        -D DB_DEFAULT_FILE4=./ms_db4.cer \
+        -D DBX_DEFAULT_FILE1=./arm64_dbx.bin
 }
 
 package_edk2-rpi4() {
@@ -134,19 +158,20 @@ package_edk2-rpi4() {
 }
 
 package_edk2-bootloader-rpi4() {
-    pkgdesc="Bootloader shim to let edk2-rpi4 bootable on real RaspberryPi 4"
+    pkgdesc="Bootloader shim to let edk2 image bootable on real machine."
     url+="/RPi4"
     license=("GPL-2.0-only AND LicenseRef-broadcom")
     depends=("linux-aarch64>=5.8" raspberrypi-bootloader "edk2-rpi4=$pkgver" bash)
     optdepends=("firmware-raspberrypi: firmware for RaspberryPi"
                 "linux-firmware-broadcom: firmware for RaspberryPi"
                 "virt-firmware: for editing EFI variables")
-    conflicts=(uboot-raspberrypi linux-rpi linux-rpi-16k)
+    conflicts=(uboot-raspberrypi linux-rpi linux-rpi-16k edk2-raspberrypi)
+    provides=(edk2-raspberrypi)
     backup=(boot/config.txt)
 
     conflicts+=(uefi-raspberrypi raspberrypi-overlays)
     replaces=(uefi-raspberrypi raspberrypi-overlays)
-    provides=(uefi-raspberrypi raspberrypi-overlays)
+    provides+=(uefi-raspberrypi raspberrypi-overlays)
 
     mkdir -p "$pkgdir/boot" "$pkgdir/usr/share/libalpm/hooks" "$pkgdir/usr/share/libalpm/scripts"
     cat <<EOF > "$pkgdir/boot/config.txt"
@@ -162,9 +187,55 @@ arm_boost=1
 uart_2ndstage=1
 dtoverlay=miniuart-bt
 dtoverlay=upstream-pi4
+# Required for disabling 3GB limit and booting through DeviceTree
+# https://github.com/pftf/RPi4/pull/279
+dtoverlay=pcie-32bit-dma
 EOF
     cp -rv "firmware-$_raspberrypi_firmware_tag/boot/overlays" "$pkgdir/boot"
-    install -Dvm644 -t "$pkgdir/usr/share/libalpm/hooks/" -- *.hook
+    install -Dvm644 -t "$pkgdir/usr/share/libalpm/hooks/" -- *edk2-rpi4*.hook
     install -Dvm755 -t "$pkgdir/usr/share/libalpm/scripts/" edk2-rpi4
+    install -Dvm644 -t "$pkgdir/usr/share/licenses/$pkgname/" "firmware-$_raspberrypi_firmware_tag/boot/LICENCE.broadcom"
+}
+
+package_edk2-rpi3() {
+    pkgdesc="Firmware for RPi3 (aarch64)"
+    url+="/RPi3"
+
+    install -Dvm644 Build/RPi3/RELEASE_GCC/FV/RPI_EFI.fd "$pkgdir/usr/share/edk2/aarch64/RPi3_EFI.fd"
+    install -Dvm644 -t "$pkgdir/usr/share/qemu/firmware/" -- *"$pkgname"*.json
+    install -Dvm644 edk2/License.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+    install -Dvm644 edk2-platforms/License.txt "$pkgdir/usr/share/licenses/$pkgname/License.platforms.txt"
+    install -Dvm644 edk2-non-osi/Platform/RaspberryPi/RPi4/TrustedFirmware/License.txt "$pkgdir/usr/share/licenses/$pkgname/License.tf-a.txt"
+}
+
+package_edk2-bootloader-rpi3() {
+    pkgdesc="Bootloader shim to let edk2 image bootable on real machine."
+    url+="/RPi3"
+    license=("GPL-2.0-only AND LicenseRef-broadcom")
+    depends=("linux-aarch64>=5.8" raspberrypi-bootloader "edk2-rpi3=$pkgver" bash)
+    optdepends=("firmware-raspberrypi: firmware for RaspberryPi"
+                "linux-firmware-broadcom: firmware for RaspberryPi"
+                "virt-firmware: for editing EFI variables")
+    conflicts=(uboot-raspberrypi linux-rpi linux-rpi-16k edk2-raspberrypi)
+    provides=(edk2-raspberrypi)
+    backup=(boot/config.txt)
+
+    mkdir -p "$pkgdir/boot" "$pkgdir/usr/share/libalpm/hooks" "$pkgdir/usr/share/libalpm/scripts"
+    cat <<EOF > "$pkgdir/boot/config.txt"
+arm_control=0x200
+enable_uart=1
+armstub=RPi3_EFI.fd
+disable_commandline_tags=2
+device_tree_address=0x1f0000
+device_tree_end=0x200000
+
+arm_64bit=1
+uart_2ndstage=1
+dtoverlay=miniuart-bt
+dtoverlay=upstream
+EOF
+    cp -rv "firmware-$_raspberrypi_firmware_tag/boot/overlays" "$pkgdir/boot"
+    install -Dvm644 -t "$pkgdir/usr/share/libalpm/hooks/" -- *edk2-rpi3*.hook
+    install -Dvm755 -t "$pkgdir/usr/share/libalpm/scripts/" edk2-rpi3
     install -Dvm644 -t "$pkgdir/usr/share/licenses/$pkgname/" "firmware-$_raspberrypi_firmware_tag/boot/LICENCE.broadcom"
 }
