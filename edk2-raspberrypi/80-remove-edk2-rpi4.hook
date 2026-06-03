@@ -1,7 +1,6 @@
 [Trigger]
 Operation = Remove
 Type = Path
-Target = boot/overlays/*
 Target = boot/start4*.elf
 Target = boot/config.txt
 Target = boot/fixup4*.dat

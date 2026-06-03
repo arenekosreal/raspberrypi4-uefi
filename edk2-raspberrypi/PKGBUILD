@@ -4,7 +4,6 @@
 _edk2_non_osi_commit=7ac12d81e02b323bffdf1ef3c188ea33c2185c91
 _edk2_platforms_commit=f37b334aad56fff58bbc1169983657a3167377ce
 
-_raspberrypi_firmware_tag=1.20260521
 _secureboot_objects_version=1.6.4
 
 buildarch=8 # aarch64
@@ -37,7 +36,6 @@ source=("git+https://github.com/tianocore/edk2.git#tag=edk2-stable$pkgver"
         "git+https://github.com/DMTF/libspdm.git"
         "git+https://github.com/TrustedComputingGroup/TPM.git"
         "edk2-aarch64-secureboot-binaries-$_secureboot_objects_version.tar.gz::https://github.com/microsoft/secureboot_objects/releases/download/v$_secureboot_objects_version/edk2-aarch64-secureboot-binaries.tar.gz"
-        "firmware-$_raspberrypi_firmware_tag.tar.gz::https://github.com/raspberrypi/firmware/archive/refs/tags/$_raspberrypi_firmware_tag.tar.gz"
         "edk2-rpi4"
         "edk2-rpi3"
         "70-sync-edk2-rpi4.hook"
@@ -62,13 +60,12 @@ sha256sums=('2199d1a6f3d2afaf8658e69d2e68da3a5e047f9db24bc498b13eecb89eb5956e'
             'SKIP'
             'SKIP'
             '8df53791b65a5b6b1a0c6c3b588b48a3fab46fb0d4321febdde956618d35f107'
-            'b900de58571920a306ab2d1296500499d0744451dbefda0c76b79e652bb71cb7'
             '5145785a4897d52729895d8e9c60bddf8574245e0f0df0be0197329c2f323ee3'
             'a97336ff84a47127d61c1045f71b9cf3a16eb4bf54c67ef73b8bd243b54f16fa'
-            '5f487ad10e3f4b1be15c12f5815416b5d7c8e057d4aea547546be4214d1e3ab8'
-            'fe934b632b1b0c19bf7da61bcb4f49cb06a73d1764b9b772357ba0cc13c98d54'
-            'f7e89eef3ec300a93c46653399dd34feddd98b96db5bf69548209ce1b4141d1f'
-            '44842285450b94c11b45ab1128fb2e414cd113688943b74c626123657b94d73f'
+            '58ee39188c5859ab3e6dcc531b25dd432d8d2ceda93287df5a3a50ffe084545a'
+            'c55fdf553f684b21f1eae1316a85c51408465b3c8aa740d9339dba89fca8a77a'
+            '010e704babfddab2009da583fe99a6e0c76dd8b3cf5a4a0e943c20182d9a0227'
+            '0c3986a818c2ae850200f4c112c9df6778ac6fec5c4ad9afc915fc5b01a750a7'
             '8cb1ffe0c4bff487e27e3d7d561db9877c92416e4971a2a3c492f22ff7470bf4'
             'c8e59269198bf595ba95a990bae65f30b31211be6023731256d9b8ec94b2222f')
 
@@ -102,6 +99,7 @@ build() {
     edk2/BaseTools/BinWrappers/PosixLike/build -a AARCH64 -t GCC -b RELEASE -p edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc \
         --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"EDK2 $pkgver-$pkgrel" \
         --pcd gRaspberryPiTokenSpaceGuid.PcdRamLimitTo3GB="0" \
+        --pcd gRaspberryPiTokenSpaceGuid.PcdSystemTableMode="1" \
         -D SECURE_BOOT_ENABLE=TRUE \
         -D INCLUDE_TFTP_COMMAND=TRUE \
         -D NETWORK_ISCSI_ENABLE=TRUE \
@@ -113,6 +111,7 @@ build() {
         -D DBX_DEFAULT_FILE1=./$secureboot_type/Firmware/DBX.bin
     edk2/BaseTools/BinWrappers/PosixLike/build -a AARCH64 -t GCC -b RELEASE -p edk2-platforms/Platform/RaspberryPi/RPi3/RPi3.dsc \
         --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString=L"EDK2 $pkgver-$pkgrel" \
+        --pcd gRaspberryPiTokenSpaceGuid.PcdSystemTableMode="1" \
         -D SECURE_BOOT_ENABLE=TRUE \
         -D INCLUDE_TFTP_COMMAND=TRUE \
         -D NETWORK_ISCSI_ENABLE=TRUE \
@@ -138,7 +137,6 @@ package_edk2-rpi4() {
 package_edk2-bootloader-rpi4() {
     pkgdesc="Bootloader shim to let edk2 image bootable on real machine."
     url+="/RPi4"
-    license=("GPL-2.0-only AND LicenseRef-broadcom")
     depends=("linux-aarch64>=5.8" raspberrypi-bootloader "edk2-rpi4=$pkgver" bash)
     optdepends=("firmware-raspberrypi: firmware for RaspberryPi"
                 "linux-firmware-broadcom: firmware for RaspberryPi"
@@ -163,16 +161,9 @@ device_tree_end=0x400000
 
 arm_boost=1
 uart_2ndstage=1
-dtoverlay=miniuart-bt
-dtoverlay=upstream-pi4
-# Required for disabling 3GB limit and booting through DeviceTree
-# https://github.com/pftf/RPi4/pull/279
-#dtoverlay=pcie-32bit-dma
 EOF
-    cp -rv "firmware-$_raspberrypi_firmware_tag/boot/overlays" "$pkgdir/boot"
     install -Dvm644 -t "$pkgdir/usr/share/libalpm/hooks/" -- *edk2-rpi4*.hook
     install -Dvm755 -t "$pkgdir/usr/share/libalpm/scripts/" edk2-rpi4
-    install -Dvm644 -t "$pkgdir/usr/share/licenses/$pkgname/" "firmware-$_raspberrypi_firmware_tag/boot/LICENCE.broadcom"
 }
 
 package_edk2-rpi3() {
@@ -189,7 +180,6 @@ package_edk2-rpi3() {
 package_edk2-bootloader-rpi3() {
     pkgdesc="Bootloader shim to let edk2 image bootable on real machine."
     url+="/RPi3"
-    license=("GPL-2.0-only AND LicenseRef-broadcom")
     depends=(linux-aarch64 raspberrypi-bootloader "edk2-rpi3=$pkgver" bash)
     optdepends=("firmware-raspberrypi: firmware for RaspberryPi"
                 "linux-firmware-broadcom: firmware for RaspberryPi"
@@ -209,11 +199,7 @@ device_tree_end=0x200000
 
 arm_64bit=1
 uart_2ndstage=1
-dtoverlay=miniuart-bt
-dtoverlay=upstream
 EOF
-    cp -rv "firmware-$_raspberrypi_firmware_tag/boot/overlays" "$pkgdir/boot"
     install -Dvm644 -t "$pkgdir/usr/share/libalpm/hooks/" -- *edk2-rpi3*.hook
     install -Dvm755 -t "$pkgdir/usr/share/libalpm/scripts/" edk2-rpi3
-    install -Dvm644 -t "$pkgdir/usr/share/licenses/$pkgname/" "firmware-$_raspberrypi_firmware_tag/boot/LICENCE.broadcom"
 }
