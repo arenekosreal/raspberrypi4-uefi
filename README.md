@@ -5,7 +5,7 @@
 
 ## What is this?
 
-Files needed for booting Raspberry Pi 4 in UEFI mode.  
+Files needed for booting Raspberry Pi 3/4 in UEFI mode.  
 
 ## How to use?
 
@@ -44,9 +44,12 @@ Howewer, this means that you may not build packages as easy as old days. But we 
 
 ## Install
 
-Most of the time you need to install packages provide `uefi-raspberrypi4` and `raspberrypi-overlays`.
+Most of the time you need to install packages provide `edk2-raspberrypi4` or `edk2-raspberrypi3` based on your hardware.
 If you want to install dependencies used for building, you can install `raspberrypi4-uefi-devel-meta` meta package.
 Here are also some pacman hooks maybe useful for you at [pacman-hooks](./pacman-hooks) folder, you can check `README.md` here for how to use them.
+Using RaspberryPi kernel is not possible at least for archlinuxarm, because it does not enable UEFI related configuration by default.
+You may consider building it yourself so you can enable them. As for myself, using upstream kernel(the `linux-aarch64`) is recommended for archlinuxarm.
+We enabled ACPI+DeviceTree hybrid mode to let those components like V3D GPU available.
 
 ## Adjust bootloader
 
@@ -61,12 +64,11 @@ If you think pacman or other wrapper complains about not found these packages, p
 ## NOTE
 
 1. Backup your Pi's files or at least backup boot partition. Or you may have to reinstall your original system.  
-2. UEFI firmware is experimental, that means maybe some features may not work properly. You can get more infomation at [there](https://github.com/pftf/RPi4)  
+2. UEFI firmware is experimental, that means maybe some features may not work properly. You can get more infomation at [RPi4](https://github.com/tianocore/edk2-platforms/tree/master/Platform/RaspberryPi/RPi4) or [RPi3](https://github.com/tianocore/edk2-platforms/tree/master/Platform/RaspberryPi/RPi3).  
 3. Install grub with `--removeable` flag, or you have to choose boot from `/EFI/grub/grubaa64.efi` file in UEFI manually when your Pi is powering on. Also you can add a boot entry in UEFI manualy to solve this. For systemd-boot, `--no-variables` should be OK.
 4. According to kernel [documentation](https://www.kernel.org/doc/Documentation/arm64/booting.rst), a compressed aarch64 kernel does not have a decompressor, so you have to choose a bootloader which can do the decompression job. GRUB works well on Raspberry Pi 4B even with the compressed vmlinuz kernel.  
 5. GRUB may create some useless entries in advanced menu, like booting from vmlinux without initramfs, booting from Image without initramfs and so on, you can remove them as you like, booting from vmlinuz with initramfs works well.  
 
 ## References
 
-UEFI provided by [this](https://github.com/pftf/RPi4) project. Thanks to [pftf](https://github.com/pftf) and others' contribution, we can use UEFI Firmware in RaspberryPi.  
-Overlays provided by [raspberrypi/firmware](https://github.com/raspberrypi/firmware).
+UEFI provided by [edk2](https://github.com/tianocore/edk2) project. Thanks to [pftf](https://github.com/pftf) and others' contributions, we can use UEFI Firmware on RaspberryPi.
