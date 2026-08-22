@@ -2,7 +2,7 @@
 
 # No tags, use the latest commit when we update the package
 _edk2_non_osi_commit=7ac12d81e02b323bffdf1ef3c188ea33c2185c91
-_edk2_platforms_commit=f37b334aad56fff58bbc1169983657a3167377ce
+_edk2_platforms_commit=9377d445f41cbb69addf5eef9e8a53dae4360502
 
 _secureboot_objects_version=1.6.4
 
@@ -10,7 +10,7 @@ buildarch=8 # aarch64
 
 pkgbase=edk2-raspberrypi
 pkgname=(edk2-rpi4 edk2-bootloader-rpi4 edk2-rpi3 edk2-bootloader-rpi3)
-pkgver=202605
+pkgver=202608
 pkgrel=1
 pkgdesc="Modern, feature-rich firmware development environment for the UEFI specifications"
 arch=(any)
@@ -44,9 +44,9 @@ source=("git+https://github.com/tianocore/edk2.git#tag=edk2-stable$pkgver"
         "80-remove-edk2-rpi3.hook"
         "60-edk2-rpi4.json"
         "60-edk2-rpi3.json")
-sha256sums=('2199d1a6f3d2afaf8658e69d2e68da3a5e047f9db24bc498b13eecb89eb5956e'
+sha256sums=('21ee88df36289235173a09f40ca71b833b0bafcb021c7c74069f409ea769b576'
             '8bd31168159be3b27cc79593856d3ab22a019a139b21a40c9001b35894282b7f'
-            '5fa5a4b9eeca0a36a62233908d3c7643eb6b695a496444ee1a07de954c443988'
+            '498c6b991d81a3f1e14187c9a206a6fb0dcb38f268534942d5cc941f277e15ed'
             'SKIP'
             'SKIP'
             'SKIP'
