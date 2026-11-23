@@ -1,16 +1,16 @@
 # Based on edk2 pkgbase in extra repo of vanilla archlinux.
 
 # No tags, use the latest commit when we update the package
-_edk2_non_osi_commit=7ac12d81e02b323bffdf1ef3c188ea33c2185c91
-_edk2_platforms_commit=9377d445f41cbb69addf5eef9e8a53dae4360502
+_edk2_non_osi_commit=7d983bc4cca34be4789565e3d3b4b8d45982a3d2
+_edk2_platforms_commit=4db2845d14425599238be86b8a73d288f7c0b4a6
 
-_secureboot_objects_version=1.6.4
+_secureboot_objects_version=1.7.2
 
 buildarch=8 # aarch64
 
 pkgbase=edk2-raspberrypi
 pkgname=(edk2-rpi4 edk2-bootloader-rpi4 edk2-rpi3 edk2-bootloader-rpi3)
-pkgver=202608
+pkgver=202611
 pkgrel=1
 pkgdesc="Modern, feature-rich firmware development environment for the UEFI specifications"
 arch=(any)
@@ -44,9 +44,9 @@ source=("git+https://github.com/tianocore/edk2.git#tag=edk2-stable$pkgver"
         "80-remove-edk2-rpi3.hook"
         "60-edk2-rpi4.json"
         "60-edk2-rpi3.json")
-sha256sums=('21ee88df36289235173a09f40ca71b833b0bafcb021c7c74069f409ea769b576'
-            '8bd31168159be3b27cc79593856d3ab22a019a139b21a40c9001b35894282b7f'
-            '498c6b991d81a3f1e14187c9a206a6fb0dcb38f268534942d5cc941f277e15ed'
+sha256sums=('6c65948a1e6d2d958908cc5b60a6ec1b2e0087f84c14abc81e975837ca0cb662'
+            '487a2bd2a712c5ad7c923ee03f0765be3547a8e28f3134e987d3f124118e113e'
+            '2295c0d8904cdf5c1d706bc2d5b5854d05ca65007bb8b44a71cf2ffefa13b10d'
             'SKIP'
             'SKIP'
             'SKIP'
@@ -59,7 +59,7 @@ sha256sums=('21ee88df36289235173a09f40ca71b833b0bafcb021c7c74069f409ea769b576'
             'SKIP'
             'SKIP'
             'SKIP'
-            '8df53791b65a5b6b1a0c6c3b588b48a3fab46fb0d4321febdde956618d35f107'
+            '0c4dadd40932f02cb6cd416b10bd6fb50148a68c903d07d1e29fe83271e65a74'
             'af8fdb018c040add6bdb77bf4994b290e3ee29e6c03ba60fff48c442dcaabdb5'
             '5837e2327340dd3cfdfe4f26fda7c2242316b10cd7505c8fdb6af71ae417b69a'
             '58ee39188c5859ab3e6dcc531b25dd432d8d2ceda93287df5a3a50ffe084545a'
